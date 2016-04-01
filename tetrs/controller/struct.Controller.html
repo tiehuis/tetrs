@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `Controller` struct in crate `tetrs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Controller">
+
+    <title>tetrs::controller::Controller - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>tetrs</a>::<wbr><a href='index.html'>controller</a></p><script>window.sidebarCurrent = {name: 'Controller', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>tetrs</a>::<wbr><a href='index.html'>controller</a>::<wbr><a class='struct' href=''>Controller</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-318' class='srclink' href='../../src/tetrs/src/controller.rs.html#33-39' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Controller {
+    // some fields omitted
+}</pre><div class='docblock'><p>A controller stores the internal state as a series of known actions.</p>
+
+<p>The active status of each action is stored, along with how long each action
+has been active for. At its simplest, this/ controller parallels the
+keystate of a keyboard.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a></code></h4>
+<div class='docblock'><p>Return a new controller instance.</p>
+
+<p>The controller specified will start with all actions in the inactive
+state.</p>
+
+<h2 id='examples' class='section-header'><a href='#examples'>Examples</a></h2>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>controller</span>;
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>controller</span> <span class='op'>=</span> <span class='ident'>controller</span>::<span class='ident'>Controller</span>::<span class='ident'>new</span>();</pre>
+</div><h4 id='method.active' class='method'><code>fn <a href='#method.active' class='fnname'>active</a>(&amp;self, action: <a class='enum' href='../../tetrs/controller/enum.Action.html' title='tetrs::controller::Action'>Action</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Query if an action is currently active.</p>
+</div><h4 id='method.time' class='method'><code>fn <a href='#method.time' class='fnname'>time</a>(&amp;self, action: <a class='enum' href='../../tetrs/controller/enum.Action.html' title='tetrs::controller::Action'>Action</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h4>
+<div class='docblock'><p>Query how long an action has been active for.</p>
+</div><h4 id='method.activate' class='method'><code>fn <a href='#method.activate' class='fnname'>activate</a>(&amp;mut self, action: <a class='enum' href='../../tetrs/controller/enum.Action.html' title='tetrs::controller::Action'>Action</a>)</code></h4>
+<div class='docblock'><p>Activate the specified action.</p>
+
+<p>The action will be set to active and all subsequent updates will
+now trigger this actions timer.
+Reactivating an already active action has no effect and will not
+restart the timer.</p>
+
+<h2 id='examples-1' class='section-header'><a href='#examples-1'>Examples</a></h2>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>controller</span>;
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>controller</span> <span class='op'>=</span> <span class='ident'>controller</span>::<span class='ident'>Controller</span>::<span class='ident'>new</span>();
+<span class='ident'>controller</span>.<span class='ident'>activate</span>(<span class='ident'>controller</span>::<span class='ident'>Action</span>::<span class='ident'>MoveLeft</span>);</pre>
+</div><h4 id='method.deactivate' class='method'><code>fn <a href='#method.deactivate' class='fnname'>deactivate</a>(&amp;mut self, action: <a class='enum' href='../../tetrs/controller/enum.Action.html' title='tetrs::controller::Action'>Action</a>)</code></h4>
+<div class='docblock'><p>Deactivate the specified action.</p>
+
+<p>The action will be set to inactive.
+Deactivating an already inactive action has no effect.</p>
+
+<h2 id='examples-2' class='section-header'><a href='#examples-2'>Examples</a></h2>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>controller</span>;
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>controller</span> <span class='op'>=</span> <span class='ident'>controller</span>::<span class='ident'>Controller</span>::<span class='ident'>new</span>();
+<span class='ident'>controller</span>.<span class='ident'>deactivate</span>(<span class='ident'>controller</span>::<span class='ident'>Action</span>::<span class='ident'>MoveLeft</span>);</pre>
+</div><h4 id='method.update' class='method'><code>fn <a href='#method.update' class='fnname'>update</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>Update all active actions and increment their timers.</p>
+
+<h2 id='examples-3' class='section-header'><a href='#examples-3'>Examples</a></h2>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>controller</span>::{<span class='ident'>Action</span>, <span class='ident'>Controller</span>};
+
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>controller</span> <span class='op'>=</span> <span class='ident'>Controller</span>::<span class='ident'>new</span>();
+<span class='ident'>controller</span>.<span class='ident'>activate</span>(<span class='ident'>Action</span>::<span class='ident'>MoveRight</span>);
+<span class='comment'>// active[Action::MoveRight] == 0</span>
+<span class='ident'>controller</span>.<span class='ident'>update</span>();
+<span class='comment'>// active[Action::MoveRight] == 1</span></pre>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "tetrs";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Field","Implements a field state with specified dimensions and game data."]]});

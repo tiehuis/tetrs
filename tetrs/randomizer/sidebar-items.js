@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["bag_randomizer","Implements a 7-element bag randomizer."]],"trait":[["Randomizer","This trait must be implemented by all randomizers. This is in effect an iterator with the specified type."]]});

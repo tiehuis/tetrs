@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Action","Abstract actions which are understood by the controller."]],"struct":[["Controller","A controller stores the internal state as a series of known actions."]]});

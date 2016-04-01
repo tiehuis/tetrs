@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["BagRandomizer","A generic bag randomizer."]]});

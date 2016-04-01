@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Schema","A schema is a simple 2d textual representation of a field and a block. It allows conversion from a string, and also from a `(&Field, &Block)` and bridges the gap between these two components."]]});

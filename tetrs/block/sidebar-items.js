@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Type","The type of a specific block."]],"struct":[["Block","A block."]]});
