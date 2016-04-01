@@ -1,12 +1,13 @@
 //! Implements a high-level engine which composes all the components
 //! into one abstract structure.
 
-use ::{Rotation, Direction};
-use ::field::Field;
-use ::controller::{Action, Controller};
-use ::block::Block;
-use ::randomizer::Randomizer;
-use ::wallkick::WallkickTest;
+use Rotation;
+use Direction;
+use field::Field;
+use controller::{Action, Controller};
+use block::Block;
+use randomizer::Randomizer;
+use wallkick::WallkickTest;
 
 /// Which part of the game are we in. This is used to keep track of multi-frame
 /// events that require some internal state past state to be kept.

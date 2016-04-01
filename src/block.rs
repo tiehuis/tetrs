@@ -1,7 +1,8 @@
 //! A block represents a single tetrimino and is always tied to a specific
 //! field instance.
 
-use ::{Rotation, Direction};
+use Rotation;
+use Direction;
 use field::Field;
 
 use std::{cmp, mem};
@@ -356,8 +357,10 @@ impl Block {
 
 #[cfg(test)]
 mod tests {
-    use ::{Rotation, Direction};
+
     use super::*;
+    use Rotation;
+    use Direction;
     use field::Field;
 
     #[test]
@@ -398,7 +401,6 @@ mod tests {
         assert_eq!((1, 0), Block::offset_to_first(Type::T, Rotation::R270));
 
         assert_eq!((2, 0), Block::offset_to_first(Type::I, Rotation::R90));
-
         assert_eq!((0, 0), Block::offset_to_first(Type::Z, Rotation::R0));
     }
 }

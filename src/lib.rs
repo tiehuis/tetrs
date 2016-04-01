@@ -28,7 +28,6 @@ pub mod randomizer;
 
 pub mod schema;
 
-
 /// Represents all rotation statuses a block can be. This is used both as
 /// a rotation state, and to indicate how much relative movement shoud be
 /// applied for various functions.

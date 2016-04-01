@@ -30,10 +30,10 @@
 //! This requires slightly more work in combining with other field
 //! initialization parameters.
 
-use ::Rotation;
-use ::field::Field;
-use ::block;
-use ::block::Block;
+use Rotation;
+use field::Field;
+use block;
+use block::Block;
 
 use std::{fmt, iter};
 use std::cmp::PartialEq;
@@ -311,7 +311,7 @@ impl PartialEq for Schema {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ::Direction;
+    use Direction;
 
     #[test]
     fn test_from_string1() {
