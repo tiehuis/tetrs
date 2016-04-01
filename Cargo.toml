@@ -1,0 +1,8 @@
+[package]
+name = "tetrs"
+version = "0.1.0"
+authors = ["tiehuis <marctiehuis@gmail.com>"]
+
+[dependencies]
+rand = "0.3"
+itertools = "0.4"
