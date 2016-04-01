@@ -2,6 +2,7 @@
 #![warn(missing_docs)]
 
 #![crate_name = "tetrs"]
+#![doc(html_root_url = "https://tiehuis/github.io/tetrs/tetrs/")]
 
 //! The tetrs library provides a number of low-level tasks related to movement
 //! of blocks. The code aims to be correct and provide easy extension for new
