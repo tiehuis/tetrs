@@ -16,4 +16,5 @@ pub trait WallkickTest {
     fn test(&self, block: &Block, r: Rotation) -> &'static [(i32, i32)];
 }
 
-pub mod srs;
+pub use self::srs::SRS;
+mod srs;

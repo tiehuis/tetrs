@@ -15,4 +15,5 @@ pub trait Randomizer : Iterator {
     fn preview(&self) -> Vec<block::Type>;
 }
 
-pub mod bag_randomizer;
+pub use self::bag_randomizer::BagRandomizer;
+mod bag_randomizer;
