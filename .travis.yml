@@ -1,0 +1,19 @@
+sudo: false
+language: rust
+
+after_success:
+  - test "${TRAVIS_BUILD_NUMBER}.1" == "${TRAVIS_JOB_NUMBER}" && bash .build-pages.sh
+
+rust:
+  - nightly
+  - beta
+  - stable
+
+matrix:
+  allow_failures:
+    - rust: beta
+    - rust: stable
+
+env:
+  global:
+    secure: EIOEiCi/LbSmoCCsqTlNRDz6rlmW60RFHh5RbpyhIiNyv82AF+/+hRtxGMrT3vPQst3A0qNbB/wNrTDc24I5IAompQ+6SqwBneh3dYoILTpK93U7oGyQ8vKWml5D8Y5dPyqY+mkwGS9UJ7j+OclsQ98frMbqP+Qgfi1Hzn2gmxpFRBNhqf1W/wgANrcyjXdUIzKkwBsTL23RTASveUMDx+GNIyO2InmCxTwp0S+1QyP6Nu3OD4oUwsjvoxAiIMtaArBLHVk44J1J2Q2ciOloYTbQyMd2WuZijJ+LzANRwYxp3k2DigqHtjDT63vZhoPE3RnOGOF40ZxzloyGQK4CcJAxBtHPhjbwRT8UehwhtJWBNE56zxzbG/CRZdGOuyKCwLQhCQWQlop1svxZtxf1HtFVFmTvdAtbNn62PSpkkBpMxUM1kTK3RbigcDhGKceShUZmbHCNe7N0Y3nMFRspaCd6sUkej1CKs2egKwt5Y/pOJeeqnt9YOeLW3R+L94HowMwrZVvrYQ++55YtKH/hkoLq4JD06KC1pUIxoq1jaHTjzP5xoEOvSYM+M9qfTQ6r5Z7vHXq4wscaP4rAuHoy8LN68dI93Wxr2NsUdmuV/hNsLMTMUk89BqyJ55v2sICmreB0kfmLwvRXtgYoDjqJjxMylEFC0biwD8Ibn9LG5YY=
