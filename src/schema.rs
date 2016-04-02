@@ -33,7 +33,7 @@
 use Rotation;
 use field::Field;
 use block;
-use block::Block;
+use block::{Block, BlockBuilder};
 
 use std::{fmt, iter};
 use std::cmp::PartialEq;
@@ -253,7 +253,10 @@ impl Schema {
 
                 // (xo, yo) are not normalized based on the field so the block
                 // needs to be adjusted.
-                let block = Block::new_at(ty, ro, (ox, field.height - oy - 1));
+                let block = Block::new(ty)
+                                  .rotation(ro)
+                                  .position((ox, field.height - oy - 1));
+
                 assert!(!block.collision(&field));
                 return block;
             }

@@ -29,6 +29,60 @@ pub struct Field {
     pub data: Vec<Vec<usize>>,
 }
 
+/// Handles building of more complicated fields than can be constructed with
+/// `new` itself.
+///
+/// More options may be added in the future whilst keeping
+/// backwards-compatibility.
+///
+/// ## Examples
+/// ```
+/// use tetrs::field::{Field, FieldBuilder};
+/// // Constructs a field with a width of 12 and height of 30
+/// let field = Field::new().width(12).height(30);
+/// ```
+pub trait FieldBuilder {
+    /// Alter the width of the field and return the modified field.
+    fn width(self, width: usize) -> Field;
+
+    /// Alter the height of the field and return the modified field.
+    fn height(self, height: usize) -> Field;
+
+    /// Alter the hidden height of the field and return the modified field.
+    fn hidden(self, hidden: usize) -> Field;
+
+    /// Alter the block spawn point of the field and return the modified.
+    fn spawn(self, spawn: (usize, usize)) -> Field;
+}
+
+/// Not sure if this would be better as an actual type to disallow calling
+/// these functions on arbitrary fields, but we can trust the caller for now.
+impl FieldBuilder for Field {
+    fn width(mut self, width: usize) -> Field {
+        self.width = width;
+        self.data.iter_mut().foreach(|x| x.resize(width, block::Type::None.to_usize()));
+        self
+    }
+
+    fn height(mut self, height: usize) -> Field {
+        assert!(height > self.hidden);
+        let width = self.width;
+        self.height = height;
+        self.data.resize(height, vec![block::Type::None.to_usize(); width]);
+        self
+    }
+
+    fn hidden(mut self, hidden: usize) -> Field {
+        self.hidden = hidden;
+        self
+    }
+
+    fn spawn(mut self, spawn: (usize, usize)) -> Field {
+        self.spawn = spawn;
+        self
+    }
+}
+
 impl Field {
     /// Construct a new field object.
     ///
@@ -40,24 +94,11 @@ impl Field {
     /// ```
     pub fn new() -> Field {
         Field {
-            width: 10, height: 25, hidden: 3, spawn: (3, 0),
+            width: 10,
+            height: 25,
+            hidden: 3,
+            spawn: (4, 0),
             data: vec![vec![block::Type::None.to_usize(); 25]; 10]
-        }
-    }
-
-    /// Construct a new field object with the specified options.
-    ///
-    /// ## Examples
-    /// ```
-    /// use tetrs::field::Field;
-    ///
-    /// let field = Field::with_options(12, 25, (5, 0));
-    /// ```
-    pub fn with_options(width: usize, height: usize, spawn: (usize, usize))
-            -> Field {
-        Field  {
-            width: width, height: height, hidden: 3, spawn: (spawn.0, spawn.1),
-            data: vec![vec![block::Type::None.to_usize(); height]; width]
         }
     }
 
@@ -91,7 +132,7 @@ impl Field {
     /// use tetrs::{field, block};
     ///
     /// let mut field = field::Field::new();
-    /// let mut block = block::Block::new(block::Type::I, tetrs::Rotation::R0);
+    /// let mut block = block::Block::new(block::Type::I);
     ///
     /// field.freeze(block);
     ///

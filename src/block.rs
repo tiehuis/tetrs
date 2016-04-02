@@ -121,6 +121,40 @@ pub struct Block {
     pub data: &'static [(usize, usize)],
 }
 
+/// A trait for building a block.
+///
+/// No collision testing is performed for any of the following.
+pub trait BlockBuilder {
+    /// Alter the initial position of the block.
+    fn position(self, position: (usize, usize)) -> Block;
+
+    /// Alter the initial rotation of the block.
+    fn rotation(self, rotation: Rotation) -> Block;
+
+    /// Alter the initial position based on the given fields spawn location.
+    fn on_field(self, field: &Field) -> Block;
+}
+
+impl BlockBuilder for Block {
+    fn position(mut self, position: (usize, usize)) -> Block {
+        self.x = position.0 as i32;
+        self.y = position.1 as i32;
+        self
+    }
+
+    fn rotation(mut self, rotation: Rotation) -> Block {
+        self.rotation_raw(rotation);
+        self
+    }
+
+    fn on_field(mut self, field: &Field) -> Block {
+        self.x = field.spawn.0 as i32;
+        self.y = field.spawn.1 as i32;
+        self
+    }
+}
+
+
 impl Block {
     /// Construct a new block from the specified input parameters.
     ///
@@ -128,36 +162,15 @@ impl Block {
     /// ```
     /// use tetrs::block::Block;
     ///
-    /// let block = Block::new(tetrs::block::Type::I, tetrs::Rotation::R90);
+    /// let block = Block::new(tetrs::block::Type::I);
     /// ```
-    pub fn new(id: Type, r: Rotation) -> Block {
+    pub fn new(id: Type) -> Block {
         Block { x: 4,
                 y: 0,
                 id: id,
-                r: r,
-                data: &BLOCK_DATA[id.to_usize()][r.to_usize()],
+                r: Rotation::R0,
+                data: &BLOCK_DATA[id.to_usize()][Rotation::R0.to_usize()],
         }
-    }
-
-    /// Construct a block at the specific location on the field.
-    ///
-    /// If the location is invalid and is filled, then return None. This is
-    /// not often used, but can be useful for specific cases.
-    pub fn new_at(id: Type, r: Rotation, (x, y): (usize, usize)) -> Block {
-        Block { x: x as i32,
-                y: y as i32,
-                id: id,
-                r: r,
-                data: &BLOCK_DATA[id.to_usize()][r.to_usize()],
-        }
-    }
-
-    /// Consumes the current block returning a new block that has been
-    /// `reset` (respawned).
-    ///
-    /// This is useful when implementing a hold function
-    pub fn reset(self) -> Block {
-        Block::new(self.id, Rotation::R0)
     }
 
     /// Returns a tuple with the minimum x, y values of the current block.
@@ -225,7 +238,7 @@ impl Block {
     /// use tetrs::block::Block;
     ///
     /// let field = Field::new();
-    /// let mut block = Block::new(tetrs::block::Type::Z, tetrs::Rotation::R0);
+    /// let mut block = Block::new(tetrs::block::Type::Z);
     /// block.shift(&field, tetrs::Direction::Left);
     /// ```
     pub fn shift(&mut self, field: &Field, direction: Direction) -> bool {
@@ -247,7 +260,7 @@ impl Block {
     /// use tetrs::block::Block;
     ///
     /// let field = Field::new();
-    /// let mut block = Block::new(tetrs::block::Type::Z, tetrs::Rotation::R0);
+    /// let mut block = Block::new(tetrs::block::Type::Z);
     /// block.shift_extend(&field, tetrs::Direction::Left);
     /// ```
     pub fn shift_extend(&mut self, field: &Field, direction: Direction) {
@@ -291,7 +304,7 @@ impl Block {
     /// use tetrs::block::Block;
     ///
     /// let field = Field::new();
-    /// let mut block = Block::new(tetrs::block::Type::Z, tetrs::Rotation::R0);
+    /// let mut block = Block::new(tetrs::block::Type::Z);
     /// block.rotate(&field, tetrs::Rotation::R90);
     /// ```
     pub fn rotate(&mut self, field: &Field, rotation: Rotation) -> bool {
@@ -311,10 +324,10 @@ impl Block {
     /// ## Examples
     /// ```
     /// use tetrs::field::Field;
-    /// use tetrs::block::Block;
+    /// use tetrs::block::{Block, BlockBuilder};
     ///
     /// let field = Field::new();
-    /// let block = Block::new(tetrs::block::Type::Z, tetrs::Rotation::R0);
+    /// let block = Block::new(tetrs::block::Type::Z).on_field(&field);
     /// let ghost = block.ghost(&field);
     /// ```
     pub fn ghost(&self, field: &Field) -> Block {
@@ -366,7 +379,8 @@ mod tests {
     #[test]
     fn test_shift() {
         let field = Field::new();
-        let mut block = Block::new(Type::Z, Rotation::R0);
+        let mut block = Block::new(Type::Z)
+                              .on_field(&field);
 
         let x = block.x;
         block.shift(&field, Direction::Left);
@@ -379,7 +393,9 @@ mod tests {
     #[test]
     fn test_rotation() {
         let field = Field::new();
-        let mut block = Block::new(Type::S, Rotation::R0);
+        let mut block = Block::new(Type::S)
+                              .on_field(&field);
+
         block.shift(&field, Direction::Down);
         block.shift(&field, Direction::Down);
 
