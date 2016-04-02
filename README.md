@@ -14,4 +14,4 @@ available.
 
 ### License
 
-**tetrs** is MIT licensed.
+**tetrs** is MIT/Apache-2.0 licensed.
