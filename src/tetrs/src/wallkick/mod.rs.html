@@ -60,6 +60,7 @@
 <span id="17">17</span>
 <span id="18">18</span>
 <span id="19">19</span>
+<span id="20">20</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a wallkick test</span>
 <span class='doccomment'>//!</span>
@@ -79,7 +80,8 @@
     <span class='kw'>fn</span> <span class='ident'>test</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>block</span>: <span class='kw-2'>&amp;</span><span class='ident'>Block</span>, <span class='ident'>r</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [(<span class='ident'>i32</span>, <span class='ident'>i32</span>)];
 }
 
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>srs</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>srs</span>::<span class='ident'>SRS</span>;
+<span class='kw'>mod</span> <span class='ident'>srs</span>;
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

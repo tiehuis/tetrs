@@ -169,6 +169,47 @@
 <span id="126">126</span>
 <span id="127">127</span>
 <span id="128">128</span>
+<span id="129">129</span>
+<span id="130">130</span>
+<span id="131">131</span>
+<span id="132">132</span>
+<span id="133">133</span>
+<span id="134">134</span>
+<span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! A generic field for use with a game.</span>
 <span class='doccomment'>//!</span>
@@ -201,6 +242,60 @@
     <span class='kw'>pub</span> <span class='ident'>data</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;&gt;</span>,
 }
 
+<span class='doccomment'>/// Handles building of more complicated fields than can be constructed with</span>
+<span class='doccomment'>/// `new` itself.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// More options may be added in the future whilst keeping</span>
+<span class='doccomment'>/// backwards-compatibility.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// ## Examples</span>
+<span class='doccomment'>/// ```</span>
+<span class='doccomment'>/// use tetrs::field::{Field, FieldBuilder};</span>
+<span class='doccomment'>/// // Constructs a field with a width of 12 and height of 30</span>
+<span class='doccomment'>/// let field = Field::new().width(12).height(30);</span>
+<span class='doccomment'>/// ```</span>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>FieldBuilder</span> {
+    <span class='doccomment'>/// Alter the width of the field and return the modified field.</span>
+    <span class='kw'>fn</span> <span class='ident'>width</span>(<span class='self'>self</span>, <span class='ident'>width</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Field</span>;
+
+    <span class='doccomment'>/// Alter the height of the field and return the modified field.</span>
+    <span class='kw'>fn</span> <span class='ident'>height</span>(<span class='self'>self</span>, <span class='ident'>height</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Field</span>;
+
+    <span class='doccomment'>/// Alter the hidden height of the field and return the modified field.</span>
+    <span class='kw'>fn</span> <span class='ident'>hidden</span>(<span class='self'>self</span>, <span class='ident'>hidden</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Field</span>;
+
+    <span class='doccomment'>/// Alter the block spawn point of the field and return the modified.</span>
+    <span class='kw'>fn</span> <span class='ident'>spawn</span>(<span class='self'>self</span>, <span class='ident'>spawn</span>: (<span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='ident'>Field</span>;
+}
+
+<span class='doccomment'>/// Not sure if this would be better as an actual type to disallow calling</span>
+<span class='doccomment'>/// these functions on arbitrary fields, but we can trust the caller for now.</span>
+<span class='kw'>impl</span> <span class='ident'>FieldBuilder</span> <span class='kw'>for</span> <span class='ident'>Field</span> {
+    <span class='kw'>fn</span> <span class='ident'>width</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>width</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Field</span> {
+        <span class='self'>self</span>.<span class='ident'>width</span> <span class='op'>=</span> <span class='ident'>width</span>;
+        <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>iter_mut</span>().<span class='ident'>foreach</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>resize</span>(<span class='ident'>width</span>, <span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='prelude-val'>None</span>.<span class='ident'>to_usize</span>()));
+        <span class='self'>self</span>
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>height</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>height</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Field</span> {
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>height</span> <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>hidden</span>);
+        <span class='kw'>let</span> <span class='ident'>width</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>width</span>;
+        <span class='self'>self</span>.<span class='ident'>height</span> <span class='op'>=</span> <span class='ident'>height</span>;
+        <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>resize</span>(<span class='ident'>height</span>, <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='prelude-val'>None</span>.<span class='ident'>to_usize</span>(); <span class='ident'>width</span>]);
+        <span class='self'>self</span>
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>hidden</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>hidden</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Field</span> {
+        <span class='self'>self</span>.<span class='ident'>hidden</span> <span class='op'>=</span> <span class='ident'>hidden</span>;
+        <span class='self'>self</span>
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>spawn</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>spawn</span>: (<span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='ident'>Field</span> {
+        <span class='self'>self</span>.<span class='ident'>spawn</span> <span class='op'>=</span> <span class='ident'>spawn</span>;
+        <span class='self'>self</span>
+    }
+}
+
 <span class='kw'>impl</span> <span class='ident'>Field</span> {
     <span class='doccomment'>/// Construct a new field object.</span>
     <span class='doccomment'>///</span>
@@ -212,24 +307,11 @@
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Field</span> {
         <span class='ident'>Field</span> {
-            <span class='ident'>width</span>: <span class='number'>10</span>, <span class='ident'>height</span>: <span class='number'>25</span>, <span class='ident'>hidden</span>: <span class='number'>3</span>, <span class='ident'>spawn</span>: (<span class='number'>3</span>, <span class='number'>0</span>),
+            <span class='ident'>width</span>: <span class='number'>10</span>,
+            <span class='ident'>height</span>: <span class='number'>25</span>,
+            <span class='ident'>hidden</span>: <span class='number'>3</span>,
+            <span class='ident'>spawn</span>: (<span class='number'>4</span>, <span class='number'>0</span>),
             <span class='ident'>data</span>: <span class='macro'>vec</span><span class='macro'>!</span>[<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='prelude-val'>None</span>.<span class='ident'>to_usize</span>(); <span class='number'>25</span>]; <span class='number'>10</span>]
-        }
-    }
-
-    <span class='doccomment'>/// Construct a new field object with the specified options.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ## Examples</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::field::Field;</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// let field = Field::with_options(12, 25, (5, 0));</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>with_options</span>(<span class='ident'>width</span>: <span class='ident'>usize</span>, <span class='ident'>height</span>: <span class='ident'>usize</span>, <span class='ident'>spawn</span>: (<span class='ident'>usize</span>, <span class='ident'>usize</span>))
-            <span class='op'>-&gt;</span> <span class='ident'>Field</span> {
-        <span class='ident'>Field</span>  {
-            <span class='ident'>width</span>: <span class='ident'>width</span>, <span class='ident'>height</span>: <span class='ident'>height</span>, <span class='ident'>hidden</span>: <span class='number'>3</span>, <span class='ident'>spawn</span>: (<span class='ident'>spawn</span>.<span class='number'>0</span>, <span class='ident'>spawn</span>.<span class='number'>1</span>),
-            <span class='ident'>data</span>: <span class='macro'>vec</span><span class='macro'>!</span>[<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='prelude-val'>None</span>.<span class='ident'>to_usize</span>(); <span class='ident'>height</span>]; <span class='ident'>width</span>]
         }
     }
 
@@ -263,7 +345,7 @@
     <span class='doccomment'>/// use tetrs::{field, block};</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let mut field = field::Field::new();</span>
-    <span class='doccomment'>/// let mut block = block::Block::new(block::Type::I, tetrs::Rotation::R0);</span>
+    <span class='doccomment'>/// let mut block = block::Block::new(block::Type::I);</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// field.freeze(block);</span>
     <span class='doccomment'>///</span>

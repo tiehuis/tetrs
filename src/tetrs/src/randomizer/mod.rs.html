@@ -59,6 +59,7 @@
 <span id="16">16</span>
 <span id="17">17</span>
 <span id="18">18</span>
+<span id="19">19</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a randomizer.</span>
 
@@ -77,7 +78,8 @@
     <span class='kw'>fn</span> <span class='ident'>preview</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>block</span>::<span class='ident'>Type</span><span class='op'>&gt;</span>;
 }
 
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>bag_randomizer</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>bag_randomizer</span>::<span class='ident'>BagRandomizer</span>;
+<span class='kw'>mod</span> <span class='ident'>bag_randomizer</span>;
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

@@ -408,6 +408,9 @@
 <span id="365">365</span>
 <span id="366">366</span>
 <span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Methods for converting to and from a textual field representation.</span>
 <span class='doccomment'>//!</span>
@@ -441,10 +444,10 @@
 <span class='doccomment'>//! This requires slightly more work in combining with other field</span>
 <span class='doccomment'>//! initialization parameters.</span>
 
-<span class='kw'>use</span> ::<span class='ident'>Rotation</span>;
-<span class='kw'>use</span> ::<span class='ident'>field</span>::<span class='ident'>Field</span>;
-<span class='kw'>use</span> ::<span class='ident'>block</span>;
-<span class='kw'>use</span> ::<span class='ident'>block</span>::<span class='ident'>Block</span>;
+<span class='kw'>use</span> <span class='ident'>Rotation</span>;
+<span class='kw'>use</span> <span class='ident'>field</span>::<span class='ident'>Field</span>;
+<span class='kw'>use</span> <span class='ident'>block</span>;
+<span class='kw'>use</span> <span class='ident'>block</span>::{<span class='ident'>Block</span>, <span class='ident'>BlockBuilder</span>};
 
 <span class='kw'>use</span> <span class='ident'>std</span>::{<span class='ident'>fmt</span>, <span class='ident'>iter</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>::<span class='ident'>PartialEq</span>;
@@ -664,7 +667,10 @@
 
                 <span class='comment'>// (xo, yo) are not normalized based on the field so the block</span>
                 <span class='comment'>// needs to be adjusted.</span>
-                <span class='kw'>let</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new_at</span>(<span class='ident'>ty</span>, <span class='ident'>ro</span>, (<span class='ident'>ox</span>, <span class='ident'>field</span>.<span class='ident'>height</span> <span class='op'>-</span> <span class='ident'>oy</span> <span class='op'>-</span> <span class='number'>1</span>));
+                <span class='kw'>let</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>ty</span>)
+                                  .<span class='ident'>rotation</span>(<span class='ident'>ro</span>)
+                                  .<span class='ident'>position</span>((<span class='ident'>ox</span>, <span class='ident'>field</span>.<span class='ident'>height</span> <span class='op'>-</span> <span class='ident'>oy</span> <span class='op'>-</span> <span class='number'>1</span>));
+
                 <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>block</span>.<span class='ident'>collision</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>));
                 <span class='kw'>return</span> <span class='ident'>block</span>;
             }
@@ -722,7 +728,7 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
     <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
-    <span class='kw'>use</span> ::<span class='ident'>Direction</span>;
+    <span class='kw'>use</span> <span class='ident'>Direction</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_from_string1</span>() {

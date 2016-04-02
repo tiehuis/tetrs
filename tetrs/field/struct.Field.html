@@ -73,18 +73,10 @@
 <span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>field</span>::<span class='ident'>Field</span>;
 
 <span class='kw'>let</span> <span class='ident'>field</span> <span class='op'>=</span> <span class='ident'>Field</span>::<span class='ident'>new</span>();</pre>
-</div><h4 id='method.with_options' class='method'><code>fn <a href='#method.with_options' class='fnname'>with_options</a>(width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, height: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, spawn: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>) -&gt; <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a></code></h4>
-<div class='docblock'><p>Construct a new field object with the specified options.</p>
-
-<h2 id='examples-1' class='section-header'><a href='#examples-1'>Examples</a></h2>
-<pre class='rust rust-example-rendered'>
-<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>field</span>::<span class='ident'>Field</span>;
-
-<span class='kw'>let</span> <span class='ident'>field</span> <span class='op'>=</span> <span class='ident'>Field</span>::<span class='ident'>with_options</span>(<span class='number'>12</span>, <span class='number'>25</span>, (<span class='number'>5</span>, <span class='number'>0</span>));</pre>
 </div><h4 id='method.clear_lines' class='method'><code>fn <a href='#method.clear_lines' class='fnname'>clear_lines</a>(&amp;mut self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h4>
 <div class='docblock'><p>Clear lines from the field and return the number cleared.</p>
 
-<h2 id='examples-2' class='section-header'><a href='#examples-2'>Examples</a></h2>
+<h2 id='examples-1' class='section-header'><a href='#examples-1'>Examples</a></h2>
 <pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>field</span>::<span class='ident'>Field</span>;
 
@@ -94,12 +86,12 @@
 <div class='docblock'><p>Freeze a block into place on the field. This takes ownership of the
 block to ensure it cannot be used again.</p>
 
-<h2 id='examples-3' class='section-header'><a href='#examples-3'>Examples</a></h2>
+<h2 id='examples-2' class='section-header'><a href='#examples-2'>Examples</a></h2>
 <pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>tetrs</span>::{<span class='ident'>field</span>, <span class='ident'>block</span>};
 
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>field</span> <span class='op'>=</span> <span class='ident'>field</span>::<span class='ident'>Field</span>::<span class='ident'>new</span>();
-<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>block</span>::<span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='ident'>I</span>, <span class='ident'>tetrs</span>::<span class='ident'>Rotation</span>::<span class='ident'>R0</span>);
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>block</span>::<span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='ident'>I</span>);
 
 <span class='ident'>field</span>.<span class='ident'>freeze</span>(<span class='ident'>block</span>);
 
@@ -107,7 +99,7 @@ block to ensure it cannot be used again.</p>
 </div><h4 id='method.at' class='method'><code>fn <a href='#method.at' class='fnname'>at</a>(&amp;self, (x, y): <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h4>
 <div class='docblock'><p>Return the value at the specified field location</p>
 
-<h2 id='examples-4' class='section-header'><a href='#examples-4'>Examples</a></h2>
+<h2 id='examples-3' class='section-header'><a href='#examples-3'>Examples</a></h2>
 <pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>field</span>::<span class='ident'>Field</span>;
 
@@ -115,7 +107,13 @@ block to ensure it cannot be used again.</p>
 <span class='kw'>let</span> <span class='ident'>value</span> <span class='op'>=</span> <span class='ident'>field</span>.<span class='ident'>at</span>((<span class='number'>5</span>, <span class='number'>10</span>));</pre>
 </div><h4 id='method.set' class='method'><code>fn <a href='#method.set' class='fnname'>set</a>(&amp;self, (x, y): <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Return if the value at the specified location is empty or not.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='../../tetrs/field/trait.FieldBuilder.html' title='tetrs::field::FieldBuilder'>FieldBuilder</a> for <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a></code></h3><div class='docblock'><p>Not sure if this would be better as an actual type to disallow calling
+these functions on arbitrary fields, but we can trust the caller for now.</p>
+</div><div class='impl-items'><h4 id='method.width' class='method'><code>fn <a href='../../tetrs/field/trait.FieldBuilder.html#tymethod.width' class='fnname'>width</a>(self, width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a></code></h4>
+<h4 id='method.height' class='method'><code>fn <a href='../../tetrs/field/trait.FieldBuilder.html#tymethod.height' class='fnname'>height</a>(self, height: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a></code></h4>
+<h4 id='method.hidden' class='method'><code>fn <a href='../../tetrs/field/trait.FieldBuilder.html#tymethod.hidden' class='fnname'>hidden</a>(self, hidden: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a></code></h4>
+<h4 id='method.spawn' class='method'><code>fn <a href='../../tetrs/field/trait.FieldBuilder.html#tymethod.spawn' class='fnname'>spawn</a>(self, spawn: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>) -&gt; <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a></code></h4>
+</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
 </div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a> for <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a></code></h3><div class='impl-items'><h4 id='method.clone' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a></code></h4>
 <h4 id='method.clone_from' class='method'><span class="since">1.0.0</span><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code></h4>
 </div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html' title='core::hash::Hash'>Hash</a> for <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a></code></h3><div class='impl-items'><h4 id='method.hash' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/hash/trait.Hash.html#tymethod.hash' class='fnname'>hash</a>&lt;__H: <a class='trait' href='https://doc.rust-lang.org/nightly/core/hash/trait.Hasher.html' title='core::hash::Hasher'>Hasher</a>&gt;(&amp;self, __arg_0: &amp;mut __H)</code></h4>

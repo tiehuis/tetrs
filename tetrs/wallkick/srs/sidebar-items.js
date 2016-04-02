@@ -1,1 +1,1 @@
-initSidebarItems({});
+initSidebarItems({"struct":[["SRS","Wallkick test implementing the SRS rotation system. Most wallkick structs do not have any data associated that is not of 'static lifetime."]]});
