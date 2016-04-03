@@ -19,70 +19,11 @@
 use Rotation;
 use Direction;
 use field::Field;
+use rotation;
+use rotation::RotationSystem;
 
 use std::{cmp, mem};
 use collections::enum_set::CLike;
-
-/// Rotation specifications. All the values are x, y coordinates that
-/// extend down and right, with the origin being the upper-left corner
-/// of the field.
-///
-/// Values can never be negative, as a blocks x, y value could always be
-/// normalized to make these data points positive.
-///
-/// Currently this implements SRS rotations but we can theoretically have
-/// more, so this should be generalized and hidden behind a trait at some
-/// point.
-static BLOCK_DATA: [[[(usize, usize); 4]; 4]; 7] = [
-    [   // I-block
-        [(0, 1), (1, 1), (2, 1), (3, 1)],
-        [(2, 0), (2, 1), (2, 2), (2, 3)],
-        [(0, 2), (1, 2), (2, 2), (3, 2)],
-        [(1, 0), (1, 1), (1, 2), (1, 3)],
-    ],
-
-    [   // T-block
-        [(0, 1), (1, 0), (1, 1), (2, 1)],
-        [(1, 0), (1, 1), (1, 2), (2, 1)],
-        [(0, 1), (1, 1), (1, 2), (2, 1)],
-        [(0, 1), (1, 0), (1, 1), (1, 2)],
-    ],
-
-    [   // L-block
-        [(0, 1), (1, 1), (2, 0), (2, 1)],
-        [(1, 0), (1, 1), (1, 2), (2, 2)],
-        [(0, 1), (0, 2), (1, 1), (2, 1)],
-        [(0, 0), (1, 0), (1, 1), (1, 2)],
-    ],
-
-    [   // J-block
-        [(0, 0), (0, 1), (1, 1), (2, 1)],
-        [(1, 0), (1, 1), (1, 2), (2, 0)],
-        [(0, 1), (1, 1), (2, 1), (2, 2)],
-        [(0, 2), (1, 0), (1, 1), (1, 2)],
-    ],
-
-    [   // S-block
-        [(0, 1), (1, 0), (1, 1), (2, 0)],
-        [(1, 0), (1, 1), (2, 1), (2, 2)],
-        [(0, 2), (1, 1), (1, 2), (2, 1)],
-        [(0, 0), (0, 1), (1, 1), (1, 2)],
-    ],
-
-    [   // Z-block
-        [(0, 0), (1, 0), (1, 1), (2, 1)],
-        [(1, 1), (1, 2), (2, 0), (2, 1)],
-        [(0, 1), (1, 1), (1, 2), (2, 2)],
-        [(0, 1), (0, 2), (1, 0), (1, 1)],
-    ],
-
-    [   // O-block
-        [(1, 0), (1, 1), (2, 0), (2, 1)],
-        [(1, 0), (1, 1), (2, 0), (2, 1)],
-        [(1, 0), (1, 1), (2, 0), (2, 1)],
-        [(1, 0), (1, 1), (2, 0), (2, 1)],
-    ]
-];
 
 /// The identifier for a particular block.
 #[repr(usize)]
@@ -113,7 +54,6 @@ impl Type {
         vec![Type::I, Type::T, Type::L, Type::J, Type::S, Type::Z, Type::O]
     }
 }
-
 
 /// A struct representing a single tetrimino.
 ///
@@ -170,8 +110,8 @@ pub struct Block {
     /// Rotation state of the block
     pub r: Rotation,
 
-    /// Block offset data
-    pub data: &'static [(usize, usize)],
+    /// Rotation system used internally
+    pub rs: rotation::SRS
 }
 
 /// Traits for building a block.
@@ -216,7 +156,7 @@ impl BlockBuilder for Block {
     }
 
     fn rotation(mut self, rotation: Rotation) -> Block {
-        self.rotation_raw(rotation);
+        self.r = rotation;
         self
     }
 
@@ -257,7 +197,7 @@ impl Block {
                 y: 0,
                 id: id,
                 r: Rotation::R0,
-                data: &BLOCK_DATA[id.to_usize()][Rotation::R0.to_usize()],
+                rs: rotation::SRS{}
         }
     }
 
@@ -325,7 +265,7 @@ impl Block {
     ///
     /// ```
     pub fn trailing(&self) -> (i32, i32) {
-        self.data.iter()
+        self.rs.data(self.id, self.r).iter()
                  .map(|&(x, y)| (x as i32, y as i32))
                  .fold((0, 0), |(a, b), (x, y)| {
                      (cmp::max(a, x), cmp::max(b, y))
@@ -336,7 +276,7 @@ impl Block {
     /// Return `true` if the block collides with the field after applying the
     /// specified offset.
     fn collision_at(&self, field: &Field, (xo, yo): (i32, i32)) -> bool {
-        self.data.iter()
+        self.rs.data(self.id, self.r).iter()
                   .map(|&(dx, dy)| {
                       (self.x + dx as i32 + xo, self.y + dy as i32 + yo)
                   })
@@ -413,13 +353,6 @@ impl Block {
         while self.shift(&field, direction) {}
     }
 
-
-    ///Set the blocks rotation to the specified.
-    fn rotation_raw(&mut self, rotation: Rotation) {
-        self.r = rotation;
-        self.data = &BLOCK_DATA[self.id.to_usize()][self.r.to_usize()];
-    }
-
     /// Rotate the block by a specified amount and then apply an offset.
     ///
     /// This is useful for calculating wallkicks, where a collision check is
@@ -445,13 +378,13 @@ impl Block {
             Rotation::R270 => self.r.anticlockwise()
         };
 
-        self.rotation_raw(new_rotation);
+        self.r = new_rotation;
 
         if self.shift_raw(&field, (x, y)) {
             true
         }
         else {
-            self.rotation_raw(original_rotation);
+            self.r = original_rotation;
             false
         }
     }
@@ -474,7 +407,7 @@ impl Block {
 
     /// Check if the block occupies a particular `(x, y)` absolute location.
     pub fn at(&self, (a, b): (usize, usize)) -> bool {
-        self.data.iter()
+        self.rs.data(self.id, self.r).iter()
             .map(|&(x, y)| (self.x as usize + x, self.y as usize + y))
             .any(|(x, y)| a == x && b == y)
     }
@@ -511,7 +444,9 @@ impl Block {
     /// let data = Block::data(Type::Z, Rotation::R270);
     /// ```
     pub fn data(id: Type, r: Rotation) -> &'static [(usize, usize)] {
-        &BLOCK_DATA[id.to_usize()][r.to_usize()]
+        // Default to SRS for the moment, this should take another arg
+        let srs = rotation::SRS{};
+        srs.data(id, r)
     }
 
     /// Equivalent to the `leading` method but not on an instance.
@@ -524,7 +459,9 @@ impl Block {
     /// let (x, y) = Block::offset(Type::Z, Rotation::R270);
     /// ```
     pub fn offset(id: Type, r: Rotation) -> (i32, i32) {
-        BLOCK_DATA[id.to_usize()][r.to_usize()].iter()
+        // Default to SRS for the moment, this should take another arg
+        let srs = rotation::SRS{};
+        srs.data(id, r).iter()
                  .map(|&(x, y)| (x as i32, y as i32))
                  .fold((100, 100), |(a, b), (x, y)| {
                      (cmp::min(a, x), cmp::min(b, y))
@@ -551,7 +488,9 @@ impl Block {
     ///
     /// ```
     pub fn offset_to_first(id: Type, r: Rotation) -> (usize, usize) {
-        BLOCK_DATA[id.to_usize()][r.to_usize()].iter()
+        // Default to SRS for the moment, this should take another arg
+        let srs = rotation::SRS{};
+        srs.data(id, r).iter()
                 .fold((100, 100), |(a, b), &(x, y)| {
                     // We want the least-(x, y) such that y is minimized.
                     // This is subtly different from offset which allows the

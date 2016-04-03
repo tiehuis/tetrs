@@ -36,6 +36,7 @@ pub mod block;
 pub mod controller;
 pub mod wallkick;
 pub mod randomizer;
+pub mod rotation;
 //pub mod engine;
 
 pub mod schema;

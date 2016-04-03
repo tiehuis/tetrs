@@ -7,6 +7,7 @@
 
 use block;
 use block::Block;
+use rotation::RotationSystem;
 
 use std::iter;
 use itertools::Itertools;
@@ -173,9 +174,10 @@ impl Field {
     /// // block.shift(Direction::Right); // Compile Error
     /// ```
     pub fn freeze(&mut self, block: Block) {
-        block.data.iter()
+        let data = block.rs.data(block.id, block.r);
+        data.iter()
             .enumerate()
-            .map(|(i, &(x, y))| (x + block.data[i].0, y + block.data[i].1))
+            .map(|(i, &(x, y))| (x + data[i].0, y + data[i].1))
             .foreach(|(x, y)| {
                 self.data[x][y] = block.id.to_usize();
             });
