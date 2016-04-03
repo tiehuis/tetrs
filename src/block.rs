@@ -86,7 +86,7 @@ static BLOCK_DATA: [[[(usize, usize); 4]; 4]; 7] = [
 
 /// The identifier for a particular block.
 #[repr(usize)]
-#[derive(Hash, Clone, Debug, Copy, PartialEq)]
+#[derive(Hash, Clone, Debug, Copy, PartialEq, Eq)]
 #[allow(missing_docs)]
 pub enum Type {
     I, T, L, J, S, Z, O, None

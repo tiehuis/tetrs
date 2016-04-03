@@ -1,6 +1,8 @@
 //! Implements a 7-element bag randomizer.
+//!
+//! Currently it can be confusing dealing with iterators and their clones etc
+//! so there may be a slightly better way in working with these.
 
-use collections::enum_set::CLike;
 use rand;
 use rand::Rng;
 
@@ -41,13 +43,13 @@ impl BagRandomizer {
             //
             // This can probably be fixed, just not sure how right now. So we
             // fall back to an outside initialization.
-            data: [block::Type::I; 14],
+            data: [block::Type::None; 14],
             head: 0,
             rng: rand::thread_rng()
         };
 
-        for (i, v) in (0..7).cycle().take(14).enumerate() {
-            bag.data[i] = block::Type::from_usize(v);
+        for (i, v) in block::Type::variants().into_iter().cycle().take(14).enumerate() {
+            bag.data[i] = v;
         }
 
         bag.shuffle(true);
@@ -106,10 +108,20 @@ impl Iterator for BagRandomizer {
 #[cfg(test)]
 mod tests {
 
+    use super::*;
+    use std::collections::HashSet;
+
     #[test]
     fn test_cycle() {
-        // Ensure that we encounter each value once on each 7-element cycle
+        // Ensure values are seen as expected
+        let bag = BagRandomizer::new();
 
+        let mut seen = HashSet::new();
+
+        for ty in bag.clone().take(7) {
+            assert_eq!(seen.contains(&ty), false);
+            seen.insert(ty);
+        }
     }
 
     #[test]
