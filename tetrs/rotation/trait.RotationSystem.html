@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `WallkickTest` trait in crate `tetrs`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, WallkickTest">
+    <meta name="description" content="API documentation for the Rust `RotationSystem` trait in crate `tetrs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, RotationSystem">
 
-    <title>tetrs::wallkick::WallkickTest - Rust</title>
+    <title>tetrs::rotation::RotationSystem - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
@@ -27,7 +27,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>tetrs</a>::<wbr><a href='index.html'>wallkick</a></p><script>window.sidebarCurrent = {name: 'WallkickTest', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'><a href='../index.html'>tetrs</a>::<wbr><a href='index.html'>rotation</a></p><script>window.sidebarCurrent = {name: 'RotationSystem', ty: 'trait', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -42,25 +42,25 @@
     </nav>
 
     <section id='main' class="content trait">
-<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>tetrs</a>::<wbr><a href='index.html'>wallkick</a>::<wbr><a class='trait' href=''>WallkickTest</a></span><span class='out-of-band'><span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>tetrs</a>::<wbr><a href='index.html'>rotation</a>::<wbr><a class='trait' href=''>RotationSystem</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-384' class='srclink' href='../../src/tetrs/src/wallkick/mod.rs.html#14-17' title='goto source code'>[src]</a></span></h1>
-<pre class='rust trait'>pub trait WallkickTest {
-    fn <a href='#tymethod.test' class='fnname'>test</a>(&amp;self, block: &amp;<a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a>, r: <a class='enum' href='../../tetrs/enum.Rotation.html' title='tetrs::Rotation'>Rotation</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'static [</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>;
-}</pre><div class='docblock'><p>Trait which specifies what wallkick tests must implement. Every wallkick
-test must implement an iterator with offsets of type (i32, i32).</p>
+               </span><a id='src-463' class='srclink' href='../../src/tetrs/src/rotation/mod.rs.html#14-19' title='goto source code'>[src]</a></span></h1>
+<pre class='rust trait'>pub trait RotationSystem {
+    fn <a href='#tymethod.data' class='fnname'>data</a>(&amp;self, ty: <a class='enum' href='../../tetrs/block/enum.Type.html' title='tetrs::block::Type'>Type</a>, rotation: <a class='enum' href='../../tetrs/enum.Rotation.html' title='tetrs::Rotation'>Rotation</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'static [</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>;
+}</pre><div class='docblock'><p>The <code>RotationSystem</code> trait is implmented by all rotation systems.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.test' class='method stab '><code>fn <a href='#tymethod.test' class='fnname'>test</a>(&amp;self, block: &amp;<a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a>, r: <a class='enum' href='../../tetrs/enum.Rotation.html' title='tetrs::Rotation'>Rotation</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'static [</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a></code></h3><div class='docblock'><p>Returns a set of wallkick tests for the specified block and rotation</p>
+        <h3 id='tymethod.data' class='method stab '><code>fn <a href='#tymethod.data' class='fnname'>data</a>(&amp;self, ty: <a class='enum' href='../../tetrs/block/enum.Type.html' title='tetrs::block::Type'>Type</a>, rotation: <a class='enum' href='../../tetrs/enum.Rotation.html' title='tetrs::Rotation'>Rotation</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'static [</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a></code></h3><div class='docblock'><p>Returns a static array of offset values for the specified <code>Type</code>
+and <code>Rotation</code>.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl <a class='trait' href='../../tetrs/wallkick/trait.WallkickTest.html' title='tetrs::wallkick::WallkickTest'>WallkickTest</a> for <a class='struct' href='../../tetrs/wallkick/struct.SRS.html' title='tetrs::wallkick::SRS'>SRS</a></code></li>
+    <li><code>impl <a class='trait' href='../../tetrs/rotation/trait.RotationSystem.html' title='tetrs::rotation::RotationSystem'>RotationSystem</a> for <a class='struct' href='../../tetrs/rotation/srs/struct.SRS.html' title='tetrs::rotation::srs::SRS'>SRS</a></code></li>
 </ul><script type="text/javascript" async
-                         src="../../implementors/tetrs/wallkick/trait.WallkickTest.js">
+                         src="../../implementors/tetrs/rotation/trait.RotationSystem.js">
                  </script></section>
     <section id='search' class="content hidden"></section>
 

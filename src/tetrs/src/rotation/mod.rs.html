@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `src/randomizer/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `src/rotation/mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
@@ -64,28 +64,28 @@
 <span id="21">21</span>
 <span id="22">22</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! Implements a randomizer.</span>
+<span class='doccomment'>//! This modules provides an interface for dealing with different block offsets.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! Offsets refer to particular rotation specifications. For example, the SRS</span>
+<span class='doccomment'>//! and Akira style rotation systems which each contain different offset values</span>
+<span class='doccomment'>//! which can both be used if they implement the RotationSystem trait.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! All `RotationsSystem`&#39;s currently use an empty struct which can be passed</span>
+<span class='doccomment'>//! around. This allows generic usage of anything which impl&#39;s `RotationSystem`.</span>
 
-<span class='kw'>use</span> <span class='ident'>block</span>;
+<span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Type</span>;
+<span class='kw'>use</span> <span class='ident'>Rotation</span>;
 
-<span class='doccomment'>/// This trait must be implemented by all randomizers. This is in effect an</span>
-<span class='doccomment'>/// iterator with the specified type.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// All randomizers do not actually store blocks, but instead block::Type</span>
-<span class='doccomment'>/// values which are used to construct blocks.</span>
-<span class='doccomment'>/// This is done so that the randomizer does not require extra constructor</span>
-<span class='doccomment'>/// knowledge in how to create a block itself (i.e. a field etc);</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// Currently it is up to the randomizer itself to ensure it stores enough</span>
-<span class='doccomment'>/// blocks in its buffer to handle preview pieces.</span>
-<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Randomizer</span> : <span class='ident'>Iterator</span> {
-    <span class='doccomment'>/// Preview returns a list of upcoming blocks. This can be any length,</span>
-    <span class='doccomment'>/// including 0 length in the case of no previews.</span>
-    <span class='kw'>fn</span> <span class='ident'>preview</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>block</span>::<span class='ident'>Type</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// The `RotationSystem` trait is implmented by all rotation systems.</span>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>RotationSystem</span> {
+
+    <span class='doccomment'>/// Returns a static array of offset values for the specified `Type`</span>
+    <span class='doccomment'>/// and `Rotation`.</span>
+    <span class='kw'>fn</span> <span class='ident'>data</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>ty</span>: <span class='ident'>Type</span>, <span class='ident'>rotation</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [(<span class='ident'>usize</span>, <span class='ident'>usize</span>)];
 }
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>bag_randomizer</span>::<span class='ident'>BagRandomizer</span>;
-<span class='kw'>mod</span> <span class='ident'>bag_randomizer</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>srs</span>::<span class='ident'>SRS</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>srs</span>;
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

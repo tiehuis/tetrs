@@ -250,6 +250,8 @@
 <span id="207">207</span>
 <span id="208">208</span>
 <span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! A generic playfield.</span>
 <span class='doccomment'>//!</span>
@@ -260,6 +262,7 @@
 
 <span class='kw'>use</span> <span class='ident'>block</span>;
 <span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Block</span>;
+<span class='kw'>use</span> <span class='ident'>rotation</span>::<span class='ident'>RotationSystem</span>;
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>;
 <span class='kw'>use</span> <span class='ident'>itertools</span>::<span class='ident'>Itertools</span>;
@@ -426,9 +429,10 @@
     <span class='doccomment'>/// // block.shift(Direction::Right); // Compile Error</span>
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>freeze</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>block</span>: <span class='ident'>Block</span>) {
-        <span class='ident'>block</span>.<span class='ident'>data</span>.<span class='ident'>iter</span>()
+        <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>block</span>.<span class='ident'>rs</span>.<span class='ident'>data</span>(<span class='ident'>block</span>.<span class='ident'>id</span>, <span class='ident'>block</span>.<span class='ident'>r</span>);
+        <span class='ident'>data</span>.<span class='ident'>iter</span>()
             .<span class='ident'>enumerate</span>()
-            .<span class='ident'>map</span>(<span class='op'>|</span>(<span class='ident'>i</span>, <span class='kw-2'>&amp;</span>(<span class='ident'>x</span>, <span class='ident'>y</span>))<span class='op'>|</span> (<span class='ident'>x</span> <span class='op'>+</span> <span class='ident'>block</span>.<span class='ident'>data</span>[<span class='ident'>i</span>].<span class='number'>0</span>, <span class='ident'>y</span> <span class='op'>+</span> <span class='ident'>block</span>.<span class='ident'>data</span>[<span class='ident'>i</span>].<span class='number'>1</span>))
+            .<span class='ident'>map</span>(<span class='op'>|</span>(<span class='ident'>i</span>, <span class='kw-2'>&amp;</span>(<span class='ident'>x</span>, <span class='ident'>y</span>))<span class='op'>|</span> (<span class='ident'>x</span> <span class='op'>+</span> <span class='ident'>data</span>[<span class='ident'>i</span>].<span class='number'>0</span>, <span class='ident'>y</span> <span class='op'>+</span> <span class='ident'>data</span>[<span class='ident'>i</span>].<span class='number'>1</span>))
             .<span class='ident'>foreach</span>(<span class='op'>|</span>(<span class='ident'>x</span>, <span class='ident'>y</span>)<span class='op'>|</span> {
                 <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>x</span>][<span class='ident'>y</span>] <span class='op'>=</span> <span class='ident'>block</span>.<span class='ident'>id</span>.<span class='ident'>to_usize</span>();
             });

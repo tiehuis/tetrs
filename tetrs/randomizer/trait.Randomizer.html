@@ -46,16 +46,19 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-409' class='srclink' href='../../src/tetrs/src/randomizer/mod.rs.html#12-16' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-415' class='srclink' href='../../src/tetrs/src/randomizer/mod.rs.html#15-19' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Randomizer: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/trait.Iterator.html' title='core::iter::Iterator'>Iterator</a> {
     fn <a href='#tymethod.preview' class='fnname'>preview</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../../tetrs/block/enum.Type.html' title='tetrs::block::Type'>Type</a>&gt;;
 }</pre><div class='docblock'><p>This trait must be implemented by all randomizers. This is in effect an
 iterator with the specified type.</p>
 
-<p>All randomizer do not actually store blocks, but instead block::Type
+<p>All randomizers do not actually store blocks, but instead block::Type
 values which are used to construct blocks.
 This is done so that the randomizer does not require extra constructor
 knowledge in how to create a block itself (i.e. a field etc);</p>
+
+<p>Currently it is up to the randomizer itself to ensure it stores enough
+blocks in its buffer to handle preview pieces.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
