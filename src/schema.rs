@@ -1,8 +1,9 @@
 //! Methods for converting to and from a textual field representation.
 //!
-//! This is tremendously useful for writing complex tests.
+//! This is mostly useful for writing more complicated test cases. Other uses
+//! are for generating fixed start field parameters.
 //!
-//! Examples:
+//! ## Examples
 //!
 //! ```ignore
 //! use tetrs::schema::Schema;
@@ -25,10 +26,6 @@
 //!     ------------
 //! "));
 //! ```
-//!
-//! This can also potentially be useful for specifying initial fields of play.
-//! This requires slightly more work in combining with other field
-//! initialization parameters.
 
 use Rotation;
 use field::Field;
@@ -229,7 +226,8 @@ impl Schema {
     //  @@
     // ";
     //
-    // // Matching block will always be rotation 0, and never rotation 2.
+    // // Matching block will always be rotation 0, and never rotation 2, even
+    // // though both have the same representation.
     // ```
     //
     // If it is required for exact rotations, then we could add support for
@@ -280,9 +278,9 @@ impl Schema {
     }
 
 
-    // Truncate a given schema to its simplest form.
-    //
-    // This removes all leading empty rows.
+    /// Truncate a given schema to its simplest form.
+    ///
+    /// This removes all leading empty rows.
     fn truncate(&self) -> Schema {
         let mut schema = self.clone();
         let empty = iter::repeat(' ').take(self.width).collect_vec();

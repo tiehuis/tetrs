@@ -1,7 +1,9 @@
-//! A generic field for use with a game.
+//! A generic playfield.
 //!
-//! The field has little concept about any other components and has no
-//! dependencies on them.
+//! A `Field` stores the state of previously placed blocks, and is used to
+//! determine collisions for any `Block`. A `Field` is not actually aware
+//! of what blocks belong to it, tis generality allows for more advanced
+//! gameplay to be built from this structure.
 
 use block;
 use block::Block;
@@ -10,7 +12,11 @@ use std::iter;
 use itertools::Itertools;
 use collections::enum_set::CLike;
 
-/// Implements a field state with specified dimensions and game data.
+/// A `Field` is simply a 2-D `Vec` with some corresponding options.
+///
+/// Internally we use a `Vec` of `Vec`'s for easier resizing, but all rows
+/// must be of equal length, so it can be thought of as rectangular for all
+/// purposes.
 #[derive(Hash, Clone, Debug)]
 pub struct Field {
     /// The width of the field.
@@ -20,9 +26,12 @@ pub struct Field {
     pub height: usize,
 
     /// The height of the hidden region of the field.
+    ///
+    /// This is a subregion of height, and does not actually add any more
+    /// height to the field.
     pub hidden: usize,
 
-    /// The initial spawn of all blocks.
+    /// The initial spawn of a `Block` on this field.
     pub spawn: (usize, usize),
 
     /// The current field state.
@@ -38,6 +47,7 @@ pub struct Field {
 /// ## Examples
 /// ```
 /// use tetrs::field::{Field, FieldBuilder};
+///
 /// // Constructs a field with a width of 12 and height of 30
 /// let field = Field::new().width(12).height(30);
 /// ```
@@ -86,6 +96,28 @@ impl FieldBuilder for Field {
 impl Field {
     /// Construct a new field object.
     ///
+    /// This is often combined with the `FieldBuilder` trait impl's to provide
+    /// custom parameters for a `Field`.
+    ///
+    /// A `Field` can be constructed with no arguments, in which case the
+    /// following defaults are used:
+    ///
+    /// ## Width
+    /// Default width is 10 columns.
+    ///
+    /// ## Height
+    /// Default height is 25 rows.
+    ///
+    /// ## Hidden
+    /// The hidden segment takes up 3 rows.
+    ///
+    /// ## Spawn
+    /// The default spawn is at coordinates `(4, 0)`.
+    ///
+    /// ---
+    ///
+    /// If values are to be overridden, look at the `FieldBuilder` trait impl.
+    ///
     /// ## Examples
     /// ```
     /// use tetrs::field::Field;
@@ -129,14 +161,16 @@ impl Field {
     ///
     /// ## Examples
     /// ```
-    /// use tetrs::{field, block};
+    /// use tetrs::field::{Field};
+    /// use tetrs::block::{Block, Type};
+    /// use tetrs::Direction;
     ///
-    /// let mut field = field::Field::new();
-    /// let mut block = block::Block::new(block::Type::I);
+    /// let mut field = Field::new();
+    /// let mut block = Block::new(Type::I);
     ///
     /// field.freeze(block);
     ///
-    /// // block.shift(tetrs::Direction::Right); // Invalid
+    /// // block.shift(Direction::Right); // Compile Error
     /// ```
     pub fn freeze(&mut self, block: Block) {
         block.data.iter()
@@ -147,7 +181,10 @@ impl Field {
             });
     }
 
-    /// Return the value at the specified field location
+    /// Return the value at the specified field location.
+    ///
+    /// This currently is a `usize` value which corresponds to some `Type`
+    /// of `Block`.
     ///
     /// ## Examples
     /// ```
@@ -161,7 +198,10 @@ impl Field {
         self.data[x][y]
     }
 
-    /// Return if the value at the specified location is empty or not.
+    /// Return true if the value at the specified location is non-empty.
+    ///
+    /// This is a convenience function which queries `at` and checks if the
+    /// result is of empty `Type`.
     pub fn set(&self, (x, y): (usize, usize)) -> bool {
         assert!(x < self.width && y < self.height);
         self.data[x][y] != block::Type::None.to_usize()

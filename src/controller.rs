@@ -2,11 +2,15 @@
 //!
 //! This controller acts like a bridge between any physical input and the
 //! input which the internal gamestate can understand.
+//!
+//! When a key is pressed, this can be translated to a call to the controllers
+//! `activate` function, and when the key is removed, this corresponds to a
+//! call to the `deactivate` function.
 
 use std::mem;
 use collections::enum_set::CLike;
 
-/// Abstract actions which are understood by the controller.
+/// Actions which are understood by the controller.
 #[repr(usize)]
 #[derive(Hash, Clone, Debug, Copy)]
 #[allow(missing_docs)]
