@@ -46,11 +46,15 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-318' class='srclink' href='../../src/tetrs/src/controller.rs.html#1-151' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-313' class='srclink' href='../../src/tetrs/src/controller.rs.html#1-155' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>An abstract controller for specifying actions.</p>
 
 <p>This controller acts like a bridge between any physical input and the
 input which the internal gamestate can understand.</p>
+
+<p>When a key is pressed, this can be translated to a call to the controllers
+<code>activate</code> function, and when the key is removed, this corresponds to a
+call to the <code>deactivate</code> function.</p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                        <tr class=' module-item'>
@@ -65,7 +69,7 @@ input which the internal gamestate can understand.</p>
                            <td><a class='enum' href='enum.Action.html'
                                   title='tetrs::controller::Action'>Action</a></td>
                            <td class='docblock short'>
-                                <p>Abstract actions which are understood by the controller.</p>
+                                <p>Actions which are understood by the controller.</p>
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>

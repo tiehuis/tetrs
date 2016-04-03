@@ -192,16 +192,24 @@
 <span id="149">149</span>
 <span id="150">150</span>
 <span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! An abstract controller for specifying actions.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! This controller acts like a bridge between any physical input and the</span>
 <span class='doccomment'>//! input which the internal gamestate can understand.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! When a key is pressed, this can be translated to a call to the controllers</span>
+<span class='doccomment'>//! `activate` function, and when the key is removed, this corresponds to a</span>
+<span class='doccomment'>//! call to the `deactivate` function.</span>
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 <span class='kw'>use</span> <span class='ident'>collections</span>::<span class='ident'>enum_set</span>::<span class='ident'>CLike</span>;
 
-<span class='doccomment'>/// Abstract actions which are understood by the controller.</span>
+<span class='doccomment'>/// Actions which are understood by the controller.</span>
 <span class='attribute'>#[<span class='ident'>repr</span>(<span class='ident'>usize</span>)]</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Hash</span>, <span class='ident'>Clone</span>, <span class='ident'>Debug</span>, <span class='ident'>Copy</span>)]</span>
 <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>missing_docs</span>)]</span>

@@ -46,7 +46,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-582' class='srclink' href='../src/tetrs/src/lib.rs.html#37-39' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-577' class='srclink' href='../src/tetrs/src/lib.rs.html#65-67' title='goto source code'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum Rotation {
     R0,
     R90,
@@ -54,14 +54,44 @@
     R270,
 }</pre><div class='docblock'><p>Represents all rotation statuses a block can be. This is used both as
 a rotation state, and to indicate how much relative movement shoud be
-applied for various functions.</p>
+applied for various functions.
+A rotation state.</p>
+
+<p>Rotations states are available in 90 degree increments and internally all
+follow a clockwise direction.</p>
+
+<h2 id='examples' class='section-header'><a href='#examples'>Examples</a></h2>
+<pre class='rust rust-example-rendered'>
+
+<span class='ident'>Rotation</span>::<span class='ident'>R90</span>  <span class='ident'>Rotation</span>::<span class='ident'>R270</span>
+
+  <span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span>      <span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span>
+  <span class='op'>|</span>       <span class='op'>|</span>      <span class='op'>|</span>       <span class='op'>|</span>
+  <span class='op'>|</span>   .<span class='op'>-</span><span class='op'>-&gt;</span><span class='op'>|</span>      <span class='op'>|</span>&lt;-<span class='op'>-</span>.   <span class='op'>|</span>
+  <span class='op'>|</span>       <span class='op'>|</span>      <span class='op'>|</span>       <span class='op'>|</span>
+  <span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span>      <span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span></pre>
 </div><h2 class='variants'>Variants</h2>
 <table class='variants_table'><tr><td id='variant.R0'><code>R0</code></td><td></td><td></td></tr><tr><td id='variant.R90'><code>R90</code></td><td></td><td></td></tr><tr><td id='variant.R180'><code>R180</code></td><td></td><td></td></tr><tr><td id='variant.R270'><code>R270</code></td><td></td><td></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='enum' href='../tetrs/enum.Rotation.html' title='tetrs::Rotation'>Rotation</a></code></h3><div class='impl-items'><h4 id='method.variants' class='method'><code>fn <a href='#method.variants' class='fnname'>variants</a>() -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../tetrs/enum.Rotation.html' title='tetrs::Rotation'>Rotation</a>&gt;</code></h4>
-<div class='docblock'><p>Returns all rotation variants</p>
+<div class='docblock'><p>Returns all available <code>Rotation</code> variants.</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>let</span> <span class='ident'>rotations</span> <span class='op'>=</span> <span class='ident'>tetrs</span>::<span class='ident'>Rotation</span>::<span class='ident'>variants</span>();</pre>
 </div><h4 id='method.clockwise' class='method'><code>fn <a href='#method.clockwise' class='fnname'>clockwise</a>(&amp;self) -&gt; <a class='enum' href='../tetrs/enum.Rotation.html' title='tetrs::Rotation'>Rotation</a></code></h4>
 <div class='docblock'><p>Returns the next clockwise rotation.</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>Rotation</span>;
+
+<span class='kw'>let</span> <span class='ident'>rotation</span> <span class='op'>=</span> <span class='ident'>Rotation</span>::<span class='ident'>R0</span>;
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>rotation</span>.<span class='ident'>clockwise</span>(), <span class='ident'>Rotation</span>::<span class='ident'>R90</span>);</pre>
 </div><h4 id='method.anticlockwise' class='method'><code>fn <a href='#method.anticlockwise' class='fnname'>anticlockwise</a>(&amp;self) -&gt; <a class='enum' href='../tetrs/enum.Rotation.html' title='tetrs::Rotation'>Rotation</a></code></h4>
 <div class='docblock'><p>Returns the next anticlockwise rotation.</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>Rotation</span>;
+
+<span class='kw'>let</span> <span class='ident'>rotation</span> <span class='op'>=</span> <span class='ident'>Rotation</span>::<span class='ident'>R270</span>;
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>rotation</span>.<span class='ident'>anticlockwise</span>(), <span class='ident'>Rotation</span>::<span class='ident'>R180</span>);</pre>
 </div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/collections/enum_set/trait.CLike.html' title='collections::enum_set::CLike'>CLike</a> for <a class='enum' href='../tetrs/enum.Rotation.html' title='tetrs::Rotation'>Rotation</a></code></h3><div class='impl-items'><h4 id='method.to_usize' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/collections/enum_set/trait.CLike.html#tymethod.to_usize' class='fnname'>to_usize</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h4>
 <h4 id='method.from_usize' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/collections/enum_set/trait.CLike.html#tymethod.from_usize' class='fnname'>from_usize</a>(v: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='enum' href='../tetrs/enum.Rotation.html' title='tetrs::Rotation'>Rotation</a></code></h4>
 </div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html' title='core::cmp::PartialEq'>PartialEq</a> for <a class='enum' href='../tetrs/enum.Rotation.html' title='tetrs::Rotation'>Rotation</a></code></h3><div class='impl-items'><h4 id='method.eq' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/cmp/trait.PartialEq.html#tymethod.eq' class='fnname'>eq</a>(&amp;self, __arg_0: &amp;<a class='enum' href='../tetrs/enum.Rotation.html' title='tetrs::Rotation'>Rotation</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>

@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Field","Implements a field state with specified dimensions and game data."]],"trait":[["FieldBuilder","Handles building of more complicated fields than can be constructed with `new` itself."]]});
+initSidebarItems({"struct":[["Field","A `Field` is simply a 2-D `Vec` with some corresponding options."]],"trait":[["FieldBuilder","Handles building of more complicated fields than can be constructed with `new` itself."]]});

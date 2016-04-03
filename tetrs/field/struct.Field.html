@@ -46,14 +46,18 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-14' class='srclink' href='../../src/tetrs/src/field.rs.html#15-30' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-14' class='srclink' href='../../src/tetrs/src/field.rs.html#21-39' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Field {
     pub width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>,
     pub height: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>,
     pub hidden: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>,
     pub spawn: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>,
     pub data: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>&gt;&gt;,
-}</pre><div class='docblock'><p>Implements a field state with specified dimensions and game data.</p>
+}</pre><div class='docblock'><p>A <code>Field</code> is simply a 2-D <code>Vec</code> with some corresponding options.</p>
+
+<p>Internally we use a <code>Vec</code> of <code>Vec</code>&#39;s for easier resizing, but all rows
+must be of equal length, so it can be thought of as rectangular for all
+purposes.</p>
 </div><h2 class='fields'>Fields</h2>
 <table><tr class='stab '>
                              <td id='structfield.width'><code>width</code></td><td><div class='docblock'><p>The width of the field.</p>
@@ -61,12 +65,37 @@
                              <td id='structfield.height'><code>height</code></td><td><div class='docblock'><p>The height of the field.</p>
 </div></td></tr><tr class='stab '>
                              <td id='structfield.hidden'><code>hidden</code></td><td><div class='docblock'><p>The height of the hidden region of the field.</p>
+
+<p>This is a subregion of height, and does not actually add any more
+height to the field.</p>
 </div></td></tr><tr class='stab '>
-                             <td id='structfield.spawn'><code>spawn</code></td><td><div class='docblock'><p>The initial spawn of all blocks.</p>
+                             <td id='structfield.spawn'><code>spawn</code></td><td><div class='docblock'><p>The initial spawn of a <code>Block</code> on this field.</p>
 </div></td></tr><tr class='stab '>
                              <td id='structfield.data'><code>data</code></td><td><div class='docblock'><p>The current field state.</p>
 </div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a></code></h4>
 <div class='docblock'><p>Construct a new field object.</p>
+
+<p>This is often combined with the <code>FieldBuilder</code> trait impl&#39;s to provide
+custom parameters for a <code>Field</code>.</p>
+
+<p>A <code>Field</code> can be constructed with no arguments, in which case the
+following defaults are used:</p>
+
+<h2 id='width' class='section-header'><a href='#width'>Width</a></h2>
+<p>Default width is 10 columns.</p>
+
+<h2 id='height' class='section-header'><a href='#height'>Height</a></h2>
+<p>Default height is 25 rows.</p>
+
+<h2 id='hidden' class='section-header'><a href='#hidden'>Hidden</a></h2>
+<p>The hidden segment takes up 3 rows.</p>
+
+<h2 id='spawn' class='section-header'><a href='#spawn'>Spawn</a></h2>
+<p>The default spawn is at coordinates <code>(4, 0)</code>.</p>
+
+<hr>
+
+<p>If values are to be overridden, look at the <code>FieldBuilder</code> trait impl.</p>
 
 <h2 id='examples' class='section-header'><a href='#examples'>Examples</a></h2>
 <pre class='rust rust-example-rendered'>
@@ -88,16 +117,21 @@ block to ensure it cannot be used again.</p>
 
 <h2 id='examples-2' class='section-header'><a href='#examples-2'>Examples</a></h2>
 <pre class='rust rust-example-rendered'>
-<span class='kw'>use</span> <span class='ident'>tetrs</span>::{<span class='ident'>field</span>, <span class='ident'>block</span>};
+<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>field</span>::{<span class='ident'>Field</span>};
+<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>block</span>::{<span class='ident'>Block</span>, <span class='ident'>Type</span>};
+<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>Direction</span>;
 
-<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>field</span> <span class='op'>=</span> <span class='ident'>field</span>::<span class='ident'>Field</span>::<span class='ident'>new</span>();
-<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>block</span>::<span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='ident'>I</span>);
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>field</span> <span class='op'>=</span> <span class='ident'>Field</span>::<span class='ident'>new</span>();
+<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>Type</span>::<span class='ident'>I</span>);
 
 <span class='ident'>field</span>.<span class='ident'>freeze</span>(<span class='ident'>block</span>);
 
-<span class='comment'>// block.shift(tetrs::Direction::Right); // Invalid</span></pre>
+<span class='comment'>// block.shift(Direction::Right); // Compile Error</span></pre>
 </div><h4 id='method.at' class='method'><code>fn <a href='#method.at' class='fnname'>at</a>(&amp;self, (x, y): <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h4>
-<div class='docblock'><p>Return the value at the specified field location</p>
+<div class='docblock'><p>Return the value at the specified field location.</p>
+
+<p>This currently is a <code>usize</code> value which corresponds to some <code>Type</code>
+of <code>Block</code>.</p>
 
 <h2 id='examples-3' class='section-header'><a href='#examples-3'>Examples</a></h2>
 <pre class='rust rust-example-rendered'>
@@ -106,7 +140,10 @@ block to ensure it cannot be used again.</p>
 <span class='kw'>let</span> <span class='ident'>field</span> <span class='op'>=</span> <span class='ident'>Field</span>::<span class='ident'>new</span>();
 <span class='kw'>let</span> <span class='ident'>value</span> <span class='op'>=</span> <span class='ident'>field</span>.<span class='ident'>at</span>((<span class='number'>5</span>, <span class='number'>10</span>));</pre>
 </div><h4 id='method.set' class='method'><code>fn <a href='#method.set' class='fnname'>set</a>(&amp;self, (x, y): <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
-<div class='docblock'><p>Return if the value at the specified location is empty or not.</p>
+<div class='docblock'><p>Return true if the value at the specified location is non-empty.</p>
+
+<p>This is a convenience function which queries <code>at</code> and checks if the
+result is of empty <code>Type</code>.</p>
 </div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='../../tetrs/field/trait.FieldBuilder.html' title='tetrs::field::FieldBuilder'>FieldBuilder</a> for <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a></code></h3><div class='docblock'><p>Not sure if this would be better as an actual type to disallow calling
 these functions on arbitrary fields, but we can trust the caller for now.</p>
 </div><div class='impl-items'><h4 id='method.width' class='method'><code>fn <a href='../../tetrs/field/trait.FieldBuilder.html#tymethod.width' class='fnname'>width</a>(self, width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a></code></h4>

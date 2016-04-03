@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Type","The type of a specific block."]],"struct":[["Block","A block."]],"trait":[["BlockBuilder","A trait for building a block."]]});
+initSidebarItems({"enum":[["Type","The identifier for a particular block."]],"struct":[["Block","A struct representing a single tetrimino."]],"trait":[["BlockBuilder","Traits for building a block."]]});

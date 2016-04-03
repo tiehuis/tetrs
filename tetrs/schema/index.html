@@ -46,13 +46,13 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-459' class='srclink' href='../../src/tetrs/src/schema.rs.html#1-370' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-454' class='srclink' href='../../src/tetrs/src/schema.rs.html#1-368' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Methods for converting to and from a textual field representation.</p>
 
-<p>This is tremendously useful for writing complex tests.</p>
+<p>This is mostly useful for writing more complicated test cases. Other uses
+are for generating fixed start field parameters.</p>
 
-<p>Examples:</p>
-
+<h2 id='examples' class='section-header'><a href='#examples'>Examples</a></h2>
 <pre class='rust rust-example-rendered'>
 <span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>schema</span>::<span class='ident'>Schema</span>;
 
@@ -73,10 +73,6 @@
     |#  @@     |
     ------------
 &quot;</span>));</pre>
-
-<p>This can also potentially be useful for specifying initial fields of play.
-This requires slightly more work in combining with other field
-initialization parameters.</p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                        <tr class=' module-item'>
