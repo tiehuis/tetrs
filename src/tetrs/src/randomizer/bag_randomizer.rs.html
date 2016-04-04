@@ -146,137 +146,90 @@
 <span id="103">103</span>
 <span id="104">104</span>
 <span id="105">105</span>
-<span id="106">106</span>
-<span id="107">107</span>
-<span id="108">108</span>
-<span id="109">109</span>
-<span id="110">110</span>
-<span id="111">111</span>
-<span id="112">112</span>
-<span id="113">113</span>
-<span id="114">114</span>
-<span id="115">115</span>
-<span id="116">116</span>
-<span id="117">117</span>
-<span id="118">118</span>
-<span id="119">119</span>
-<span id="120">120</span>
-<span id="121">121</span>
-<span id="122">122</span>
-<span id="123">123</span>
-<span id="124">124</span>
-<span id="125">125</span>
-<span id="126">126</span>
-<span id="127">127</span>
-<span id="128">128</span>
-<span id="129">129</span>
-<span id="130">130</span>
-<span id="131">131</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a 7-element bag randomizer.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! Currently it can be confusing dealing with iterators and their clones etc</span>
-<span class='doccomment'>//! so there may be a slightly better way in working with these.</span>
 
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>VecDeque</span>;
 <span class='kw'>use</span> <span class='ident'>rand</span>;
 <span class='kw'>use</span> <span class='ident'>rand</span>::<span class='ident'>Rng</span>;
-
 <span class='kw'>use</span> <span class='ident'>block</span>;
-<span class='kw'>use</span> <span class='ident'>randomizer</span>::<span class='ident'>Randomizer</span>;
+<span class='kw'>use</span> <span class='ident'>randomizer</span>::{<span class='ident'>Randomizer</span>, <span class='ident'>RandomizerPrivate</span>};
 
 <span class='doccomment'>/// A generic bag randomizer.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// This randomizer allows a 7 piece lookahead and guarantees a maximum</span>
-<span class='doccomment'>/// distance between blocks of the same type to be 13 blocks apart.</span>
+<span class='doccomment'>/// This randomizer generates sequences of all 7-blocks and shuffles them,</span>
+<span class='doccomment'>/// allowing a maximum distance between block sightings of 13.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// Lookahead pieces are provided as an vector currently, but when abstract</span>
-<span class='doccomment'>/// return types are implemented this can be changed easily to an iterator.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// ## Examples</span>
 <span class='doccomment'>/// ```ignore</span>
-<span class='doccomment'>/// let bag = BagRandomizer::new();</span>
+<span class='doccomment'>/// use randomizer::{BagRandomizer, Randomizer};</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// for piece_type in bag.preview().iter() {</span>
-<span class='doccomment'>///     // Do something with the block</span>
-<span class='doccomment'>/// }</span>
-<span class='doccomment'>///</span>
+<span class='doccomment'>/// // Generate a bag with a 15-piece lookahead</span>
+<span class='doccomment'>/// let bag = BagRandomizer::new(15);</span>
+<span class='comment'>//</span>
+<span class='doccomment'>/// let piece1 = bag.next();</span>
+<span class='doccomment'>/// let previews = bag.preview(4); // Get upcoming 4 pieces</span>
+<span class='doccomment'>/// let piece2 = bag.next();</span>
 <span class='doccomment'>/// ```</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>BagRandomizer</span> {
+    <span class='doccomment'>/// The lookahead buffer.</span>
+    <span class='ident'>lookahead</span>: <span class='ident'>VecDeque</span><span class='op'>&lt;</span><span class='ident'>block</span>::<span class='ident'>Type</span><span class='op'>&gt;</span>,
+
+    <span class='doccomment'>/// The rng used to generate random values</span>
+    <span class='ident'>rng</span>: <span class='ident'>rand</span>::<span class='ident'>ThreadRng</span>,
+
+    <span class='doccomment'>/// The current index of the bag</span>
     <span class='ident'>head</span>: <span class='ident'>usize</span>,
-    <span class='ident'>data</span>: [<span class='ident'>block</span>::<span class='ident'>Type</span>; <span class='number'>14</span>],
-    <span class='ident'>rng</span>: <span class='ident'>rand</span>::<span class='ident'>ThreadRng</span>
-}
 
-<span class='kw'>impl</span> <span class='ident'>BagRandomizer</span> {
-    <span class='doccomment'>/// Return a new BagRandomizer instance.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>BagRandomizer</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>bag</span> <span class='op'>=</span> <span class='ident'>BagRandomizer</span> {
-            <span class='comment'>// FIXME: a map, cycle, take, reduce encounters the following:</span>
-            <span class='comment'>// the trait `core::clone::Clone` is not implemented for the type</span>
-            <span class='comment'>// `[closure@randomizer.rs:52:30: 52:60]` [E0277]</span>
-            <span class='comment'>//</span>
-            <span class='comment'>// This can probably be fixed, just not sure how right now. So we</span>
-            <span class='comment'>// fall back to an outside initialization.</span>
-            <span class='ident'>data</span>: [<span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='prelude-val'>None</span>; <span class='number'>14</span>],
-            <span class='ident'>head</span>: <span class='number'>0</span>,
-            <span class='ident'>rng</span>: <span class='ident'>rand</span>::<span class='ident'>thread_rng</span>()
-        };
-
-        <span class='kw'>for</span> (<span class='ident'>i</span>, <span class='ident'>v</span>) <span class='kw'>in</span> <span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='ident'>variants</span>().<span class='ident'>into_iter</span>().<span class='ident'>cycle</span>().<span class='ident'>take</span>(<span class='number'>14</span>).<span class='ident'>enumerate</span>() {
-            <span class='ident'>bag</span>.<span class='ident'>data</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>v</span>;
-        }
-
-        <span class='ident'>bag</span>.<span class='ident'>shuffle</span>(<span class='boolval'>true</span>);
-        <span class='ident'>bag</span>.<span class='ident'>shuffle</span>(<span class='boolval'>false</span>);
-        <span class='ident'>bag</span>
-    }
-
-    <span class='doccomment'>/// Shuffle half the bag contents.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ## Examples</span>
-    <span class='doccomment'>/// ```ignore</span>
-    <span class='doccomment'>/// let mut bag = BagRandomizer::new();</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// bag.shuffle(true);  // Shuffles the front 7 elements</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// bag.shuffle(false); // Shuffles the back 7 elements</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='kw'>fn</span> <span class='ident'>shuffle</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>front</span>: <span class='ident'>bool</span>) {
-        <span class='kw'>let</span> <span class='ident'>offset</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>front</span> { <span class='number'>0</span> } <span class='kw'>else</span> { <span class='number'>7</span> };
-        <span class='self'>self</span>.<span class='ident'>rng</span>.<span class='ident'>shuffle</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>offset</span>..(<span class='ident'>offset</span><span class='op'>+</span><span class='number'>7</span>)]);
-    }
+    <span class='doccomment'>/// The pieces in the bag</span>
+    <span class='ident'>data</span>: [<span class='ident'>block</span>::<span class='ident'>Type</span>; <span class='number'>7</span>],
 }
 
 <span class='kw'>impl</span> <span class='ident'>Randomizer</span> <span class='kw'>for</span> <span class='ident'>BagRandomizer</span> {
-    <span class='kw'>fn</span> <span class='ident'>preview</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>block</span>::<span class='ident'>Type</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>pieces</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>with_capacity</span>(<span class='number'>7</span>);
+    <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>lookahead</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>BagRandomizer</span> {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>bag</span> <span class='op'>=</span> <span class='ident'>BagRandomizer</span> {
+            <span class='ident'>lookahead</span>: <span class='ident'>VecDeque</span>::<span class='ident'>with_capacity</span>(<span class='ident'>lookahead</span>),
+            <span class='ident'>rng</span>: <span class='ident'>rand</span>::<span class='ident'>thread_rng</span>(),
+            <span class='ident'>head</span>: <span class='number'>0</span>,
+            <span class='ident'>data</span>: [<span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='prelude-val'>None</span>; <span class='number'>7</span>],
+        };
 
-        <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>7</span> {
-            <span class='ident'>pieces</span>.<span class='ident'>push</span>(<span class='self'>self</span>.<span class='ident'>data</span>[(<span class='self'>self</span>.<span class='ident'>head</span> <span class='op'>+</span> <span class='ident'>i</span>) <span class='op'>%</span> <span class='number'>14</span>])
+        <span class='comment'>// Pre-fill bag with all blocks and shuffle</span>
+        <span class='ident'>bag</span>.<span class='ident'>data</span>.<span class='ident'>clone_from_slice</span>(<span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='ident'>variants</span>());
+        <span class='ident'>bag</span>.<span class='ident'>rng</span>.<span class='ident'>shuffle</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>bag</span>.<span class='ident'>data</span>[..]);
+        <span class='ident'>bag</span>
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>preview</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>amount</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>block</span>::<span class='ident'>Type</span><span class='op'>&gt;</span> {
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>amount</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>capacity</span>());
+
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='ident'>amount</span> {
+            <span class='kw'>let</span> <span class='ident'>randvalue</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>next_block</span>();
+            <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>push_back</span>(<span class='ident'>randvalue</span>);
         }
 
-        <span class='ident'>pieces</span>
+        <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>iter</span>().<span class='ident'>cloned</span>().<span class='ident'>take</span>(<span class='ident'>amount</span>).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>()
+    }
+
+    <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>block</span>::<span class='ident'>Type</span> {
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>is_empty</span>() {
+            <span class='self'>self</span>.<span class='ident'>next_block</span>()
+        }
+        <span class='kw'>else</span> {
+            <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>pop_front</span>().<span class='ident'>unwrap</span>()
+        }
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>Iterator</span> <span class='kw'>for</span> <span class='ident'>BagRandomizer</span> {
-    <span class='kw'>type</span> <span class='ident'>Item</span> <span class='op'>=</span> <span class='ident'>block</span>::<span class='ident'>Type</span>;
-
-    <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>block</span>::<span class='ident'>Type</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>RandomizerPrivate</span> <span class='kw'>for</span> <span class='ident'>BagRandomizer</span> {
+    <span class='kw'>fn</span> <span class='ident'>next_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>block</span>::<span class='ident'>Type</span> {
         <span class='kw'>let</span> <span class='ident'>id</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>data</span>[<span class='self'>self</span>.<span class='ident'>head</span>];
-        <span class='self'>self</span>.<span class='ident'>head</span> <span class='op'>=</span> (<span class='self'>self</span>.<span class='ident'>head</span> <span class='op'>+</span> <span class='number'>1</span>) <span class='op'>%</span> <span class='number'>14</span>;
-
-        <span class='comment'>// Copy required until MIR improvements</span>
-        <span class='kw'>let</span> <span class='ident'>head_value</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>head</span>;
-
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>head</span> <span class='op'>%</span> <span class='number'>7</span> <span class='op'>==</span> <span class='number'>0</span> {
-            <span class='comment'>// If the head is 7, we have just consumed elements 0-6 so we</span>
-            <span class='comment'>// can reshuffle, else it is 0, so we shuffle the back.</span>
-            <span class='self'>self</span>.<span class='ident'>shuffle</span>(<span class='ident'>head_value</span> <span class='op'>==</span> <span class='number'>7</span>);
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>head</span> <span class='op'>+</span> <span class='number'>1</span> <span class='op'>==</span> <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>len</span>() {
+            <span class='self'>self</span>.<span class='ident'>rng</span>.<span class='ident'>shuffle</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>data</span>[..]);
+            <span class='self'>self</span>.<span class='ident'>head</span> <span class='op'>=</span> <span class='number'>0</span>;
         }
 
-        <span class='prelude-val'>Some</span>(<span class='ident'>id</span>)
+        <span class='ident'>id</span>
     }
 }
 
@@ -284,24 +237,19 @@
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
 
     <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
+    <span class='kw'>use</span> <span class='ident'>randomizer</span>::<span class='ident'>Randomizer</span>;
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashSet</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_cycle</span>() {
         <span class='comment'>// Ensure values are seen as expected</span>
-        <span class='kw'>let</span> <span class='ident'>bag</span> <span class='op'>=</span> <span class='ident'>BagRandomizer</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>bag</span> <span class='op'>=</span> <span class='ident'>BagRandomizer</span>::<span class='ident'>new</span>(<span class='number'>7</span>);
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>seen</span> <span class='op'>=</span> <span class='ident'>HashSet</span>::<span class='ident'>new</span>();
-
-        <span class='kw'>for</span> <span class='ident'>ty</span> <span class='kw'>in</span> <span class='ident'>bag</span>.<span class='ident'>clone</span>().<span class='ident'>take</span>(<span class='number'>7</span>) {
-            <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>seen</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>ty</span>), <span class='boolval'>false</span>);
-            <span class='ident'>seen</span>.<span class='ident'>insert</span>(<span class='ident'>ty</span>);
+        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>7</span> {
+            <span class='comment'>//let ty = bag.next();</span>
+            <span class='comment'>//assert_eq!(seen.contains(&amp;ty), false);</span>
+            <span class='comment'>//seen.insert(ty);</span>
         }
-    }
-
-    <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>test_preview</span>() {
-        <span class='comment'>// Ensure previews are accurate when used with next values</span>
     }
 }
 </pre>

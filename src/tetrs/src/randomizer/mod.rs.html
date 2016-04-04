@@ -63,25 +63,143 @@
 <span id="20">20</span>
 <span id="21">21</span>
 <span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a randomizer.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! Randomizers currently only are required to implement the `Iterator`</span>
+<span class='doccomment'>//! trait. Preview pieces are managed by the caller, although this could be</span>
+<span class='doccomment'>//! something added as a trait.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! It is arguable whether `Randomizer` should imply `Iterator`. A `Randomizer`</span>
+<span class='doccomment'>//! is often only processed a single element at a time, and cannot be used in</span>
+<span class='doccomment'>//! an iterator fashion due to borrow rules.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! Also, all `Randomizer`&#39;s should return infinite sequences so we can remove</span>
+<span class='doccomment'>//! the required `unwrap` on manual calls to `next`.</span>
 
 <span class='kw'>use</span> <span class='ident'>block</span>;
 
-<span class='doccomment'>/// This trait must be implemented by all randomizers. This is in effect an</span>
-<span class='doccomment'>/// iterator with the specified type.</span>
+<span class='doccomment'>/// A randomizer must implement an iterator, plus a preview function which</span>
+<span class='doccomment'>/// returns a number of lookahead pieces.</span>
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Randomizer</span> {
+    <span class='doccomment'>/// Construct a new Randomizer object with the specified lookahead.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// `lookahead` determines the size of the lookahead array and allows the</span>
+    <span class='doccomment'>/// library to manage these pieces instead of the caller.</span>
+    <span class='comment'>//</span>
+    <span class='comment'>// This feels more suitable to not be part of the trait itself.</span>
+    <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>lookahead</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+
+    <span class='doccomment'>/// Return a vector containing the next `n` pieces that will be retrieved</span>
+    <span class='doccomment'>/// by the iterator.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// `n` must be &lt; `lookahead` else a panic will be issued.</span>
+    <span class='kw'>fn</span> <span class='ident'>preview</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>lookahead</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>block</span>::<span class='ident'>Type</span><span class='op'>&gt;</span>;
+
+    <span class='doccomment'>/// Return the next block value in this sequence.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// All sequences should be infinite, and iterator use is limited so we use</span>
+    <span class='doccomment'>/// a custom function on this trait instead of implementing `Iterator`.</span>
+    <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>block</span>::<span class='ident'>Type</span>;
+}
+
+<span class='doccomment'>/// `next_block` should not be exposed as calling it can produce unexpected</span>
+<span class='doccomment'>/// results (it modifies the internal buffer).</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// All randomizers do not actually store blocks, but instead block::Type</span>
-<span class='doccomment'>/// values which are used to construct blocks.</span>
-<span class='doccomment'>/// This is done so that the randomizer does not require extra constructor</span>
-<span class='doccomment'>/// knowledge in how to create a block itself (i.e. a field etc);</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// Currently it is up to the randomizer itself to ensure it stores enough</span>
-<span class='doccomment'>/// blocks in its buffer to handle preview pieces.</span>
-<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Randomizer</span> : <span class='ident'>Iterator</span> {
-    <span class='doccomment'>/// Preview returns a list of upcoming blocks. This can be any length,</span>
-    <span class='doccomment'>/// including 0 length in the case of no previews.</span>
-    <span class='kw'>fn</span> <span class='ident'>preview</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>block</span>::<span class='ident'>Type</span><span class='op'>&gt;</span>;
+<span class='doccomment'>/// Thus, this is hidden behind a private trait.</span>
+<span class='kw'>trait</span> <span class='ident'>RandomizerPrivate</span> : <span class='ident'>Randomizer</span> {
+    <span class='doccomment'>/// Generate the next block in sequence for this randomizer.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// This is not exposed as part of the API so is part of a private trait.</span>
+    <span class='kw'>fn</span> <span class='ident'>next_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>block</span>::<span class='ident'>Type</span>;
+}
+
+<span class='comment'>// This macro can be used to generate the `lookahead` and `next` functions for</span>
+<span class='comment'>// the given randomizer. These are generic across all randomizers but with the</span>
+<span class='comment'>// lack of inheritance we resort to this method of generation.</span>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>gen_rand</span> {
+    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rdid</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> {
+        <span class='kw'>impl</span> <span class='ident'>Randomizer</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rdid</span> {
+            <span class='kw'>fn</span> <span class='ident'>preview</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>amount</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>block</span>::<span class='ident'>Type</span><span class='op'>&gt;</span> {
+                <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>amount</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>capacity</span>());
+
+                <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='ident'>amount</span> {
+                    <span class='kw'>let</span> <span class='ident'>randvalue</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>next_block</span>();
+                    <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>push</span>(<span class='ident'>randvalue</span>);
+                }
+
+                <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>iter</span>().<span class='ident'>cloned</span>().<span class='ident'>take</span>(<span class='ident'>amount</span>).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>()
+            }
+
+            <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>block</span>::<span class='ident'>Type</span> {
+                <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>is_empty</span>() {
+                    <span class='self'>self</span>.<span class='ident'>gen_block</span>()
+                }
+                <span class='kw'>else</span> {
+                    <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>pop_front</span>().<span class='ident'>unwrap</span>()
+                }
+            }
+        }
+    }
 }
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>bag_randomizer</span>::<span class='ident'>BagRandomizer</span>;

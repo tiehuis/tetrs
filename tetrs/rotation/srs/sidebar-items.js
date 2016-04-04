@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["SRS","A struct containing SRS rotation data."]]});
+initSidebarItems({"struct":[["SRS",""]]});

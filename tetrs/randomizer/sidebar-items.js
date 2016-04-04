@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["BagRandomizer","A generic bag randomizer."]],"trait":[["Randomizer","This trait must be implemented by all randomizers. This is in effect an iterator with the specified type."]]});
+initSidebarItems({"struct":[["BagRandomizer","A generic bag randomizer."]],"trait":[["Randomizer","A randomizer must implement an iterator, plus a preview function which returns a number of lookahead pieces."]]});

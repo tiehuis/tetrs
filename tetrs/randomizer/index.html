@@ -46,8 +46,19 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-412' class='srclink' href='../../src/tetrs/src/randomizer/mod.rs.html#1-22' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-380' class='srclink' href='../../src/tetrs/src/randomizer/mod.rs.html#1-81' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Implements a randomizer.</p>
+
+<p>Randomizers currently only are required to implement the <code>Iterator</code>
+trait. Preview pieces are managed by the caller, although this could be
+something added as a trait.</p>
+
+<p>It is arguable whether <code>Randomizer</code> should imply <code>Iterator</code>. A <code>Randomizer</code>
+is often only processed a single element at a time, and cannot be used in
+an iterator fashion due to borrow rules.</p>
+
+<p>Also, all <code>Randomizer</code>&#39;s should return infinite sequences so we can remove
+the required <code>unwrap</code> on manual calls to <code>next</code>.</p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                        <tr class=' module-item'>
@@ -62,8 +73,8 @@
                            <td><a class='trait' href='trait.Randomizer.html'
                                   title='tetrs::randomizer::Randomizer'>Randomizer</a></td>
                            <td class='docblock short'>
-                                <p>This trait must be implemented by all randomizers. This is in effect an
-iterator with the specified type.</p>
+                                <p>A randomizer must implement an iterator, plus a preview function which
+returns a number of lookahead pieces.</p>
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>

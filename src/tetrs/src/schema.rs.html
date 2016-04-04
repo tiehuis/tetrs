@@ -409,6 +409,11 @@
 <span id="366">366</span>
 <span id="367">367</span>
 <span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Methods for converting to and from a textual field representation.</span>
 <span class='doccomment'>//!</span>
@@ -440,6 +445,8 @@
 <span class='doccomment'>//! ```</span>
 
 <span class='kw'>use</span> <span class='ident'>Rotation</span>;
+<span class='kw'>use</span> <span class='ident'>rotation</span>;
+<span class='kw'>use</span> <span class='ident'>rotation</span>::<span class='ident'>RotationSystem</span>;
 <span class='kw'>use</span> <span class='ident'>field</span>::<span class='ident'>Field</span>;
 <span class='kw'>use</span> <span class='ident'>block</span>;
 <span class='kw'>use</span> <span class='ident'>block</span>::{<span class='ident'>Block</span>, <span class='ident'>BlockBuilder</span>};
@@ -646,9 +653,12 @@
     <span class='comment'>// rotation specification in the input string, but this adds complexity</span>
     <span class='comment'>// and more rules which are not needed currently.</span>
     <span class='kw'>fn</span> <span class='ident'>match_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>field</span>: <span class='kw-2'>&amp;</span><span class='ident'>Field</span>, (<span class='ident'>x</span>, <span class='ident'>y</span>): (<span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='ident'>Block</span> {
+        <span class='comment'>// For the moment, always assume SRS rotation</span>
+        <span class='kw'>let</span> <span class='ident'>rs</span> <span class='op'>=</span> <span class='ident'>rotation</span>::<span class='ident'>SRS</span>{};
+
         <span class='kw'>for</span> (<span class='kw-2'>&amp;</span><span class='ident'>ty</span>, <span class='kw-2'>&amp;</span><span class='ident'>ro</span>) <span class='kw'>in</span> <span class='macro'>iproduct</span><span class='macro'>!</span>(<span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='ident'>variants</span>().<span class='ident'>iter</span>(), <span class='ident'>Rotation</span>::<span class='ident'>variants</span>().<span class='ident'>iter</span>()) {
             <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>data</span>(<span class='ident'>ty</span>, <span class='ident'>ro</span>);
-            <span class='kw'>let</span> (<span class='ident'>xo</span>, <span class='ident'>yo</span>) <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>offset_to_first</span>(<span class='ident'>ty</span>, <span class='ident'>ro</span>);
+            <span class='kw'>let</span> (<span class='ident'>xo</span>, <span class='ident'>yo</span>) <span class='op'>=</span> <span class='ident'>rs</span>.<span class='ident'>minp</span>(<span class='ident'>ty</span>, <span class='ident'>ro</span>);
 
             <span class='kw'>if</span> <span class='ident'>x</span> <span class='op'>&lt;</span> <span class='ident'>xo</span> <span class='op'>||</span> <span class='ident'>y</span> <span class='op'>&lt;</span> <span class='ident'>yo</span> {
                 <span class='kw'>continue</span>;
