@@ -22,7 +22,7 @@ use field::Field;
 use rotation;
 use rotation::RotationSystem;
 
-use std::{cmp, mem};
+use std::mem;
 use collections::enum_set::CLike;
 
 /// The identifier for a particular block.
@@ -201,78 +201,6 @@ impl Block {
         }
     }
 
-    /// Returns a tuple containing the leading empty `(x, y)` columns.
-    ///
-    /// ## Examples
-    /// ```
-    /// use tetrs::block::{Block, BlockBuilder, Type};
-    /// use tetrs::Rotation;
-    ///
-    /// // An L-block can have the following representation
-    /// // .#.
-    /// // .#.
-    /// // .##
-    ///
-    /// let (x1, y1) = Block::new(Type::L)
-    ///                      .rotation(Rotation::R90)
-    ///                      .leading();
-    /// assert_eq!((x1, y1), (1, 0));
-    ///
-    /// // An I-block can have the following representation
-    /// // ....
-    /// // ....
-    /// // ####
-    /// // ....
-    ///
-    /// let (x2, y2) = Block::new(Type::I)
-    ///                      .rotation(Rotation::R180)
-    ///                      .leading();
-    /// assert_eq!((x2, y2), (0, 2));
-    ///
-    /// ```
-    pub fn leading(&self) -> (i32, i32) {
-        Block::offset(self.id, self.r)
-    }
-
-    /// Returns an `(x, y)` tuple containing the maximum offsets for the
-    /// specified block.
-    ///
-    /// ## Examples
-    /// ```
-    /// use tetrs::block::{Block, BlockBuilder, Type};
-    /// use tetrs::Rotation;
-    ///
-    /// // An L-block can have the following representation
-    /// // .#.
-    /// // .#.
-    /// // .##
-    ///
-    /// let (x1, y1) = Block::new(Type::L)
-    ///                      .rotation(Rotation::R90)
-    ///                      .trailing();
-    /// assert_eq!((x1, y1), (2, 2));
-    ///
-    /// // An I-block can have the following representation
-    /// // ....
-    /// // ....
-    /// // ####
-    /// // ....
-    ///
-    /// let (x2, y2) = Block::new(Type::I)
-    ///                      .rotation(Rotation::R180)
-    ///                      .trailing();
-    /// assert_eq!((x2, y2), (3, 2));
-    ///
-    /// ```
-    pub fn trailing(&self) -> (i32, i32) {
-        self.rs.data(self.id, self.r).iter()
-                 .map(|&(x, y)| (x as i32, y as i32))
-                 .fold((0, 0), |(a, b), (x, y)| {
-                     (cmp::max(a, x), cmp::max(b, y))
-                 })
-    }
-
-
     /// Return `true` if the block collides with the field after applying the
     /// specified offset.
     fn collision_at(&self, field: &Field, (xo, yo): (i32, i32)) -> bool {
@@ -281,11 +209,11 @@ impl Block {
                       (self.x + dx as i32 + xo, self.y + dy as i32 + yo)
                   })
                   .any(|(x, y)| {
-                      let maxf = self.trailing();
-                      let minf = self.leading();
+                      let maxf = self.rs.max(self.id, self.r);
+                      let minf = self.rs.min(self.id, self.r);
 
-                      x - minf.0 < 0 || x + maxf.0 > field.width as i32 ||
-                      y - minf.1 < 0 || y + maxf.1 > field.height as i32 ||
+                      x - (minf.0 as i32) < 0 || x + maxf.0 as i32 > field.width as i32 ||
+                      y - (minf.1 as i32) < 0 || y + maxf.1 as i32 > field.height as i32 ||
                       field.at((x as usize, y as usize)) != Type::None.to_usize()
                   })
     }
@@ -448,61 +376,6 @@ impl Block {
         let srs = rotation::SRS{};
         srs.data(id, r)
     }
-
-    /// Equivalent to the `leading` method but not on an instance.
-    ///
-    /// ## Examples
-    /// ```
-    /// use tetrs::block::{Block, Type};
-    /// use tetrs::Rotation;
-    ///
-    /// let (x, y) = Block::offset(Type::Z, Rotation::R270);
-    /// ```
-    pub fn offset(id: Type, r: Rotation) -> (i32, i32) {
-        // Default to SRS for the moment, this should take another arg
-        let srs = rotation::SRS{};
-        srs.data(id, r).iter()
-                 .map(|&(x, y)| (x as i32, y as i32))
-                 .fold((100, 100), |(a, b), (x, y)| {
-                     (cmp::min(a, x), cmp::min(b, y))
-                 })
-    }
-
-    /// Return the offset to the first piece. This is slightly different
-    /// from `offset` which itself returns the offsets of empty rows/cols.
-    ///
-    /// Return the offset from the `(x, y)` bounding coordinate to the first
-    /// non-empty piece in a block. This row by row from `y = 0` onwards.
-    ///
-    /// ```
-    /// use tetrs::block::{Block, Type};
-    /// use tetrs::Rotation;
-    ///
-    /// // The piece marked '@' is the first encountered piece.
-    /// // ...
-    /// // @##
-    /// // .#.
-    ///
-    /// let (x1, y1) = Block::offset_to_first(Type::T, Rotation::R180);
-    /// assert_eq!((x1, y1), (0, 1));
-    ///
-    /// ```
-    pub fn offset_to_first(id: Type, r: Rotation) -> (usize, usize) {
-        // Default to SRS for the moment, this should take another arg
-        let srs = rotation::SRS{};
-        srs.data(id, r).iter()
-                .fold((100, 100), |(a, b), &(x, y)| {
-                    // We want the least-(x, y) such that y is minimized.
-                    // This is subtly different from offset which allows the
-                    // minimum of (x, y) from any multiple blocks.
-                    if y < b || (y == b && x <= a) {
-                        (x, y)
-                    }
-                    else {
-                        (a, b)
-                    }
-                })
-    }
 }
 
 #[cfg(test)]
@@ -544,16 +417,5 @@ mod tests {
 
         block.rotate(&field, Rotation::R270);
         assert_eq!(block.r, Rotation::R90);
-    }
-
-    #[test]
-    fn test_offset_to_first1() {
-        assert_eq!((1, 0), Block::offset_to_first(Type::T, Rotation::R0));
-        assert_eq!((1, 0), Block::offset_to_first(Type::T, Rotation::R90));
-        assert_eq!((0, 1), Block::offset_to_first(Type::T, Rotation::R180));
-        assert_eq!((1, 0), Block::offset_to_first(Type::T, Rotation::R270));
-
-        assert_eq!((2, 0), Block::offset_to_first(Type::I, Rotation::R90));
-        assert_eq!((0, 0), Block::offset_to_first(Type::Z, Rotation::R0));
     }
 }

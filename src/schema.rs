@@ -28,6 +28,8 @@
 //! ```
 
 use Rotation;
+use rotation;
+use rotation::RotationSystem;
 use field::Field;
 use block;
 use block::{Block, BlockBuilder};
@@ -234,9 +236,12 @@ impl Schema {
     // rotation specification in the input string, but this adds complexity
     // and more rules which are not needed currently.
     fn match_block(&mut self, field: &Field, (x, y): (usize, usize)) -> Block {
+        // For the moment, always assume SRS rotation
+        let rs = rotation::SRS{};
+
         for (&ty, &ro) in iproduct!(block::Type::variants().iter(), Rotation::variants().iter()) {
             let data = Block::data(ty, ro);
-            let (xo, yo) = Block::offset_to_first(ty, ro);
+            let (xo, yo) = rs.minp(ty, ro);
 
             if x < xo || y < yo {
                 continue;

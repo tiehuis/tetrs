@@ -67,3 +67,7 @@ impl RotationSystem for Akira {
             Type::O => O[rotation.to_usize()],
             _ => panic!("Attempted to get data for Type: {:?}", ty)
         }
+    }
+
+    rs_gen!();
+}

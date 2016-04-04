@@ -71,4 +71,6 @@ impl RotationSystem for SRS {
             _ => panic!("Attempted to get data for Type: {:?}", ty)
         }
     }
+
+    rs_gen!();
 }

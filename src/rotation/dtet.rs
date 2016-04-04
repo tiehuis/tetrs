@@ -68,4 +68,6 @@ impl RotationSystem for DTET {
             _ => panic!("Attempted to get data for Type: {:?}", ty)
         }
     }
+
+    rs_gen!();
 }
