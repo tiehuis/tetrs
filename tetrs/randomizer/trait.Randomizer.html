@@ -46,9 +46,8 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-383' class='srclink' href='../../src/tetrs/src/randomizer/mod.rs.html#18-38' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-383' class='srclink' href='../../src/tetrs/src/randomizer/mod.rs.html#18-30' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Randomizer {
-    fn <a href='#tymethod.new' class='fnname'>new</a>(lookahead: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; Self;
     fn <a href='#tymethod.preview' class='fnname'>preview</a>(&amp;mut self, lookahead: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../../tetrs/block/enum.Type.html' title='tetrs::block::Type'>Type</a>&gt;;
     fn <a href='#tymethod.next' class='fnname'>next</a>(&amp;mut self) -&gt; <a class='enum' href='../../tetrs/block/enum.Type.html' title='tetrs::block::Type'>Type</a>;
 }</pre><div class='docblock'><p>A randomizer must implement an iterator, plus a preview function which
@@ -56,11 +55,7 @@ returns a number of lookahead pieces.</p>
 </div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.new' class='method stab '><code>fn <a href='#tymethod.new' class='fnname'>new</a>(lookahead: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; Self</code></h3><div class='docblock'><p>Construct a new Randomizer object with the specified lookahead.</p>
-
-<p><code>lookahead</code> determines the size of the lookahead array and allows the
-library to manage these pieces instead of the caller.</p>
-</div><h3 id='tymethod.preview' class='method stab '><code>fn <a href='#tymethod.preview' class='fnname'>preview</a>(&amp;mut self, lookahead: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../../tetrs/block/enum.Type.html' title='tetrs::block::Type'>Type</a>&gt;</code></h3><div class='docblock'><p>Return a vector containing the next <code>n</code> pieces that will be retrieved
+        <h3 id='tymethod.preview' class='method stab '><code>fn <a href='#tymethod.preview' class='fnname'>preview</a>(&amp;mut self, lookahead: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../../tetrs/block/enum.Type.html' title='tetrs::block::Type'>Type</a>&gt;</code></h3><div class='docblock'><p>Return a vector containing the next <code>n</code> pieces that will be retrieved
 by the iterator.</p>
 
 <p><code>n</code> must be &lt; <code>lookahead</code> else a panic will be issued.</p>
@@ -72,6 +67,10 @@ a custom function on this trait instead of implementing <code>Iterator</code>.</
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
     <li><code>impl <a class='trait' href='../../tetrs/randomizer/trait.Randomizer.html' title='tetrs::randomizer::Randomizer'>Randomizer</a> for <a class='struct' href='../../tetrs/randomizer/struct.BagRandomizer.html' title='tetrs::randomizer::BagRandomizer'>BagRandomizer</a></code></li>
+<li><code>impl <a class='trait' href='../../tetrs/randomizer/trait.Randomizer.html' title='tetrs::randomizer::Randomizer'>Randomizer</a> for <a class='struct' href='../../tetrs/randomizer/struct.MemorylessRandomizer.html' title='tetrs::randomizer::MemorylessRandomizer'>MemorylessRandomizer</a></code></li>
+<li><code>impl <a class='trait' href='../../tetrs/randomizer/trait.Randomizer.html' title='tetrs::randomizer::Randomizer'>Randomizer</a> for <a class='struct' href='../../tetrs/randomizer/struct.GameboyRandomizer.html' title='tetrs::randomizer::GameboyRandomizer'>GameboyRandomizer</a></code></li>
+<li><code>impl <a class='trait' href='../../tetrs/randomizer/trait.Randomizer.html' title='tetrs::randomizer::Randomizer'>Randomizer</a> for <a class='struct' href='../../tetrs/randomizer/struct.TGM1Randomizer.html' title='tetrs::randomizer::TGM1Randomizer'>TGM1Randomizer</a></code></li>
+<li><code>impl <a class='trait' href='../../tetrs/randomizer/trait.Randomizer.html' title='tetrs::randomizer::Randomizer'>Randomizer</a> for <a class='struct' href='../../tetrs/randomizer/struct.TGM2Randomizer.html' title='tetrs::randomizer::TGM2Randomizer'>TGM2Randomizer</a></code></li>
 </ul><script type="text/javascript" async
                          src="../../implementors/tetrs/randomizer/trait.Randomizer.js">
                  </script></section>

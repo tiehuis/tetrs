@@ -113,15 +113,6 @@
 <span id="70">70</span>
 <span id="71">71</span>
 <span id="72">72</span>
-<span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
-<span id="81">81</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a randomizer.</span>
 <span class='doccomment'>//!</span>
@@ -136,41 +127,22 @@
 <span class='doccomment'>//! Also, all `Randomizer`&#39;s should return infinite sequences so we can remove</span>
 <span class='doccomment'>//! the required `unwrap` on manual calls to `next`.</span>
 
-<span class='kw'>use</span> <span class='ident'>block</span>;
+<span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Type</span>;
 
 <span class='doccomment'>/// A randomizer must implement an iterator, plus a preview function which</span>
 <span class='doccomment'>/// returns a number of lookahead pieces.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Randomizer</span> {
-    <span class='doccomment'>/// Construct a new Randomizer object with the specified lookahead.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// `lookahead` determines the size of the lookahead array and allows the</span>
-    <span class='doccomment'>/// library to manage these pieces instead of the caller.</span>
-    <span class='comment'>//</span>
-    <span class='comment'>// This feels more suitable to not be part of the trait itself.</span>
-    <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>lookahead</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-
     <span class='doccomment'>/// Return a vector containing the next `n` pieces that will be retrieved</span>
     <span class='doccomment'>/// by the iterator.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// `n` must be &lt; `lookahead` else a panic will be issued.</span>
-    <span class='kw'>fn</span> <span class='ident'>preview</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>lookahead</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>block</span>::<span class='ident'>Type</span><span class='op'>&gt;</span>;
+    <span class='kw'>fn</span> <span class='ident'>preview</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>lookahead</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Type</span><span class='op'>&gt;</span>;
 
     <span class='doccomment'>/// Return the next block value in this sequence.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// All sequences should be infinite, and iterator use is limited so we use</span>
     <span class='doccomment'>/// a custom function on this trait instead of implementing `Iterator`.</span>
-    <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>block</span>::<span class='ident'>Type</span>;
-}
-
-<span class='doccomment'>/// `next_block` should not be exposed as calling it can produce unexpected</span>
-<span class='doccomment'>/// results (it modifies the internal buffer).</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// Thus, this is hidden behind a private trait.</span>
-<span class='kw'>trait</span> <span class='ident'>RandomizerPrivate</span> : <span class='ident'>Randomizer</span> {
-    <span class='doccomment'>/// Generate the next block in sequence for this randomizer.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// This is not exposed as part of the API so is part of a private trait.</span>
-    <span class='kw'>fn</span> <span class='ident'>next_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>block</span>::<span class='ident'>Type</span>;
+    <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Type</span>;
 }
 
 <span class='comment'>// This macro can be used to generate the `lookahead` and `next` functions for</span>
@@ -179,20 +151,20 @@
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>gen_rand</span> {
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rdid</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> {
         <span class='kw'>impl</span> <span class='ident'>Randomizer</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rdid</span> {
-            <span class='kw'>fn</span> <span class='ident'>preview</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>amount</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>block</span>::<span class='ident'>Type</span><span class='op'>&gt;</span> {
+            <span class='kw'>fn</span> <span class='ident'>preview</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>amount</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Type</span><span class='op'>&gt;</span> {
                 <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>amount</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>capacity</span>());
 
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='ident'>amount</span> {
                     <span class='kw'>let</span> <span class='ident'>randvalue</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>next_block</span>();
-                    <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>push</span>(<span class='ident'>randvalue</span>);
+                    <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>push_back</span>(<span class='ident'>randvalue</span>);
                 }
 
                 <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>iter</span>().<span class='ident'>cloned</span>().<span class='ident'>take</span>(<span class='ident'>amount</span>).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>()
             }
 
-            <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>block</span>::<span class='ident'>Type</span> {
+            <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Type</span> {
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>is_empty</span>() {
-                    <span class='self'>self</span>.<span class='ident'>gen_block</span>()
+                    <span class='self'>self</span>.<span class='ident'>next_block</span>()
                 }
                 <span class='kw'>else</span> {
                     <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>pop_front</span>().<span class='ident'>unwrap</span>()
@@ -202,8 +174,18 @@
     }
 }
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>bag_randomizer</span>::<span class='ident'>BagRandomizer</span>;
-<span class='kw'>mod</span> <span class='ident'>bag_randomizer</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>bag</span>::<span class='ident'>BagRandomizer</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>memoryless</span>::<span class='ident'>MemorylessRandomizer</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>gameboy</span>::<span class='ident'>GameboyRandomizer</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>tgm1</span>::<span class='ident'>TGM1Randomizer</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>tgm2</span>::<span class='ident'>TGM2Randomizer</span>;
+
+<span class='kw'>mod</span> <span class='ident'>bag</span>;
+<span class='kw'>mod</span> <span class='ident'>memoryless</span>;
+<span class='kw'>mod</span> <span class='ident'>gameboy</span>;
+<span class='kw'>mod</span> <span class='ident'>tgm1</span>;
+<span class='kw'>mod</span> <span class='ident'>tgm2</span>;
+
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

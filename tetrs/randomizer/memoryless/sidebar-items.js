@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["MemorylessRandomizer","A generic memoryless randomizer. This generates a completely arbitrary sequence of `Type`'s."]]});
