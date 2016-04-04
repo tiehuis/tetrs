@@ -51,7 +51,13 @@ pub trait RotationSystem {
     /// assert_eq!((x2, y2), (0, 2));
     ///
     /// ```
-    fn min(&self, ty: Type, rotation: Rotation) -> (usize, usize);
+    fn min(&self, id: Type, r: Rotation) -> (usize, usize) {
+        use std::cmp;
+        self.data(id, r).iter()
+            .fold((!0, !0), |(a, b), &(x, y)| {
+                (cmp::min(a, x), cmp::min(b, y))
+            })
+    }
 
     /// Returns an `(x, y)` tuple containing the maximum offsets for the
     /// specified block.
@@ -82,7 +88,13 @@ pub trait RotationSystem {
     /// assert_eq!((x2, y2), (3, 2));
     ///
     /// ```
-    fn max(&self, id: Type, r: Rotation) -> (usize, usize);
+    fn max(&self, id: Type, r: Rotation) -> (usize, usize) {
+        use std::cmp;
+        self.data(id, r).iter()
+            .fold((0, 0), |(a, b), &(x, y)| {
+                (cmp::max(a, x), cmp::max(b, y))
+            })
+    }
 
     /// Returns the minimum offset of the first piece in a block.
     ///
@@ -105,7 +117,20 @@ pub trait RotationSystem {
     /// assert_eq!((x1, y1), (0, 1));
     ///
     /// ```
-    fn minp(&self, id: Type, r: Rotation) -> (usize, usize);
+    fn minp(&self, id: Type, r: Rotation) -> (usize, usize) {
+        self.data(id, r).iter()
+            .fold((!0, !0), |(a, b), &(x, y)| {
+                // We want the least-(x, y) such that y is minimized.
+                // This is subtly different from offset which allows the
+                // minimum of (x, y) from any multiple blocks.
+                if y < b || (y == b && x <= a) {
+                    (x, y)
+                }
+                else {
+                    (a, b)
+                }
+            })
+    }
 }
 
 /// Generates all data fields for a `RotationSystem`. The only requirement is
@@ -135,37 +160,6 @@ macro_rules! rs_gen {
                     Type::O => &O[rotation.to_usize()],
                     _ => panic!("Attempted to get data for Type: {:?}", ty)
                 }
-            }
-
-            fn min(&self, id: Type, r: Rotation) -> (usize, usize) {
-                use std::cmp;
-                self.data(id, r).iter()
-                    .fold((!0, !0), |(a, b), &(x, y)| {
-                        (cmp::min(a, x), cmp::min(b, y))
-                    })
-            }
-
-            fn max(&self, id: Type, r: Rotation) -> (usize, usize) {
-                use std::cmp;
-                self.data(id, r).iter()
-                    .fold((0, 0), |(a, b), &(x, y)| {
-                        (cmp::max(a, x), cmp::max(b, y))
-                    })
-            }
-
-            fn minp(&self, id: Type, r: Rotation) -> (usize, usize) {
-                self.data(id, r).iter()
-                    .fold((!0, !0), |(a, b), &(x, y)| {
-                        // We want the least-(x, y) such that y is minimized.
-                        // This is subtly different from offset which allows the
-                        // minimum of (x, y) from any multiple blocks.
-                        if y < b || (y == b && x <= a) {
-                            (x, y)
-                        }
-                        else {
-                            (a, b)
-                        }
-                    })
             }
         }
     }
