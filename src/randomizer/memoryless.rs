@@ -3,32 +3,33 @@
 use std::collections::VecDeque;
 use rand;
 use rand::Rng;
-use block;
+use block::Type;
 use randomizer::Randomizer;
 
+gen_rand!(MemorylessRandomizer);
+
 /// A generic memoryless randomizer.
-///
-/// This generates a completely arbitrary sequence of `block::Type`'s.
+//
+/// This generates a completely arbitrary sequence of `Type`'s.
 #[derive(Clone)]
 pub struct MemorylessRandomizer {
     /// The lookahead buffer.
-    lookahead: VecDeque<block::Type>,
+    lookahead: VecDeque<Type>,
 
     /// The rng used to generate random values
     rng: rand::ThreadRng
 }
 
-impl Randomizer for MemorylessRandomizer {
-    fn new(lookahead: usize) -> MemorylessRandomizer {
+impl MemorylessRandomizer {
+    /// Return a new `MemorylessRandomizer` instance.
+    pub fn new(lookahead: usize) -> MemorylessRandomizer {
         MemorylessRandomizer {
-            lookahead: Vec::with_capacity(lookahead),
+            lookahead: VecDeque::with_capacity(lookahead),
             rng: rand::thread_rng()
         }
     }
-}
 
-impl RandomizerPrivate for MemorylessRandomizer {
-    fn next_block(&mut self) -> block::Type {
-        self.rng.choose(block::Type::variants())
+    fn next_block(&mut self) -> Type {
+        *self.rng.choose(Type::variants()).unwrap()
     }
 }
