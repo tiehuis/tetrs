@@ -1,8 +1,6 @@
-//! Specifies the block values for the DTET rotation system.
+//! Rotation offsrts for the DTET rotation system.
 
-use collections::enum_set::CLike;
-use block::Type;
-use Rotation;
+rs_gen!(DTET);
 
 static I: [[(usize, usize); 4]; 4] = [
     [(0, 2), (1, 2), (2, 2), (3, 2)],
@@ -52,22 +50,3 @@ static O: [[(usize, usize); 4]; 4] = [
     [(1, 0), (1, 1), (2, 0), (2, 1)],
     [(1, 0), (1, 1), (2, 0), (2, 1)],
 ];
-
-pub struct DTET;
-
-impl RotationSystem for DTET {
-    fn data(&self, ty: Type, rotation: Rotation) -> &'static [(usize, usize)] {
-        match ty {
-            Type::I => I[rotation.to_usize()],
-            Type::T => T[rotation.to_usize()],
-            Type::L => L[rotation.to_usize()],
-            Type::J => J[rotation.to_usize()],
-            Type::S => S[rotation.to_usize()],
-            Type::Z => Z[rotation.to_usize()],
-            Type::O => O[rotation.to_usize()],
-            _ => panic!("Attempted to get data for Type: {:?}", ty)
-        }
-    }
-
-    rs_gen!();
-}

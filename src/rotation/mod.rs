@@ -12,9 +12,11 @@ use Rotation;
 
 /// The `RotationSystem` trait is implmented by all rotation systems.
 ///
-/// When implementing `RotationSystem`, only `data` is required to be
-/// implemented, as the remaining functions can be automatically generated
-/// via the `rs_gen!()` macro.
+/// When implementing `RotationSystem`, the only thing that is required to
+/// implement are the offset values for each of the main blocks
+/// `I, J, L, S, Z, T, O`.
+///
+/// See the `srs.rs` file for an example.
 pub trait RotationSystem {
 
     /// Returns a static array of offset values for the specified `Type`
@@ -106,40 +108,65 @@ pub trait RotationSystem {
     fn minp(&self, id: Type, r: Rotation) -> (usize, usize);
 }
 
-/// Generates the `min`, `max`, and `minp` fields for a given rotation system.
+/// Generates all data fields for a `RotationSystem`. The only requirement is
+/// to implement the block offsets in static arrays.
 ///
 /// This could work as a derive attribute probably, but that is extra work.
 macro_rules! rs_gen {
-    () => {
-        fn min(&self, id: Type, r: Rotation) -> (usize, usize) {
-            use std::cmp;
-            self.data(id, r).iter()
-                .fold((!0, !0), |(a, b), &(x, y)| {
-                    (cmp::min(a, x), cmp::min(b, y))
-                })
-        }
+    ($rsid:ident) => {
+        use collections::enum_set::CLike;
+        use Rotation;
+        use block::Type;
+        use rotation::RotationSystem;
 
-        fn max(&self, id: Type, r: Rotation) -> (usize, usize) {
-            use std::cmp;
-            self.data(id, r).iter()
-                .fold((0, 0), |(a, b), &(x, y)| {
-                    (cmp::max(a, x), cmp::max(b, y))
-                })
-        }
+        #[derive(Clone, Debug, Hash)]
+        #[allow(missing_docs)]
+        pub struct $rsid;
 
-        fn minp(&self, id: Type, r: Rotation) -> (usize, usize) {
-            self.data(id, r).iter()
-                .fold((!0, !0), |(a, b), &(x, y)| {
-                    // We want the least-(x, y) such that y is minimized.
-                    // This is subtly different from offset which allows the
-                    // minimum of (x, y) from any multiple blocks.
-                    if y < b || (y == b && x <= a) {
-                        (x, y)
-                    }
-                    else {
-                        (a, b)
-                    }
-                })
+        impl RotationSystem for $rsid {
+            fn data(&self, ty: Type, rotation: Rotation) -> &'static [(usize, usize)] {
+                match ty {
+                    Type::I => &I[rotation.to_usize()],
+                    Type::T => &T[rotation.to_usize()],
+                    Type::L => &L[rotation.to_usize()],
+                    Type::J => &J[rotation.to_usize()],
+                    Type::S => &S[rotation.to_usize()],
+                    Type::Z => &Z[rotation.to_usize()],
+                    Type::O => &O[rotation.to_usize()],
+                    _ => panic!("Attempted to get data for Type: {:?}", ty)
+                }
+            }
+
+            fn min(&self, id: Type, r: Rotation) -> (usize, usize) {
+                use std::cmp;
+                self.data(id, r).iter()
+                    .fold((!0, !0), |(a, b), &(x, y)| {
+                        (cmp::min(a, x), cmp::min(b, y))
+                    })
+            }
+
+            fn max(&self, id: Type, r: Rotation) -> (usize, usize) {
+                use std::cmp;
+                self.data(id, r).iter()
+                    .fold((0, 0), |(a, b), &(x, y)| {
+                        (cmp::max(a, x), cmp::max(b, y))
+                    })
+            }
+
+            fn minp(&self, id: Type, r: Rotation) -> (usize, usize) {
+                self.data(id, r).iter()
+                    .fold((!0, !0), |(a, b), &(x, y)| {
+                        // We want the least-(x, y) such that y is minimized.
+                        // This is subtly different from offset which allows the
+                        // minimum of (x, y) from any multiple blocks.
+                        if y < b || (y == b && x <= a) {
+                            (x, y)
+                        }
+                        else {
+                            (a, b)
+                        }
+                    })
+            }
         }
     }
 }
