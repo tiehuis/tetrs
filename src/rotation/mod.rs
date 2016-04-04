@@ -148,6 +148,13 @@ macro_rules! rs_gen {
         #[allow(missing_docs)]
         pub struct $rsid;
 
+        impl $rsid {
+            /// Return a new instance of the `RotationSystem`.
+            pub fn new() -> $rsid {
+                $rsid{}
+            }
+        }
+
         impl RotationSystem for $rsid {
             fn data(&self, ty: Type, rotation: Rotation) -> &'static [(usize, usize)] {
                 match ty {
@@ -179,7 +186,7 @@ mod tests {
 
     #[test]
     fn test_offset_to_first1() {
-        let rs = rotation::SRS{};
+        let rs = rotation::SRS::new();
 
         assert_eq!((1, 0), rs.minp(Type::T, Rotation::R0));
         assert_eq!((1, 0), rs.minp(Type::T, Rotation::R90));
