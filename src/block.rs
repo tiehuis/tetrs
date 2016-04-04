@@ -50,8 +50,12 @@ impl Type {
     /// ```
     /// let types = tetrs::block::Type::variants();
     /// ```
-    pub fn variants() -> Vec<Type> {
-        vec![Type::I, Type::T, Type::L, Type::J, Type::S, Type::Z, Type::O]
+    pub fn variants() -> &'static [Type] {
+        static VARIANTS: &'static [Type; 7] = &[
+            Type::I, Type::T, Type::L, Type::J, Type::S, Type::Z, Type::O
+        ];
+
+        VARIANTS
     }
 }
 
