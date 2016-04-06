@@ -100,7 +100,7 @@ impl Type {
 /// Further, a block could have many different internal representations which
 /// appear equal, by adjusting the `(x, y)` coordinates and `data` in
 /// conjunction.
-#[derive(Hash, Clone, Debug)]
+#[derive(Clone)]
 pub struct Block {
     /// X-coordinate of the piece
     pub x:  i32,
@@ -115,8 +115,12 @@ pub struct Block {
     pub r: Rotation,
 
     /// Rotation system used internally
-    pub rs: rotation::SRS
+    // All Rotation Systems are not instatiated directly, but use a static
+    // instance. This makes storing the trait object much easier and ensures
+    // that we use the builder properly.
+    pub rs: &'static RotationSystem
 }
+
 
 /// Traits for building a block.
 ///
@@ -136,7 +140,8 @@ pub struct Block {
 ///
 /// let block = Block::new(Type::I)
 ///                   .rotation(tetrs::Rotation::R270);
-///                   .position((5, 10));
+///                   .position((5, 10))
+///                   .rotation_system(rotation::SRS::new());
 /// ```
 ///
 /// See `block::new()` for what default values are used.
@@ -150,6 +155,9 @@ pub trait BlockBuilder {
     /// Alter the initial position of the block, setting it to the spawn
     /// position as specified by `field`.
     fn on_field(self, field: &Field) -> Block;
+
+    /// Alter the default RotationSystem used by the block.
+    fn rotation_system<R: RotationSystem>(mut self, rs: &'static R) -> Block;
 }
 
 impl BlockBuilder for Block {
@@ -167,6 +175,11 @@ impl BlockBuilder for Block {
     fn on_field(mut self, field: &Field) -> Block {
         self.x = field.spawn.0 as i32;
         self.y = field.spawn.1 as i32;
+        self
+    }
+
+    fn rotation_system<R: RotationSystem>(mut self, rs: &'static R) -> Block {
+        self.rs = rs;
         self
     }
 }
@@ -201,7 +214,7 @@ impl Block {
                 y: 0,
                 id: id,
                 r: Rotation::R0,
-                rs: rotation::SRS{}
+                rs: rotation::SRS::new() as &RotationSystem
         }
     }
 

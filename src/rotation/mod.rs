@@ -148,10 +148,13 @@ macro_rules! rs_gen {
         #[allow(missing_docs)]
         pub struct $rsid;
 
+        // Each module gets its own static instance it can use
+        static __INSTANCE: $rsid = $rsid { };
+
         impl $rsid {
-            /// Return a new instance of the `RotationSystem`.
-            pub fn new() -> $rsid {
-                $rsid{}
+            /// Return a new instance
+            pub fn new() -> &'static $rsid {
+                &__INSTANCE
             }
         }
 
