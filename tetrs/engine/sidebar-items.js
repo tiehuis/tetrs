@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Engine","This engine allows for handling of DAS-like features and other things which are otherwise transparent to sub-components which are only managed on a per-tick basis (have no concept of state over time)."]]});
