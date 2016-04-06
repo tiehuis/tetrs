@@ -196,6 +196,7 @@
 <span id="153">153</span>
 <span id="154">154</span>
 <span id="155">155</span>
+<span id="156">156</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! An abstract controller for specifying actions.</span>
 <span class='doccomment'>//!</span>
@@ -211,7 +212,7 @@
 
 <span class='doccomment'>/// Actions which are understood by the controller.</span>
 <span class='attribute'>#[<span class='ident'>repr</span>(<span class='ident'>usize</span>)]</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Hash</span>, <span class='ident'>Clone</span>, <span class='ident'>Debug</span>, <span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>, <span class='ident'>Debug</span>, <span class='ident'>Hash</span>)]</span>
 <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>missing_docs</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Action</span> {
     <span class='ident'>MoveLeft</span>, <span class='ident'>MoveRight</span>, <span class='ident'>MoveDown</span>, <span class='ident'>HardDrop</span>,
@@ -233,6 +234,7 @@
 <span class='doccomment'>/// The active status of each action is stored, along with how long each action</span>
 <span class='doccomment'>/// has been active for. At its simplest, this/ controller parallels the</span>
 <span class='doccomment'>/// keystate of a keyboard.</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Default</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Controller</span> {
     <span class='doccomment'>/// The length each action has occured for in ticks.</span>
     <span class='ident'>time</span>: [<span class='ident'>usize</span>; <span class='number'>8</span>],

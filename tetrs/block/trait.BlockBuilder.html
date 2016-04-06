@@ -46,11 +46,12 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-200' class='srclink' href='../../src/tetrs/src/block.rs.html#143-153' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-182' class='srclink' href='../../src/tetrs/src/block.rs.html#148-161' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait BlockBuilder {
     fn <a href='#tymethod.position' class='fnname'>position</a>(self, position: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>) -&gt; <a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a>;
     fn <a href='#tymethod.rotation' class='fnname'>rotation</a>(self, rotation: <a class='enum' href='../../tetrs/enum.Rotation.html' title='tetrs::Rotation'>Rotation</a>) -&gt; <a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a>;
     fn <a href='#tymethod.on_field' class='fnname'>on_field</a>(self, field: &amp;<a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a>) -&gt; <a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a>;
+    fn <a href='#tymethod.rotation_system' class='fnname'>rotation_system</a>&lt;R: <a class='trait' href='../../tetrs/rotation/trait.RotationSystem.html' title='tetrs::rotation::RotationSystem'>RotationSystem</a>&gt;(self, rs: &amp;'static R) -&gt; <a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a>;
 }</pre><div class='docblock'><p>Traits for building a block.</p>
 
 <p>This is used to override given default block values to more specific
@@ -69,7 +70,8 @@ caller to perform this.</p>
 
 <span class='kw'>let</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>Type</span>::<span class='ident'>I</span>)
                   .<span class='ident'>rotation</span>(<span class='ident'>tetrs</span>::<span class='ident'>Rotation</span>::<span class='ident'>R270</span>);
-                  .<span class='ident'>position</span>((<span class='number'>5</span>, <span class='number'>10</span>));</pre>
+                  .<span class='ident'>position</span>((<span class='number'>5</span>, <span class='number'>10</span>))
+                  .<span class='ident'>rotation_system</span>(<span class='ident'>rotation</span>::<span class='ident'>SRS</span>::<span class='ident'>new</span>());</pre>
 
 <p>See <code>block::new()</code> for what default values are used.</p>
 </div>
@@ -79,6 +81,7 @@ caller to perform this.</p>
 </div><h3 id='tymethod.rotation' class='method stab '><code>fn <a href='#tymethod.rotation' class='fnname'>rotation</a>(self, rotation: <a class='enum' href='../../tetrs/enum.Rotation.html' title='tetrs::Rotation'>Rotation</a>) -&gt; <a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a></code></h3><div class='docblock'><p>Alter the initial rotation of the block.</p>
 </div><h3 id='tymethod.on_field' class='method stab '><code>fn <a href='#tymethod.on_field' class='fnname'>on_field</a>(self, field: &amp;<a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a>) -&gt; <a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a></code></h3><div class='docblock'><p>Alter the initial position of the block, setting it to the spawn
 position as specified by <code>field</code>.</p>
+</div><h3 id='tymethod.rotation_system' class='method stab '><code>fn <a href='#tymethod.rotation_system' class='fnname'>rotation_system</a>&lt;R: <a class='trait' href='../../tetrs/rotation/trait.RotationSystem.html' title='tetrs::rotation::RotationSystem'>RotationSystem</a>&gt;(self, rs: &amp;'static R) -&gt; <a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a></code></h3><div class='docblock'><p>Alter the default RotationSystem used by the block.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>

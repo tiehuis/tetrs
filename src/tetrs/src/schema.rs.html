@@ -409,11 +409,6 @@
 <span id="366">366</span>
 <span id="367">367</span>
 <span id="368">368</span>
-<span id="369">369</span>
-<span id="370">370</span>
-<span id="371">371</span>
-<span id="372">372</span>
-<span id="373">373</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Methods for converting to and from a textual field representation.</span>
 <span class='doccomment'>//!</span>
@@ -479,11 +474,11 @@
 
 <span class='kw'>impl</span> <span class='ident'>Schema</span> {
     <span class='doccomment'>/// Construct a schema representation from an game primitives.</span>
+    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>needless_range_loop</span>)]</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_state</span>(<span class='ident'>field</span>: <span class='kw-2'>&amp;</span><span class='ident'>Field</span>, <span class='ident'>block</span>: <span class='kw-2'>&amp;</span><span class='ident'>Block</span>) <span class='op'>-&gt;</span> <span class='ident'>Schema</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>grid</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>[<span class='macro'>vec</span><span class='macro'>!</span>[<span class='string'>&#39; &#39;</span>; <span class='ident'>field</span>.<span class='ident'>width</span>]; <span class='ident'>field</span>.<span class='ident'>height</span>];
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>failure</span> <span class='op'>=</span> <span class='boolval'>false</span>;
 
-        <span class='comment'>// Problem constructing schema here</span>
         <span class='kw'>for</span> <span class='ident'>x</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>field</span>.<span class='ident'>width</span> {
             <span class='kw'>for</span> <span class='ident'>y</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>field</span>.<span class='ident'>height</span> {
                 <span class='ident'>grid</span>[<span class='ident'>y</span>][<span class='ident'>x</span>] <span class='op'>=</span> <span class='kw'>match</span> (<span class='ident'>field</span>.<span class='ident'>set</span>((<span class='ident'>x</span>, <span class='ident'>y</span>)), <span class='ident'>block</span>.<span class='ident'>at</span>((<span class='ident'>x</span>, <span class='ident'>y</span>))) {
@@ -537,14 +532,14 @@
     <span class='doccomment'>///  assert_eq!(schema1, schema2); // True</span>
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_string</span>(<span class='ident'>field</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>Schema</span> {
-        <span class='kw'>let</span> <span class='ident'>grid</span> <span class='op'>=</span> <span class='ident'>field</span>.<span class='ident'>split</span>(<span class='string'>&quot;\n&quot;</span>)
+        <span class='kw'>let</span> <span class='ident'>grid</span> <span class='op'>=</span> <span class='ident'>field</span>.<span class='ident'>split</span>(<span class='string'>&#39;\n&#39;</span>)
                         .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>s</span><span class='op'>|</span> {
                             <span class='ident'>s</span>.<span class='ident'>trim</span>()
                              .<span class='ident'>chars</span>()
                              .<span class='ident'>filter</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span> <span class='op'>!=</span> <span class='string'>&#39;\n&#39;</span> <span class='op'>&amp;&amp;</span> <span class='ident'>x</span> <span class='op'>!=</span> <span class='string'>&#39;|&#39;</span> <span class='op'>&amp;&amp;</span> <span class='ident'>x</span> <span class='op'>!=</span> <span class='string'>&#39;-&#39;</span>)
                              .<span class='ident'>collect_vec</span>()
                         })
-                        .<span class='ident'>filter</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>len</span>() <span class='op'>!=</span> <span class='number'>0</span>)
+                        .<span class='ident'>filter</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='op'>!</span><span class='ident'>x</span>.<span class='ident'>is_empty</span>())
                         .<span class='ident'>collect_vec</span>();
 
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>grid</span>.<span class='ident'>len</span>() <span class='op'>!=</span> <span class='number'>0</span>, <span class='string'>&quot;empty input&quot;</span>);
@@ -621,12 +616,7 @@
     <span class='comment'>// Return true if the specified x, y point is in the schema bounds and is</span>
     <span class='comment'>// a block.</span>
     <span class='kw'>fn</span> <span class='ident'>is_block</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, (<span class='ident'>x</span>, <span class='ident'>y</span>): (<span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='kw'>if</span> <span class='ident'>x</span> <span class='op'>&gt;=</span> <span class='self'>self</span>.<span class='ident'>width</span> <span class='op'>||</span> <span class='ident'>y</span> <span class='op'>&gt;=</span> <span class='self'>self</span>.<span class='ident'>height</span> {
-            <span class='boolval'>false</span>
-        }
-        <span class='kw'>else</span> {
-            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>y</span>][<span class='ident'>x</span>] <span class='op'>==</span> <span class='string'>&#39;@&#39;</span> { <span class='boolval'>true</span> } <span class='kw'>else</span> { <span class='boolval'>false</span> }
-        }
+        <span class='ident'>x</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>width</span> <span class='op'>&amp;&amp;</span> <span class='ident'>y</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>height</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>y</span>][<span class='ident'>x</span>] <span class='op'>==</span> <span class='string'>&#39;@&#39;</span>
     }
 
     <span class='comment'>// Determine which block block the current piece is part of.</span>

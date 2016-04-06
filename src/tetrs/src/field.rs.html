@@ -273,7 +273,7 @@
 <span class='doccomment'>/// Internally we use a `Vec` of `Vec`&#39;s for easier resizing, but all rows</span>
 <span class='doccomment'>/// must be of equal length, so it can be thought of as rectangular for all</span>
 <span class='doccomment'>/// purposes.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Hash</span>, <span class='ident'>Clone</span>, <span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Hash</span>, <span class='ident'>Clone</span>, <span class='ident'>Debug</span>, <span class='ident'>Default</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Field</span> {
     <span class='doccomment'>/// The width of the field.</span>
     <span class='kw'>pub</span> <span class='ident'>width</span>: <span class='ident'>usize</span>,
