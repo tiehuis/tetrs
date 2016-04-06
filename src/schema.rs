@@ -62,11 +62,11 @@ pub struct Schema {
 
 impl Schema {
     /// Construct a schema representation from an game primitives.
+    #[allow(needless_range_loop)]
     pub fn from_state(field: &Field, block: &Block) -> Schema {
         let mut grid = vec![vec![' '; field.width]; field.height];
         let mut failure = false;
 
-        // Problem constructing schema here
         for x in 0..field.width {
             for y in 0..field.height {
                 grid[y][x] = match (field.set((x, y)), block.at((x, y))) {
@@ -120,14 +120,14 @@ impl Schema {
     ///  assert_eq!(schema1, schema2); // True
     /// ```
     pub fn from_string(field: &str) -> Schema {
-        let grid = field.split("\n")
+        let grid = field.split('\n')
                         .map(|s| {
                             s.trim()
                              .chars()
                              .filter(|&x| x != '\n' && x != '|' && x != '-')
                              .collect_vec()
                         })
-                        .filter(|x| x.len() != 0)
+                        .filter(|x| !x.is_empty())
                         .collect_vec();
 
         assert!(grid.len() != 0, "empty input");
@@ -204,12 +204,7 @@ impl Schema {
     // Return true if the specified x, y point is in the schema bounds and is
     // a block.
     fn is_block(&self, (x, y): (usize, usize)) -> bool {
-        if x >= self.width || y >= self.height {
-            false
-        }
-        else {
-            if self.data[y][x] == '@' { true } else { false }
-        }
+        x < self.width && y < self.height && self.data[y][x] == '@'
     }
 
     // Determine which block block the current piece is part of.

@@ -247,13 +247,13 @@ impl Block {
     /// This does not check intermediate steps for collisions, so is not
     /// used for general multi-shifting.
     fn shift_raw(&mut self, field: &Field, (x, y): (i32, i32)) -> bool {
-        if !self.collision_at(&field, (x, y)) {
+        if self.collision_at(&field, (x, y)) {
+            false
+        }
+        else {
             self.x += x;
             self.y += y;
             true
-        }
-        else {
-            false
         }
     }
 

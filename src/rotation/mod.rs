@@ -2,7 +2,7 @@
 //!
 //! Offsets refer to particular rotation specifications. For example, the SRS
 //! and Akira style rotation systems which each contain different offset values
-//! which can both be used if they implement the RotationSystem trait.
+//! which can both be used if they implement the `RotationSystem` trait.
 //!
 //! All `RotationsSystem`'s currently use an empty struct which can be passed
 //! around. This allows generic usage of anything which impl's `RotationSystem`.
@@ -144,7 +144,7 @@ macro_rules! rs_gen {
         use block::Type;
         use rotation::RotationSystem;
 
-        #[derive(Clone, Debug, Hash)]
+        #[derive(Clone, Debug, Default, Hash)]
         #[allow(missing_docs)]
         pub struct $rsid;
 

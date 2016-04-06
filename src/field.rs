@@ -18,7 +18,7 @@ use collections::enum_set::CLike;
 /// Internally we use a `Vec` of `Vec`'s for easier resizing, but all rows
 /// must be of equal length, so it can be thought of as rectangular for all
 /// purposes.
-#[derive(Hash, Clone, Debug)]
+#[derive(Hash, Clone, Debug, Default)]
 pub struct Field {
     /// The width of the field.
     pub width: usize,

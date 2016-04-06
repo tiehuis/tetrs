@@ -1,4 +1,6 @@
-#![feature(collections, enumset)]
+#![feature(collections, enumset, plugin)]
+
+#![plugin(clippy)]
 #![warn(missing_docs)]
 
 #![crate_name = "tetrs"]

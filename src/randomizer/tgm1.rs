@@ -44,16 +44,7 @@ impl TGM1Randomizer {
     fn next_block(&mut self) -> Type {
         let mut piece = Type::None;
 
-        if !self.first {
-            loop {
-                // Generate a random piece and check if it is in history
-                piece = *self.rng.choose(Type::variants()).unwrap();
-                if !self.history.contains(&piece) {
-                    break;
-                }
-            }
-        }
-        else {
+        if self.first {
             const SZO: [Type; 3] = [Type::S, Type::Z, Type::O];
             for _ in 0..self.rolls {
                 piece = *self.rng.choose(Type::variants()).unwrap();
@@ -62,6 +53,15 @@ impl TGM1Randomizer {
                 }
             }
             self.first = false;
+        }
+        else {
+            loop {
+                // Generate a random piece and check if it is in history
+                piece = *self.rng.choose(Type::variants()).unwrap();
+                if !self.history.contains(&piece) {
+                    break;
+                }
+            }
         }
 
         for i in (1..self.history.len()).rev() {

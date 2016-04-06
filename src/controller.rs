@@ -12,7 +12,7 @@ use collections::enum_set::CLike;
 
 /// Actions which are understood by the controller.
 #[repr(usize)]
-#[derive(Hash, Clone, Debug, Copy)]
+#[derive(Clone, Copy, Debug, Hash)]
 #[allow(missing_docs)]
 pub enum Action {
     MoveLeft, MoveRight, MoveDown, HardDrop,
@@ -34,6 +34,7 @@ impl CLike for Action {
 /// The active status of each action is stored, along with how long each action
 /// has been active for. At its simplest, this/ controller parallels the
 /// keystate of a keyboard.
+#[derive(Default)]
 pub struct Controller {
     /// The length each action has occured for in ticks.
     time: [usize; 8],
