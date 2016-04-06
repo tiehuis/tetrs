@@ -16,5 +16,21 @@ pub trait WallkickTest {
     fn test(&self, block: &Block, r: Rotation) -> &'static [(i32, i32)];
 }
 
+macro_rules! gen_wallkick {
+    ($wkid:ident) => {
+        /// Wallkick
+        pub struct $wkid {}
+
+        static __INSTANCE: $wkid = $wkid {};
+
+        impl $wkid {
+            /// Return a new wallkick instance
+            pub fn new() -> &'static $wkid {
+                &__INSTANCE
+            }
+        }
+    }
+}
+
 pub use self::srs::SRS;
 mod srs;

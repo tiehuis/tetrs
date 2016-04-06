@@ -5,13 +5,16 @@ use Rotation;
 use Direction;
 use field::Field;
 use controller::{Action, Controller};
-use block::Block;
+use block::{Block, BlockBuilder};
+use block;
 use randomizer::Randomizer;
+use randomizer::BagRandomizer;
 use wallkick::WallkickTest;
 
 /// Which part of the game are we in. This is used to keep track of multi-frame
 /// events that require some internal state past state to be kept.
 #[derive(Debug, Clone, Copy)]
+#[allow(dead_code)]
 enum Status {
     None, Setting, Ready, Move, LockFlash, LineClear, Are, EndingStart,
     Excellent, GameOver
@@ -21,24 +24,24 @@ enum Status {
 /// This engine allows for handling of DAS-like features and other things
 /// which are otherwise transparent to sub-components which are only
 /// managed on a per-tick basis (have no concept of state over time).
-pub struct Engine<'a> {
+pub struct Engine {
     /// Controller which is used by the engine
     pub controller: Controller,
 
     /// The randomizer being used.
-    pub randomizer: &'a (Randomizer<Item=::block::Type> + 'a),
+    pub randomizer: BagRandomizer,
 
     /// The wallkick object being used.
-    pub wallkick: &'a (WallkickTest + 'a),
+    pub wallkick: &'static WallkickTest,
 
     /// The field which the game is played on
     pub field: Field,
 
     /// The active block
-    pub block: Block<'a>,
+    pub block: Block,
 
     /// The current hold block
-    pub hold: Option<Block<'a>>,
+    pub hold: Option<Block>,
 
     /// Das value
     pub das: u64,
@@ -58,7 +61,7 @@ pub struct Engine<'a> {
     status: Status
 }
 
-impl<'a> Engine<'a> {
+impl Engine {
 
     /// Construct a new engine object and return it.
     ///
@@ -68,19 +71,24 @@ impl<'a> Engine<'a> {
     ///
     /// An engine is constructed in an initialized state and is ready to be
     /// used right from the beginning.
-    pub fn new(randomizer: &'a Randomizer<Item=::block::Type>, wallkick: &'a WallkickTest, field: Field) -> Engine<'a> {
-        Engine {
-            randomizer: randomizer,
+    pub fn new(field: Field, wallkick: &'static WallkickTest) -> Engine {
+        let mut engine = Engine {
+            randomizer: BagRandomizer::new(7),
             controller: Controller::new(),
             wallkick: wallkick,
             field: field,
-            block: Block::new(&field, randomizer.next().unwrap(), Rotation::R0),
+            block: Block::new(block::Type::None),
             hold: None,
             ticks: 0,
             mspt: 16,
             das: 150,
             status: Status::Ready
-        }
+        };
+
+        // Cannot initialize in struct due to lifetime problems
+        let block = Block::new(engine.randomizer.next()).on_field(&engine.field);
+        engine.block = block;
+        engine
     }
 
     /// Adjusts a constant value to ticks for the current gamestate.
@@ -131,7 +139,7 @@ impl<'a> Engine<'a> {
     ///
     /// Each call to update is expected to take place in `~mspt` ms. It
     /// is up to the caller to manage the update lengths appropriately.
-    pub fn update(&'a mut self) {
+    pub fn update(&mut self) {
         self.controller.update();
 
         match self.status {
@@ -139,7 +147,7 @@ impl<'a> Engine<'a> {
             Status::Move => self.update_move(),
             Status::GameOver => self.update_gameover(),
             Status::Excellent => self.update_excellent(),
-            x @ _ => panic!("Cannot handle status {:?}", x)
+            x => panic!("Cannot handle status {:?}", x)
         }
 
         self.ticks += 1;
@@ -159,14 +167,14 @@ impl<'a> Engine<'a> {
     }
 
     /// This performs the bulk of the gameplay logic.
-    fn update_move(&'a mut self) {
+    fn update_move(&mut self) {
         match Some(self.lr_move_direction()) {
             None => (),
-            direction @ _ => {
+            direction => {
                 // Handle the left-right movement
                 match self.controller.time(Engine::d2a(direction.unwrap().unwrap()).unwrap()) {
                     x if x > self.ms_to_ticks(self.das) as usize || x == 1  => {
-                        self.block.shift(direction.unwrap().unwrap());
+                        self.block.shift(&self.field, direction.unwrap().unwrap());
                     },
                     _ => ()
                 }
@@ -175,30 +183,34 @@ impl<'a> Engine<'a> {
 
         // Handle rotations
         if self.controller.time(Action::RotateLeft) == 1 {
-            self.block.rotate(Rotation::R270);
+            self.block.rotate(&self.field, Rotation::R270);
         }
         if self.controller.time(Action::RotateRight) == 1 {
-            self.block.rotate(Rotation::R90);
+            self.block.rotate(&self.field, Rotation::R90);
         }
 
         // Handle hold
-        match self.hold {
+        match self.hold.clone() {
             Some(hold) => {
                 // TODO: May need a temporary here depending on binding
-                self.hold = Some(self.block);
-                self.block = hold.reset();
+                self.hold = Some(self.block.clone());
+                self.block = Block::new(hold.id).on_field(&self.field);
             },
             None => {
-                self.hold = Some(self.block);
-                self.block = Block::new(&self.field, self.randomizer.next().unwrap(), Rotation::R0);
+                self.hold = Some(self.block.clone());
+                self.block = Block::new(self.randomizer.next())
+                                   .on_field(&self.field)
+                                   .rotation(Rotation::R0);
             }
         };
 
         // Handle hard drop
         if self.controller.time(Action::HardDrop) == 1 {
-            self.block.shift_extend(Direction::Down);
-            self.field.freeze(self.block);
-            self.block = Block::new(&self.field, self.randomizer.next().unwrap(), Rotation::R0);
+            self.block.shift_extend(&self.field, Direction::Down);
+            self.field.freeze(self.block.clone());
+            self.block = Block::new(self.randomizer.next())
+                               .on_field(&self.field)
+                               .rotation(Rotation::R0);
         }
     }
 
@@ -212,20 +224,12 @@ impl<'a> Engine<'a> {
 #[cfg(test)]
 mod tests {
 
+    use super::*;
+    use wallkick;
+    use field::Field;
+
     #[test]
     fn test_engine() {
-        let field = Field::new();
-        let randomizer = BagRandomizer::new();
-        let wallkick = SRS::new();
-        let mut engine = Engine(&randomizer, &wallkick, &field);
-
-        while engine.running {
-            // Update keys - (Managed externally)
-
-            // call update
-            engine.update();
-
-            // Field is in next state iteration
-        }
+        let _ = Engine::new(Field::new(), wallkick::SRS::new());
     }
 }

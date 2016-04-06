@@ -1,15 +1,12 @@
 //! Implements the wallkicks for the SRS rotation system.
 
-/// Wallkick test implementing the SRS rotation system. Most wallkick structs
-/// do not have any data associated that is not of 'static lifetime.
-pub struct SRS;
-
 use Rotation;
 use block::Block;
 use block;
 use wallkick::WallkickTest;
-
 use collections::enum_set::CLike;
+
+gen_wallkick!(SRS);
 
 impl WallkickTest for SRS {
     /// Wallkick tests for the specified id and rotation.
