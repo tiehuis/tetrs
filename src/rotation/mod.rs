@@ -178,6 +178,15 @@ macro_rules! rs_gen {
 pub use self::srs::SRS;
 pub mod srs;
 
+pub use self::arika::Arika;
+pub mod arika;
+
+pub use self::tengen::Tengen;
+pub mod tengen;
+
+pub use self::dtet::DTET;
+pub mod dtet;
+
 // If we can guarantee `max`, `min`, and `minp` from `rs_gen!()` work, then we
 // only require testing for one case (`SRS` in this example).
 #[cfg(test)]
