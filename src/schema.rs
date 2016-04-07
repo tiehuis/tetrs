@@ -175,14 +175,16 @@ impl Schema {
         let mut field = Field::new();
         let mut block = None;
 
-        // We must iterate over rows before columns
+        // A schema may have a different height to the field
+        let ydiff = field.height - schema.height;
+
         for (y, x) in iproduct!(0..schema.height, 0..schema.width) {
             match schema.data[y][x] {
                 '@' => {
                     block = Some(schema.match_block(&field, (x, y)));
                 },
                 '#' => {
-                    field.data[x][y] = block::Type::None.to_usize();
+                    field.data[x][y + ydiff] = block::Type::I.to_usize();
                 },
                 ' ' => {
                     ()
@@ -313,7 +315,8 @@ impl PartialEq for Schema {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use block::Direction;
+    use block::{Type, Direction, Rotation};
+    use collections::enum_set::CLike;
 
     #[test]
     fn test_from_string1() {
@@ -365,5 +368,24 @@ mod tests {
                        |@@@       |
                        ------------
                    "));
+    }
+
+    #[test]
+    fn test_from_string_to_state() {
+        let schema = Schema::from_string("
+                |          |
+                | # @      |
+                |##@@@     |
+                ------------
+            ");
+
+        let (field, block) = schema.to_state();
+
+        assert_eq!(block.id, Type::T);
+        assert_eq!(block.r, Rotation::R0);
+
+        assert!(field.data[0][field.height-1] != Type::None.to_usize());
+        assert!(field.data[1][field.height-1] != Type::None.to_usize());
+        assert!(field.data[1][field.height-2] != Type::None.to_usize());
     }
 }
