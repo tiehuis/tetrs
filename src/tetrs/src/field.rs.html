@@ -264,10 +264,6 @@
 <span id="221">221</span>
 <span id="222">222</span>
 <span id="223">223</span>
-<span id="224">224</span>
-<span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! A generic playfield.</span>
 <span class='doccomment'>//!</span>
@@ -461,13 +457,9 @@
     <span class='doccomment'>/// // block.shift(Direction::Right); // Compile Error</span>
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>freeze</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>block</span>: <span class='ident'>Block</span>) {
-        <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>block</span>.<span class='ident'>rs</span>.<span class='ident'>data</span>(<span class='ident'>block</span>.<span class='ident'>id</span>, <span class='ident'>block</span>.<span class='ident'>r</span>);
-        <span class='ident'>data</span>.<span class='ident'>iter</span>()
-            .<span class='ident'>enumerate</span>()
-            .<span class='ident'>map</span>(<span class='op'>|</span>(<span class='ident'>i</span>, <span class='kw-2'>&amp;</span>(<span class='ident'>x</span>, <span class='ident'>y</span>))<span class='op'>|</span> (<span class='ident'>x</span> <span class='op'>+</span> <span class='ident'>data</span>[<span class='ident'>i</span>].<span class='number'>0</span>, <span class='ident'>y</span> <span class='op'>+</span> <span class='ident'>data</span>[<span class='ident'>i</span>].<span class='number'>1</span>))
-            .<span class='ident'>foreach</span>(<span class='op'>|</span>(<span class='ident'>x</span>, <span class='ident'>y</span>)<span class='op'>|</span> {
-                <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>x</span>][<span class='ident'>y</span>] <span class='op'>=</span> <span class='ident'>block</span>.<span class='ident'>id</span>.<span class='ident'>to_usize</span>();
-            });
+        <span class='kw'>for</span> <span class='kw-2'>&amp;</span>(<span class='ident'>x</span>, <span class='ident'>y</span>) <span class='kw'>in</span> <span class='ident'>block</span>.<span class='ident'>rs</span>.<span class='ident'>data</span>(<span class='ident'>block</span>.<span class='ident'>id</span>, <span class='ident'>block</span>.<span class='ident'>r</span>) {
+            <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>block</span>.<span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>+</span> <span class='ident'>x</span>][<span class='ident'>block</span>.<span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>+</span> <span class='ident'>y</span>] <span class='op'>=</span> <span class='ident'>block</span>.<span class='ident'>id</span>.<span class='ident'>to_usize</span>();
+        }
     }
 
     <span class='doccomment'>/// Return the value at the specified field location.</span>
