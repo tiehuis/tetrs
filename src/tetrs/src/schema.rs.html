@@ -409,6 +409,7 @@
 <span id="366">366</span>
 <span id="367">367</span>
 <span id="368">368</span>
+<span id="369">369</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Methods for converting to and from a textual field representation.</span>
 <span class='doccomment'>//!</span>
@@ -439,12 +440,9 @@
 <span class='doccomment'>//! &quot;));</span>
 <span class='doccomment'>//! ```</span>
 
-<span class='kw'>use</span> <span class='ident'>Rotation</span>;
-<span class='kw'>use</span> <span class='ident'>rotation</span>;
-<span class='kw'>use</span> <span class='ident'>rotation</span>::<span class='ident'>RotationSystem</span>;
+<span class='kw'>use</span> <span class='ident'>rotation</span>::{<span class='self'>self</span>, <span class='ident'>RotationSystem</span>};
 <span class='kw'>use</span> <span class='ident'>field</span>::<span class='ident'>Field</span>;
-<span class='kw'>use</span> <span class='ident'>block</span>;
-<span class='kw'>use</span> <span class='ident'>block</span>::{<span class='ident'>Block</span>, <span class='ident'>BlockBuilder</span>};
+<span class='kw'>use</span> <span class='ident'>block</span>::{<span class='self'>self</span>, <span class='ident'>Rotation</span>, <span class='ident'>Block</span>, <span class='ident'>BlockBuilder</span>};
 
 <span class='kw'>use</span> <span class='ident'>std</span>::{<span class='ident'>fmt</span>, <span class='ident'>iter</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>::<span class='ident'>PartialEq</span>;
@@ -481,7 +479,7 @@
 
         <span class='kw'>for</span> <span class='ident'>x</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>field</span>.<span class='ident'>width</span> {
             <span class='kw'>for</span> <span class='ident'>y</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>field</span>.<span class='ident'>height</span> {
-                <span class='ident'>grid</span>[<span class='ident'>y</span>][<span class='ident'>x</span>] <span class='op'>=</span> <span class='kw'>match</span> (<span class='ident'>field</span>.<span class='ident'>set</span>((<span class='ident'>x</span>, <span class='ident'>y</span>)), <span class='ident'>block</span>.<span class='ident'>at</span>((<span class='ident'>x</span>, <span class='ident'>y</span>))) {
+                <span class='ident'>grid</span>[<span class='ident'>y</span>][<span class='ident'>x</span>] <span class='op'>=</span> <span class='kw'>match</span> (<span class='ident'>field</span>.<span class='ident'>occupies</span>((<span class='ident'>x</span>, <span class='ident'>y</span>)), <span class='ident'>block</span>.<span class='ident'>occupies</span>((<span class='ident'>x</span>, <span class='ident'>y</span>))) {
                     (<span class='boolval'>true</span>, <span class='boolval'>true</span>) <span class='op'>=&gt;</span> {
                         <span class='ident'>failure</span> <span class='op'>=</span> <span class='boolval'>true</span>;
                         <span class='string'>&#39;X&#39;</span>
@@ -643,11 +641,15 @@
     <span class='comment'>// rotation specification in the input string, but this adds complexity</span>
     <span class='comment'>// and more rules which are not needed currently.</span>
     <span class='kw'>fn</span> <span class='ident'>match_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>field</span>: <span class='kw-2'>&amp;</span><span class='ident'>Field</span>, (<span class='ident'>x</span>, <span class='ident'>y</span>): (<span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='ident'>Block</span> {
-        <span class='comment'>// For the moment, always assume SRS rotation</span>
+        <span class='comment'>// For the moment, always assume SRS rotation. We require an option to</span>
+        <span class='comment'>// specify which `RotationSystem` to use with the input schema.</span>
+        <span class='comment'>//</span>
+        <span class='comment'>// We also require setting the correct to state, which should also require</span>
+        <span class='comment'>// a `RotationSystem` argument.</span>
         <span class='kw'>let</span> <span class='ident'>rs</span> <span class='op'>=</span> <span class='ident'>rotation</span>::<span class='ident'>SRS</span>{};
 
         <span class='kw'>for</span> (<span class='kw-2'>&amp;</span><span class='ident'>ty</span>, <span class='kw-2'>&amp;</span><span class='ident'>ro</span>) <span class='kw'>in</span> <span class='macro'>iproduct</span><span class='macro'>!</span>(<span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='ident'>variants</span>().<span class='ident'>iter</span>(), <span class='ident'>Rotation</span>::<span class='ident'>variants</span>().<span class='ident'>iter</span>()) {
-            <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>data</span>(<span class='ident'>ty</span>, <span class='ident'>ro</span>);
+            <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>rs</span>.<span class='ident'>data</span>(<span class='ident'>ty</span>, <span class='ident'>ro</span>);
             <span class='kw'>let</span> (<span class='ident'>xo</span>, <span class='ident'>yo</span>) <span class='op'>=</span> <span class='ident'>rs</span>.<span class='ident'>minp</span>(<span class='ident'>ty</span>, <span class='ident'>ro</span>);
 
             <span class='kw'>if</span> <span class='ident'>x</span> <span class='op'>&lt;</span> <span class='ident'>xo</span> <span class='op'>||</span> <span class='ident'>y</span> <span class='op'>&lt;</span> <span class='ident'>yo</span> {
@@ -664,10 +666,10 @@
                 <span class='comment'>// (xo, yo) are not normalized based on the field so the block</span>
                 <span class='comment'>// needs to be adjusted.</span>
                 <span class='kw'>let</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>ty</span>)
-                                  .<span class='ident'>rotation</span>(<span class='ident'>ro</span>)
-                                  .<span class='ident'>position</span>((<span class='ident'>ox</span>, <span class='ident'>field</span>.<span class='ident'>height</span> <span class='op'>-</span> <span class='ident'>oy</span> <span class='op'>-</span> <span class='number'>1</span>));
+                                  .<span class='ident'>set_rotation</span>(<span class='ident'>ro</span>)
+                                  .<span class='ident'>set_position</span>((<span class='ident'>ox</span>, <span class='ident'>field</span>.<span class='ident'>height</span> <span class='op'>-</span> <span class='ident'>oy</span> <span class='op'>-</span> <span class='number'>1</span>));
 
-                <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>block</span>.<span class='ident'>collision</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>));
+                <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>block</span>.<span class='ident'>collides</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>));
                 <span class='kw'>return</span> <span class='ident'>block</span>;
             }
         }
@@ -724,7 +726,7 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
     <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
-    <span class='kw'>use</span> <span class='ident'>Direction</span>;
+    <span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Direction</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_from_string1</span>() {

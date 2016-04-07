@@ -75,13 +75,11 @@
 <span id="32">32</span>
 <span id="33">33</span>
 <span id="34">34</span>
-<span id="35">35</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a memoryless randomizer.</span>
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>VecDeque</span>;
-<span class='kw'>use</span> <span class='ident'>rand</span>;
-<span class='kw'>use</span> <span class='ident'>rand</span>::<span class='ident'>Rng</span>;
+<span class='kw'>use</span> <span class='ident'>rand</span>::{<span class='self'>self</span>, <span class='ident'>Rng</span>};
 <span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Type</span>;
 <span class='kw'>use</span> <span class='ident'>randomizer</span>::<span class='ident'>Randomizer</span>;
 

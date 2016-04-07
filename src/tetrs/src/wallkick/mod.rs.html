@@ -76,7 +76,6 @@
 <span id="33">33</span>
 <span id="34">34</span>
 <span id="35">35</span>
-<span id="36">36</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a wallkick test</span>
 <span class='doccomment'>//!</span>
@@ -86,12 +85,11 @@
 <span class='doccomment'>//! It should be implemented as an iterator (currently a &#39;static vector)</span>
 <span class='doccomment'>//! which returns (i32, i32) tuples.</span>
 
-<span class='kw'>use</span> <span class='ident'>Rotation</span>;
-<span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Block</span>;
+<span class='kw'>use</span> <span class='ident'>block</span>::{<span class='ident'>Block</span>, <span class='ident'>Rotation</span>};
 
 <span class='doccomment'>/// Trait which specifies what wallkick tests must implement. Every wallkick</span>
 <span class='doccomment'>/// test must implement an iterator with offsets of type (i32, i32).</span>
-<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>WallkickTest</span> {
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Wallkick</span> {
     <span class='doccomment'>/// Returns a set of wallkick tests for the specified block and rotation</span>
     <span class='kw'>fn</span> <span class='ident'>test</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>block</span>: <span class='kw-2'>&amp;</span><span class='ident'>Block</span>, <span class='ident'>r</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [(<span class='ident'>i32</span>, <span class='ident'>i32</span>)];
 }

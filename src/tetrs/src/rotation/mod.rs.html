@@ -247,11 +247,6 @@
 <span id="204">204</span>
 <span id="205">205</span>
 <span id="206">206</span>
-<span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
-<span id="210">210</span>
-<span id="211">211</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! This modules provides an interface for dealing with different block offsets.</span>
 <span class='doccomment'>//!</span>
@@ -262,8 +257,7 @@
 <span class='doccomment'>//! All `RotationsSystem`&#39;s currently use an empty struct which can be passed</span>
 <span class='doccomment'>//! around. This allows generic usage of anything which impl&#39;s `RotationSystem`.</span>
 
-<span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Type</span>;
-<span class='kw'>use</span> <span class='ident'>Rotation</span>;
+<span class='kw'>use</span> <span class='ident'>block</span>::{<span class='ident'>Type</span>, <span class='ident'>Rotation</span>};
 
 <span class='doccomment'>/// The `RotationSystem` trait is implmented by all rotation systems.</span>
 <span class='doccomment'>///</span>
@@ -282,9 +276,8 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ## Examples</span>
     <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::block::Type;</span>
-    <span class='doccomment'>/// use tetrs::{rotation, Rotation};</span>
-    <span class='doccomment'>/// use tetrs::rotation::RotationSystem;</span>
+    <span class='doccomment'>/// use tetrs::block::{Rotation, Type};</span>
+    <span class='doccomment'>/// use tetrs::rotation::{self, RotationSystem};</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let rs = rotation::SRS{};</span>
     <span class='doccomment'>///</span>
@@ -319,9 +312,8 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ## Examples</span>
     <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::block::Type;</span>
-    <span class='doccomment'>/// use tetrs::{rotation, Rotation};</span>
-    <span class='doccomment'>/// use tetrs::rotation::RotationSystem;</span>
+    <span class='doccomment'>/// use tetrs::block::{Rotation, Type};</span>
+    <span class='doccomment'>/// use tetrs::rotation::{self, RotationSystem};</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let rs = rotation::SRS{};</span>
     <span class='doccomment'>///</span>
@@ -357,8 +349,8 @@
     <span class='doccomment'>/// non-empty piece in a block. This row by row from `y = 0` onwards.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::block::Type;</span>
-    <span class='doccomment'>/// use tetrs::{rotation, Rotation};</span>
+    <span class='doccomment'>/// use tetrs::block::{Rotation, Type};</span>
+    <span class='doccomment'>/// use tetrs::rotation;</span>
     <span class='doccomment'>/// use tetrs::rotation::RotationSystem;</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// // The piece marked &#39;@&#39; is the first encountered piece.</span>
@@ -393,27 +385,26 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// This could work as a derive attribute probably, but that is extra work.</span>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>rs_gen</span> {
-    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rsid</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> {
+    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>id</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> {
         <span class='kw'>use</span> <span class='ident'>collections</span>::<span class='ident'>enum_set</span>::<span class='ident'>CLike</span>;
-        <span class='kw'>use</span> <span class='ident'>Rotation</span>;
-        <span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Type</span>;
+        <span class='kw'>use</span> <span class='ident'>block</span>::{<span class='ident'>Type</span>, <span class='ident'>Rotation</span>};
         <span class='kw'>use</span> <span class='ident'>rotation</span>::<span class='ident'>RotationSystem</span>;
 
         <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Debug</span>, <span class='ident'>Default</span>, <span class='ident'>Hash</span>)]</span>
         <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>missing_docs</span>)]</span>
-        <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rsid</span>;
+        <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>id</span>;
 
         <span class='comment'>// Each module gets its own static instance it can use</span>
-        <span class='kw'>static</span> <span class='ident'>__INSTANCE</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rsid</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rsid</span> { };
+        <span class='kw'>static</span> <span class='ident'>__INSTANCE</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>id</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>id</span> { };
 
-        <span class='kw'>impl</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rsid</span> {
+        <span class='kw'>impl</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>id</span> {
             <span class='doccomment'>/// Return a new instance</span>
-            <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rsid</span> {
+            <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>id</span> {
                 <span class='kw-2'>&amp;</span><span class='ident'>__INSTANCE</span>
             }
         }
 
-        <span class='kw'>impl</span> <span class='ident'>RotationSystem</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rsid</span> {
+        <span class='kw'>impl</span> <span class='ident'>RotationSystem</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>id</span> {
             <span class='kw'>fn</span> <span class='ident'>data</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>ty</span>: <span class='ident'>Type</span>, <span class='ident'>rotation</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [(<span class='ident'>usize</span>, <span class='ident'>usize</span>)] {
                 <span class='kw'>match</span> <span class='ident'>ty</span> {
                     <span class='ident'>Type</span>::<span class='ident'>I</span> <span class='op'>=&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>I</span>[<span class='ident'>rotation</span>.<span class='ident'>to_usize</span>()],
@@ -448,8 +439,7 @@
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
     <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>rotation</span>;
-    <span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Type</span>;
-    <span class='kw'>use</span> <span class='ident'>Rotation</span>;
+    <span class='kw'>use</span> <span class='ident'>block</span>::{<span class='ident'>Rotation</span>, <span class='ident'>Type</span>};
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_offset_to_first1</span>() {

@@ -127,20 +127,16 @@
 <span id="84">84</span>
 <span id="85">85</span>
 <span id="86">86</span>
-<span id="87">87</span>
-<span id="88">88</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements the wallkicks for the SRS rotation system.</span>
 
-<span class='kw'>use</span> <span class='ident'>Rotation</span>;
-<span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Block</span>;
-<span class='kw'>use</span> <span class='ident'>block</span>;
-<span class='kw'>use</span> <span class='ident'>wallkick</span>::<span class='ident'>WallkickTest</span>;
+<span class='kw'>use</span> <span class='ident'>block</span>::{<span class='self'>self</span>, <span class='ident'>Rotation</span>, <span class='ident'>Block</span>};
+<span class='kw'>use</span> <span class='ident'>wallkick</span>::<span class='ident'>Wallkick</span>;
 <span class='kw'>use</span> <span class='ident'>collections</span>::<span class='ident'>enum_set</span>::<span class='ident'>CLike</span>;
 
 <span class='macro'>gen_wallkick</span><span class='macro'>!</span>(<span class='ident'>SRS</span>);
 
-<span class='kw'>impl</span> <span class='ident'>WallkickTest</span> <span class='kw'>for</span> <span class='ident'>SRS</span> {
+<span class='kw'>impl</span> <span class='ident'>Wallkick</span> <span class='kw'>for</span> <span class='ident'>SRS</span> {
     <span class='doccomment'>/// Wallkick tests for the specified id and rotation.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Wallkick test values are expected to lie in a static array currently.</span>

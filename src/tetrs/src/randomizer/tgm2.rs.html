@@ -113,13 +113,11 @@
 <span id="70">70</span>
 <span id="71">71</span>
 <span id="72">72</span>
-<span id="73">73</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements the TGM2 randomizer</span>
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>VecDeque</span>;
-<span class='kw'>use</span> <span class='ident'>rand</span>;
-<span class='kw'>use</span> <span class='ident'>rand</span>::<span class='ident'>Rng</span>;
+<span class='kw'>use</span> <span class='ident'>rand</span>::{<span class='self'>self</span>, <span class='ident'>Rng</span>};
 <span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Type</span>;
 <span class='kw'>use</span> <span class='ident'>randomizer</span>::<span class='ident'>Randomizer</span>;
 

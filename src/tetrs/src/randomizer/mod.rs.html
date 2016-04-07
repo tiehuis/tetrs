@@ -149,8 +149,8 @@
 <span class='comment'>// the given randomizer. These are generic across all randomizers but with the</span>
 <span class='comment'>// lack of inheritance we resort to this method of generation.</span>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>gen_rand</span> {
-    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rdid</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> {
-        <span class='kw'>impl</span> <span class='ident'>Randomizer</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rdid</span> {
+    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>id</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> {
+        <span class='kw'>impl</span> <span class='ident'>Randomizer</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>id</span> {
             <span class='kw'>fn</span> <span class='ident'>preview</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>amount</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Type</span><span class='op'>&gt;</span> {
                 <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>amount</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>capacity</span>());
 
