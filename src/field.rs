@@ -190,13 +190,9 @@ impl Field {
     /// // block.shift(Direction::Right); // Compile Error
     /// ```
     pub fn freeze(&mut self, block: Block) {
-        let data = block.rs.data(block.id, block.r);
-        data.iter()
-            .enumerate()
-            .map(|(i, &(x, y))| (x + data[i].0, y + data[i].1))
-            .foreach(|(x, y)| {
-                self.data[x][y] = block.id.to_usize();
-            });
+        for &(x, y) in block.rs.data(block.id, block.r) {
+            self.data[block.x as usize + x][block.y as usize + y] = block.id.to_usize();
+        }
     }
 
     /// Return the value at the specified field location.
