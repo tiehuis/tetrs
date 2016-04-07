@@ -1,15 +1,11 @@
 //! Implements a high-level engine which composes all the components
 //! into one abstract structure.
 
-use Rotation;
-use Direction;
 use field::Field;
 use controller::{Action, Controller};
-use block::{Block, BlockBuilder};
-use block;
-use randomizer::Randomizer;
-use randomizer::BagRandomizer;
-use wallkick::WallkickTest;
+use block::{self, Rotation, Direction, Block, BlockBuilder};
+use randomizer::{Randomizer, BagRandomizer};
+use wallkick::Wallkick;
 
 /// Which part of the game are we in. This is used to keep track of multi-frame
 /// events that require some internal state past state to be kept.
@@ -32,7 +28,7 @@ pub struct Engine {
     pub randomizer: BagRandomizer,
 
     /// The wallkick object being used.
-    pub wallkick: &'static WallkickTest,
+    pub wallkick: &'static Wallkick,
 
     /// The field which the game is played on
     pub field: Field,
@@ -71,7 +67,7 @@ impl Engine {
     ///
     /// An engine is constructed in an initialized state and is ready to be
     /// used right from the beginning.
-    pub fn new(field: Field, wallkick: &'static WallkickTest) -> Engine {
+    pub fn new(field: Field, wallkick: &'static Wallkick) -> Engine {
         let mut engine = Engine {
             randomizer: BagRandomizer::new(7),
             controller: Controller::new(),
@@ -86,7 +82,7 @@ impl Engine {
         };
 
         // Cannot initialize in struct due to lifetime problems
-        let block = Block::new(engine.randomizer.next()).on_field(&engine.field);
+        let block = Block::new(engine.randomizer.next()).set_field(&engine.field);
         engine.block = block;
         engine
     }
@@ -194,13 +190,13 @@ impl Engine {
             Some(hold) => {
                 // TODO: May need a temporary here depending on binding
                 self.hold = Some(self.block.clone());
-                self.block = Block::new(hold.id).on_field(&self.field);
+                self.block = Block::new(hold.id).set_field(&self.field);
             },
             None => {
                 self.hold = Some(self.block.clone());
                 self.block = Block::new(self.randomizer.next())
-                                   .on_field(&self.field)
-                                   .rotation(Rotation::R0);
+                                   .set_field(&self.field)
+                                   .set_rotation(Rotation::R0);
             }
         };
 
@@ -209,8 +205,8 @@ impl Engine {
             self.block.shift_extend(&self.field, Direction::Down);
             self.field.freeze(self.block.clone());
             self.block = Block::new(self.randomizer.next())
-                               .on_field(&self.field)
-                               .rotation(Rotation::R0);
+                               .set_field(&self.field)
+                               .set_rotation(Rotation::R0);
         }
     }
 

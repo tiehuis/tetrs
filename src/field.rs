@@ -5,8 +5,7 @@
 //! of what blocks belong to it, tis generality allows for more advanced
 //! gameplay to be built from this structure.
 
-use block;
-use block::Block;
+use block::{self, Block};
 use rotation::RotationSystem;
 
 use std::iter;
@@ -18,6 +17,26 @@ use collections::enum_set::CLike;
 /// Internally we use a `Vec` of `Vec`'s for easier resizing, but all rows
 /// must be of equal length, so it can be thought of as rectangular for all
 /// purposes.
+///
+/// ## Note
+///
+/// If one wants to only iterate over the viewable portion of the array, this
+/// can be done with the following bounds:
+///
+/// ```ignore
+/// for y in self.hidden..self.height {
+///     ...
+/// }
+/// ```
+///
+/// instead of the more presumed
+///
+/// ```ignore
+/// for y in 0..self.height {
+/// }
+/// ```
+///
+/// This is because the `height` field includes the specified `hidden` portion.
 #[derive(Hash, Clone, Debug, Default)]
 pub struct Field {
     /// The width of the field.
@@ -50,32 +69,30 @@ pub struct Field {
 /// use tetrs::field::{Field, FieldBuilder};
 ///
 /// // Constructs a field with a width of 12 and height of 30
-/// let field = Field::new().width(12).height(30);
+/// let field = Field::new().set_width(12).set_height(30);
 /// ```
 pub trait FieldBuilder {
     /// Alter the width of the field and return the modified field.
-    fn width(self, width: usize) -> Field;
+    fn set_width(self, width: usize) -> Field;
 
     /// Alter the height of the field and return the modified field.
-    fn height(self, height: usize) -> Field;
+    fn set_height(self, height: usize) -> Field;
 
     /// Alter the hidden height of the field and return the modified field.
-    fn hidden(self, hidden: usize) -> Field;
+    fn set_hidden(self, hidden: usize) -> Field;
 
     /// Alter the block spawn point of the field and return the modified.
-    fn spawn(self, spawn: (usize, usize)) -> Field;
+    fn set_spawn(self, spawn: (usize, usize)) -> Field;
 }
 
-/// Not sure if this would be better as an actual type to disallow calling
-/// these functions on arbitrary fields, but we can trust the caller for now.
 impl FieldBuilder for Field {
-    fn width(mut self, width: usize) -> Field {
+    fn set_width(mut self, width: usize) -> Field {
         self.width = width;
         self.data.iter_mut().foreach(|x| x.resize(width, block::Type::None.to_usize()));
         self
     }
 
-    fn height(mut self, height: usize) -> Field {
+    fn set_height(mut self, height: usize) -> Field {
         assert!(height > self.hidden);
         let width = self.width;
         self.height = height;
@@ -83,12 +100,12 @@ impl FieldBuilder for Field {
         self
     }
 
-    fn hidden(mut self, hidden: usize) -> Field {
+    fn set_hidden(mut self, hidden: usize) -> Field {
         self.hidden = hidden;
         self
     }
 
-    fn spawn(mut self, spawn: (usize, usize)) -> Field {
+    fn set_spawn(mut self, spawn: (usize, usize)) -> Field {
         self.spawn = spawn;
         self
     }
@@ -163,8 +180,7 @@ impl Field {
     /// ## Examples
     /// ```
     /// use tetrs::field::{Field};
-    /// use tetrs::block::{Block, Type};
-    /// use tetrs::Direction;
+    /// use tetrs::block::{Block, Direction, Type};
     ///
     /// let mut field = Field::new();
     /// let mut block = Block::new(Type::I);
@@ -193,9 +209,9 @@ impl Field {
     /// use tetrs::field::Field;
     ///
     /// let field = Field::new();
-    /// let value = field.at((5, 10));
+    /// let value = field.get((5, 10));
     /// ```
-    pub fn at(&self, (x, y): (usize, usize)) -> usize {
+    pub fn get(&self, (x, y): (usize, usize)) -> usize {
         assert!(x < self.width && y < self.height);
         self.data[x][y]
     }
@@ -204,7 +220,7 @@ impl Field {
     ///
     /// This is a convenience function which queries `at` and checks if the
     /// result is of empty `Type`.
-    pub fn set(&self, (x, y): (usize, usize)) -> bool {
+    pub fn occupies(&self, (x, y): (usize, usize)) -> bool {
         assert!(x < self.width && y < self.height);
         self.data[x][y] != block::Type::None.to_usize()
     }

@@ -1,8 +1,7 @@
 //! Implements the Gameboy randomizer
 
 use std::collections::VecDeque;
-use rand;
-use rand::Rng;
+use rand::{self, Rng};
 use block::Type;
 use randomizer::Randomizer;
 

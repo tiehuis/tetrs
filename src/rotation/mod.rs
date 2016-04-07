@@ -7,8 +7,7 @@
 //! All `RotationsSystem`'s currently use an empty struct which can be passed
 //! around. This allows generic usage of anything which impl's `RotationSystem`.
 
-use block::Type;
-use Rotation;
+use block::{Type, Rotation};
 
 /// The `RotationSystem` trait is implmented by all rotation systems.
 ///
@@ -27,9 +26,8 @@ pub trait RotationSystem {
     ///
     /// ## Examples
     /// ```
-    /// use tetrs::block::Type;
-    /// use tetrs::{rotation, Rotation};
-    /// use tetrs::rotation::RotationSystem;
+    /// use tetrs::block::{Rotation, Type};
+    /// use tetrs::rotation::{self, RotationSystem};
     ///
     /// let rs = rotation::SRS{};
     ///
@@ -64,9 +62,8 @@ pub trait RotationSystem {
     ///
     /// ## Examples
     /// ```
-    /// use tetrs::block::Type;
-    /// use tetrs::{rotation, Rotation};
-    /// use tetrs::rotation::RotationSystem;
+    /// use tetrs::block::{Rotation, Type};
+    /// use tetrs::rotation::{self, RotationSystem};
     ///
     /// let rs = rotation::SRS{};
     ///
@@ -102,8 +99,8 @@ pub trait RotationSystem {
     /// non-empty piece in a block. This row by row from `y = 0` onwards.
     ///
     /// ```
-    /// use tetrs::block::Type;
-    /// use tetrs::{rotation, Rotation};
+    /// use tetrs::block::{Rotation, Type};
+    /// use tetrs::rotation;
     /// use tetrs::rotation::RotationSystem;
     ///
     /// // The piece marked '@' is the first encountered piece.
@@ -138,27 +135,26 @@ pub trait RotationSystem {
 ///
 /// This could work as a derive attribute probably, but that is extra work.
 macro_rules! rs_gen {
-    ($rsid:ident) => {
+    ($id:ident) => {
         use collections::enum_set::CLike;
-        use Rotation;
-        use block::Type;
+        use block::{Type, Rotation};
         use rotation::RotationSystem;
 
         #[derive(Clone, Debug, Default, Hash)]
         #[allow(missing_docs)]
-        pub struct $rsid;
+        pub struct $id;
 
         // Each module gets its own static instance it can use
-        static __INSTANCE: $rsid = $rsid { };
+        static __INSTANCE: $id = $id { };
 
-        impl $rsid {
+        impl $id {
             /// Return a new instance
-            pub fn new() -> &'static $rsid {
+            pub fn new() -> &'static $id {
                 &__INSTANCE
             }
         }
 
-        impl RotationSystem for $rsid {
+        impl RotationSystem for $id {
             fn data(&self, ty: Type, rotation: Rotation) -> &'static [(usize, usize)] {
                 match ty {
                     Type::I => &I[rotation.to_usize()],
@@ -193,8 +189,7 @@ pub mod dtet;
 mod tests {
     use super::*;
     use rotation;
-    use block::Type;
-    use Rotation;
+    use block::{Rotation, Type};
 
     #[test]
     fn test_offset_to_first1() {

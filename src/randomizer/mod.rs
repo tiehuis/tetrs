@@ -33,8 +33,8 @@ pub trait Randomizer {
 // the given randomizer. These are generic across all randomizers but with the
 // lack of inheritance we resort to this method of generation.
 macro_rules! gen_rand {
-    ($rdid:ident) => {
-        impl Randomizer for $rdid {
+    ($id:ident) => {
+        impl Randomizer for $id {
             fn preview(&mut self, amount: usize) -> Vec<Type> {
                 assert!(amount < self.lookahead.capacity());
 

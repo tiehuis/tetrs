@@ -1,14 +1,12 @@
 //! Implements the wallkicks for the SRS rotation system.
 
-use Rotation;
-use block::Block;
-use block;
-use wallkick::WallkickTest;
+use block::{self, Rotation, Block};
+use wallkick::Wallkick;
 use collections::enum_set::CLike;
 
 gen_wallkick!(SRS);
 
-impl WallkickTest for SRS {
+impl Wallkick for SRS {
     /// Wallkick tests for the specified id and rotation.
     ///
     /// Wallkick test values are expected to lie in a static array currently.

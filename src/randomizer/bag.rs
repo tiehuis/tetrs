@@ -1,8 +1,7 @@
 //! Implements a 7-element bag randomizer.
 
 use std::collections::VecDeque;
-use rand;
-use rand::Rng;
+use rand::{self, Rng};
 use block::Type;
 use randomizer::Randomizer;
 

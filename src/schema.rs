@@ -27,12 +27,9 @@
 //! "));
 //! ```
 
-use Rotation;
-use rotation;
-use rotation::RotationSystem;
+use rotation::{self, RotationSystem};
 use field::Field;
-use block;
-use block::{Block, BlockBuilder};
+use block::{self, Rotation, Block, BlockBuilder};
 
 use std::{fmt, iter};
 use std::cmp::PartialEq;
@@ -69,7 +66,7 @@ impl Schema {
 
         for x in 0..field.width {
             for y in 0..field.height {
-                grid[y][x] = match (field.set((x, y)), block.at((x, y))) {
+                grid[y][x] = match (field.occupies((x, y)), block.occupies((x, y))) {
                     (true, true) => {
                         failure = true;
                         'X'
@@ -231,11 +228,15 @@ impl Schema {
     // rotation specification in the input string, but this adds complexity
     // and more rules which are not needed currently.
     fn match_block(&mut self, field: &Field, (x, y): (usize, usize)) -> Block {
-        // For the moment, always assume SRS rotation
+        // For the moment, always assume SRS rotation. We require an option to
+        // specify which `RotationSystem` to use with the input schema.
+        //
+        // We also require setting the correct to state, which should also require
+        // a `RotationSystem` argument.
         let rs = rotation::SRS{};
 
         for (&ty, &ro) in iproduct!(block::Type::variants().iter(), Rotation::variants().iter()) {
-            let data = Block::data(ty, ro);
+            let data = rs.data(ty, ro);
             let (xo, yo) = rs.minp(ty, ro);
 
             if x < xo || y < yo {
@@ -252,10 +253,10 @@ impl Schema {
                 // (xo, yo) are not normalized based on the field so the block
                 // needs to be adjusted.
                 let block = Block::new(ty)
-                                  .rotation(ro)
-                                  .position((ox, field.height - oy - 1));
+                                  .set_rotation(ro)
+                                  .set_position((ox, field.height - oy - 1));
 
-                assert!(!block.collision(&field));
+                assert!(!block.collides(&field));
                 return block;
             }
         }
@@ -312,7 +313,7 @@ impl PartialEq for Schema {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use Direction;
+    use block::Direction;
 
     #[test]
     fn test_from_string1() {
