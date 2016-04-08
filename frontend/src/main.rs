@@ -10,6 +10,7 @@ use tetrs::engine::Engine;
 use tetrs::controller::Action;
 use tetrs::block::Rotation;
 use tetrs::randomizer::Randomizer;
+use tetrs::options::Options;
 use std::thread;
 use std::time::Duration;
 
@@ -60,7 +61,12 @@ fn main() {
 
     let mut events = ctx.event_pump().unwrap();
 
-    let mut engine = Engine::new();
+    let options = Options {
+        preview_count: 3,
+        ..Default::default()
+    };
+
+    let mut engine = Engine::new(options);
 
     while engine.running {
         gather_input(&mut engine, &mut events);
@@ -79,7 +85,14 @@ fn main() {
                     (true, true,  _)      => Color::RGB(255, 0, 0),
                     (true, false, _)      => Color::RGB(150, 208, 246),
                     (false, true, _)      => Color::RGB(150, 108, 246),
-                    (false, false, true)  => Color::RGB(120, 108, 146),
+                    (false, false, true)  => {
+                        if engine.options.ghost_enabled {
+                            Color::RGB(120, 108, 146)
+                        }
+                        else {
+                            Color::RGB(0, 0, 0)
+                        }
+                    },
                     (false, false, false) => Color::RGB(0, 0, 0)
                 });
 
@@ -94,7 +107,7 @@ fn main() {
         renderer.set_draw_color(Color::RGB(150, 108, 246));
 
         // Draw preview pieces
-        for id in engine.randomizer.preview(7) {
+        for id in engine.randomizer.preview(engine.options.preview_count) {
             for &(x, y) in engine.block.rs.data(id, Rotation::R0) {
                 let _ = renderer.fill_rect(Rect::new((xoffset + 15 * x as u32) as i32, (yoffset + 15 * y as u32) as i32, 15, 15));
             }

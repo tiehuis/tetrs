@@ -10,6 +10,7 @@ use randomizer::{Randomizer, BagRandomizer};
 use rotation::{self, RotationSystem};
 use wallkick::{self, Wallkick};
 use utility::BlockHelper;
+use options::Options;
 
 /// Which part of the game are we in. This is used to keep track of multi-frame
 /// events that require some internal state past state to be kept.
@@ -46,8 +47,8 @@ pub struct Engine {
     /// The current hold block
     pub hold: Option<Block>,
 
-    /// Das value
-    pub das: usize,
+    /// Immutable game options
+    pub options: Options,
 
     /// Is the game running
     pub running: bool,
@@ -79,15 +80,16 @@ impl Default for Engine {
             hold: None,
             ticks: 0,
             mspt: 16,
-            das: 150,
             running: true,
+            options: Options::new(),
             status: Status::Ready
         };
 
         // Cannot initialize in struct due to lifetime problems
+        // TODO: Use engine rotation on block initialization
         let block = Block::new(engine.randomizer.next())
                           .set_field(&engine.field)
-                          .set_rotation_system(rotation::DTET::new());
+                          .set_rotation_system(rotation::SRS::new());
         engine.block = block;
         engine
     }
@@ -103,8 +105,8 @@ impl Engine {
     ///
     /// An engine is constructed in an initialized state and is ready to be
     /// used right from the beginning.
-    pub fn new() -> Engine {
-        Engine { ..Default::default() }
+    pub fn new(options: Options) -> Engine {
+        Engine { options: options, ..Default::default() }
     }
 
     /// Adjusts a constant value to ticks for the current gamestate.
@@ -193,24 +195,24 @@ impl Engine {
                 Direction::Right
             };
 
-            if self.controller.time(Action::MoveLeft) > self.ms_to_ticks(self.das as u64) as usize ||
-                self.controller.time(Action::MoveRight) > self.ms_to_ticks(self.das as u64) as usize {
+            if self.controller.time(Action::MoveLeft) > self.ms_to_ticks(self.options.das as u64) as usize ||
+                self.controller.time(Action::MoveRight) > self.ms_to_ticks(self.options.das as u64) as usize {
                 self.block.shift(&self.field, action);
             }
         }
 
         if self.controller.time(Action::MoveLeft) == 1 ||
-            self.controller.time(Action::MoveLeft) > self.ms_to_ticks(self.das as u64) as usize {
+            self.controller.time(Action::MoveLeft) > self.ms_to_ticks(self.options.das as u64) as usize {
             self.block.shift(&self.field, Direction::Left);
         }
 
         if self.controller.time(Action::MoveRight) == 1 ||
-            self.controller.time(Action::MoveRight) > self.ms_to_ticks(self.das as u64) as usize {
+            self.controller.time(Action::MoveRight) > self.ms_to_ticks(self.options.das as u64) as usize {
             self.block.shift(&self.field, Direction::Right);
         }
 
         if self.controller.time(Action::MoveDown) == 1 ||
-            self.controller.time(Action::MoveDown) > self.ms_to_ticks(self.das as u64) as usize {
+            self.controller.time(Action::MoveDown) > self.ms_to_ticks(self.options.das as u64) as usize {
             self.block.shift(&self.field, Direction::Down);
         }
 
@@ -245,7 +247,7 @@ impl Engine {
             self.field.freeze(self.block.clone());
             self.block = Block::new(self.randomizer.next())
                                .set_field(&self.field)
-                               .set_rotation_system(rotation::DTET::new());
+                               .set_rotation_system(rotation::SRS::new());
         }
 
         // Clear all lines

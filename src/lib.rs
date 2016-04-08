@@ -41,5 +41,5 @@ pub mod randomizer;
 pub mod rotation;
 pub mod engine;
 pub mod utility;
-
+pub mod options;
 pub mod schema;
