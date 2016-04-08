@@ -269,9 +269,10 @@ impl Engine {
 mod tests {
 
     use super::*;
+    use options::Options;
 
     #[test]
     fn test_engine() {
-        let _ = Engine::new();
+        let _ = Engine::new(Options::new());
     }
 }

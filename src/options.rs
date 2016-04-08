@@ -38,7 +38,7 @@ impl Options {
     /// If more specific options are required, make use of the `Default`
     /// trait impl.
     ///
-    /// ```
+    /// ```ignore
     /// use options::Options;
     ///
     /// // Standard initialization
