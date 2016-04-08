@@ -1,0 +1,8 @@
+[package]
+name = "frontend"
+version = "0.1.0"
+authors = ["tiehuis <marctiehuis@gmail.com>"]
+
+[dependencies]
+tetrs = { path = "../" }
+sdl2 = "0.17"
