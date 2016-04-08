@@ -11,6 +11,9 @@ use rotation::{self, RotationSystem};
 use wallkick::{self, Wallkick};
 use utility::BlockHelper;
 use options::Options;
+use statistics::Statistics;
+
+use collections::enum_set::CLike;
 
 /// Which part of the game are we in. This is used to keep track of multi-frame
 /// events that require some internal state past state to be kept.
@@ -50,6 +53,9 @@ pub struct Engine {
     /// Immutable game options
     pub options: Options,
 
+    /// Statistics of the current game
+    pub statistics: Statistics,
+
     /// Is the game running
     pub running: bool,
 
@@ -57,7 +63,7 @@ pub struct Engine {
     pub mspt: u64,
 
     /// How many ticks have elapsed this game
-    pub ticks: u64,
+    pub tick_count: u64,
 
     /// The current game status. There are 5 main states that are utilized:
     /// - Ready     -> Triggers for the first 50 frames
@@ -78,10 +84,11 @@ impl Default for Engine {
             field: Field::new().set_hidden(2),
             block: Block::new(block::Type::None),
             hold: None,
-            ticks: 0,
-            mspt: 16,
+            tick_count: 0,
+            mspt: 10,
             running: true,
             options: Options::new(),
+            statistics: Statistics::new(),
             status: Status::Ready
         };
 
@@ -111,43 +118,19 @@ impl Engine {
 
     /// Adjusts a constant value to ticks for the current gamestate.
     ///
-    /// i.e. We know that the Ready state must last for 50 frames (at 60fps),
-    /// but since we can vary the `mspt`, this requires a conversion function.
+    /// This takes a self argument, and the value to convert. If macro is
+    /// seperated by a ';' instead of a ',', the second argument is treated
+    /// as an identifier to a member function of `self`. This is cuts down
+    /// on repeated self references in a single call.
     ///
     /// ```ignore
-    /// let ticks_to_wait = ms_to_ticks(834);
+    /// let ticks_to_wait = self.ticks(self, 789);
+    ///
+    /// // Access the options.das field and convert to ticks
+    /// let ticks_to_wait = self.ticks(self; options.das);
     /// ```
-    #[inline]
-    fn ms_to_ticks(&self, ms: u64) -> u64 {
-        ms / self.mspt
-    }
-
-    /// Return the current left-right move direction. Since both actions can
-    /// occur simultaneously there are a number of different behaviours here
-    /// that could be set.
-    fn lr_move_direction(&self) -> Option<Direction> {
-        let sc = &self.controller;
-        match (sc.active(Action::MoveLeft), sc.active(Action::MoveRight)) {
-            (true, true) => {
-                if sc.time(Action::MoveLeft) > sc.time(Action::MoveRight) {
-                    Some(Direction::Right)
-                } else {
-                    Some(Direction::Left)
-                }
-            },
-            (true, false) => Some(Direction::Left),
-            (false, true) => Some(Direction::Right),
-            (false, false) => None
-        }
-    }
-
-    /// Convert a left-right direction to an action
-    fn d2a(direction: Direction) -> Option<Action> {
-        match direction {
-            Direction::Left => Some(Action::MoveLeft),
-            Direction::Right => Some(Action::MoveRight),
-            _ => None
-        }
+    fn ticks(&self, val: u64) -> u64 {
+        val / self.mspt
     }
 
     /// The main update phase of the engine.
@@ -168,7 +151,7 @@ impl Engine {
             x => panic!("Cannot handle status {:?}", x)
         }
 
-        self.ticks += 1;
+        self.tick_count += 1;
     }
 
     /// This is the initial `countdown` and is called for the first
@@ -176,17 +159,26 @@ impl Engine {
     fn update_ready(&mut self) {
         // Allow DAS charging and initial hold
 
-        match self.ticks {
-            x if x == self.ms_to_ticks(0)    => self.status = Status::Move,
-            x if x == self.ms_to_ticks(833)  => (),
-            x if x == self.ms_to_ticks(1667) => self.status = Status::Move,
+        match self.tick_count {
+            x if x == self.ticks(0)    => self.status = Status::Move,
+            x if x == self.ticks(833)  => (),
+            x if x == self.ticks(1667) => self.status = Status::Move,
             _ => ()
         }
+    }
+
+    fn is_pressed(&self, action: Action, rate: u64) -> bool {
+        let sct = self.controller.time[action.to_usize()] as u64;
+        let das = self.ticks(self.options.das);
+
+        // First press, or over das and arr rate has fired
+        sct == 1 || (sct >= das && (sct - das) % self.ticks(rate) == 0)
     }
 
     /// This performs the bulk of the gameplay logic.
     fn update_move(&mut self) {
         // Calculate movement then gravity or gravity then movement?
+
 
         if self.controller.active(Action::MoveLeft) && self.controller.active(Action::MoveRight) {
             let action = if self.controller.time(Action::MoveLeft) < self.controller.time(Action::MoveRight) {
@@ -195,25 +187,26 @@ impl Engine {
                 Direction::Right
             };
 
-            if self.controller.time(Action::MoveLeft) > self.ms_to_ticks(self.options.das as u64) as usize ||
-                self.controller.time(Action::MoveRight) > self.ms_to_ticks(self.options.das as u64) as usize {
+            if self.controller.time(Action::MoveLeft) > self.ticks(self.options.das) as usize ||
+                self.controller.time(Action::MoveRight) > self.ticks(self.options.das) as usize {
                 self.block.shift(&self.field, action);
             }
         }
 
-        if self.controller.time(Action::MoveLeft) == 1 ||
-            self.controller.time(Action::MoveLeft) > self.ms_to_ticks(self.options.das as u64) as usize {
+        if self.is_pressed(Action::MoveLeft, self.options.arr) {
             self.block.shift(&self.field, Direction::Left);
         }
 
-        if self.controller.time(Action::MoveRight) == 1 ||
-            self.controller.time(Action::MoveRight) > self.ms_to_ticks(self.options.das as u64) as usize {
+        if self.is_pressed(Action::MoveRight, self.options.arr) {
             self.block.shift(&self.field, Direction::Right);
         }
 
-        if self.controller.time(Action::MoveDown) == 1 ||
-            self.controller.time(Action::MoveDown) > self.ms_to_ticks(self.options.das as u64) as usize {
-            self.block.shift(&self.field, Direction::Down);
+        // Drop has no DAS and is immediate
+        if self.controller.active(Action::MoveDown) {
+            let down = self.controller.time(Action::MoveDown);
+            if (down - 1) % self.ticks(self.options.soft_drop_speed) as usize == 0 {
+                self.block.shift(&self.field, Direction::Down);
+            }
         }
 
         // Handle rotations
@@ -250,8 +243,17 @@ impl Engine {
                                .set_rotation_system(rotation::SRS::new());
         }
 
-        // Clear all lines
-        self.field.clear_lines();
+        // Clear all line
+        let cleared = self.field.clear_lines();
+        self.statistics.lines += cleared as u32;
+
+        match cleared {
+            4 => self.statistics.fours += 1,
+            3 => self.statistics.triples += 1,
+            2 => self.statistics.doubles += 1,
+            1 => self.statistics.singles += 1,
+            _ => ()
+        };
 
         if self.controller.time(Action::Quit) == 1 {
             self.running = false;

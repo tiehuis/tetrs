@@ -37,10 +37,10 @@ impl CLike for Action {
 #[derive(Default)]
 pub struct Controller {
     /// The length each action has occured for in ticks.
-    time: [usize; 8],
+    pub time: [usize; 8],
 
     /// Which actions are currently active.
-    active: [bool; 8]
+    pub active: [bool; 8]
 }
 
 impl Controller {

@@ -15,19 +15,47 @@ pub struct Options {
     /// DAS setting (in ms)
     pub das: u64,
 
-    /// How many preview pieces are displayed
-    pub preview_count: usize,
+    /// ARE time (in ms)
+    pub are: u64,
 
-    /// Should ghost be displayed
-    pub ghost_enabled: bool
+    /// Gravity (in ms). How many ms must pass for block to fall
+    pub gravity: u64,
+
+    /// Auto-repeat-rate (in ms)
+    pub arr: u64,
+
+    /// Is hold enabled
+    pub has_hold: bool,
+
+    /// How many times can we hold
+    pub hold_limit: u64,
+
+    /// Is hard drop allowed
+    pub has_hard_drop: bool,
+
+    /// Has soft drop
+    pub has_soft_drop: bool,
+
+    /// The speed soft drop works
+    pub soft_drop_speed: u64,
+
+    /// Maximum number of preview pieces
+    pub preview_count: u64
 }
 
 impl Default for Options {
     fn default() -> Options {
         Options {
-            das: 150,
-            preview_count: 4,
-            ghost_enabled: true
+            das: 180,
+            are: 0,
+            gravity: 100,
+            arr: 16,
+            has_hold: true,
+            hold_limit: 1,
+            has_hard_drop: true,
+            has_soft_drop: true,
+            soft_drop_speed: 16, // 1G
+            preview_count: 3
         }
     }
 }
