@@ -257,10 +257,10 @@
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Default</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Controller</span> {
     <span class='doccomment'>/// The length each action has occured for in ticks.</span>
-    <span class='ident'>time</span>: [<span class='ident'>usize</span>; <span class='number'>8</span>],
+    <span class='kw'>pub</span> <span class='ident'>time</span>: [<span class='ident'>usize</span>; <span class='number'>8</span>],
 
     <span class='doccomment'>/// Which actions are currently active.</span>
-    <span class='ident'>active</span>: [<span class='ident'>bool</span>; <span class='number'>8</span>]
+    <span class='kw'>pub</span> <span class='ident'>active</span>: [<span class='ident'>bool</span>; <span class='number'>8</span>]
 }
 
 <span class='kw'>impl</span> <span class='ident'>Controller</span> {

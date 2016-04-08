@@ -46,7 +46,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-910' class='srclink' href='../../src/tetrs/src/engine.rs.html#28-69' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-912' class='srclink' href='../../src/tetrs/src/engine.rs.html#31-75' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Engine {
     pub controller: <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a>,
     pub randomizer: <a class='struct' href='../../tetrs/randomizer/struct.BagRandomizer.html' title='tetrs::randomizer::BagRandomizer'>BagRandomizer</a>,
@@ -56,9 +56,10 @@
     pub block: <a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a>,
     pub hold: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a>&gt;,
     pub options: <a class='struct' href='../../tetrs/options/struct.Options.html' title='tetrs::options::Options'>Options</a>,
+    pub statistics: <a class='struct' href='../../tetrs/statistics/struct.Statistics.html' title='tetrs::statistics::Statistics'>Statistics</a>,
     pub running: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
     pub mspt: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
-    pub ticks: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
+    pub tick_count: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
     // some fields omitted
 }</pre><div class='docblock'><p>This engine allows for handling of DAS-like features and other things
 which are otherwise transparent to sub-components which are only
@@ -81,11 +82,13 @@ managed on a per-tick basis (have no concept of state over time).</p>
 </div></td></tr><tr class='stab '>
                              <td id='structfield.options'><code>options</code></td><td><div class='docblock'><p>Immutable game options</p>
 </div></td></tr><tr class='stab '>
+                             <td id='structfield.statistics'><code>statistics</code></td><td><div class='docblock'><p>Statistics of the current game</p>
+</div></td></tr><tr class='stab '>
                              <td id='structfield.running'><code>running</code></td><td><div class='docblock'><p>Is the game running</p>
 </div></td></tr><tr class='stab '>
                              <td id='structfield.mspt'><code>mspt</code></td><td><div class='docblock'><p>How many milliseconds occur per game tick.</p>
 </div></td></tr><tr class='stab '>
-                             <td id='structfield.ticks'><code>ticks</code></td><td><div class='docblock'><p>How many ticks have elapsed this game</p>
+                             <td id='structfield.tick_count'><code>tick_count</code></td><td><div class='docblock'><p>How many ticks have elapsed this game</p>
 </div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../tetrs/engine/struct.Engine.html' title='tetrs::engine::Engine'>Engine</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(options: <a class='struct' href='../../tetrs/options/struct.Options.html' title='tetrs::options::Options'>Options</a>) -&gt; <a class='struct' href='../../tetrs/engine/struct.Engine.html' title='tetrs::engine::Engine'>Engine</a></code></h4>
 <div class='docblock'><p>Construct a new engine object and return it.</p>
 

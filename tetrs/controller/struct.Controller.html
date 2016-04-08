@@ -48,13 +48,19 @@
                    </a>
                </span><a id='src-377' class='srclink' href='../../src/tetrs/src/controller.rs.html#38-44' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Controller {
-    // some fields omitted
+    pub time: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>[</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>; 8]</a>,
+    pub active: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>[</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>; 8]</a>,
 }</pre><div class='docblock'><p>A controller stores the internal state as a series of known actions.</p>
 
 <p>The active status of each action is stored, along with how long each action
 has been active for. At its simplest, this/ controller parallels the
 keystate of a keyboard.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a></code></h4>
+</div><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                             <td id='structfield.time'><code>time</code></td><td><div class='docblock'><p>The length each action has occured for in ticks.</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.active'><code>active</code></td><td><div class='docblock'><p>Which actions are currently active.</p>
+</div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a></code></h4>
 <div class='docblock'><p>Return a new controller instance.</p>
 
 <p>The controller specified will start with all actions in the inactive

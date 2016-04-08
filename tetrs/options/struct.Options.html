@@ -46,11 +46,18 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-979' class='srclink' href='../../src/tetrs/src/options.rs.html#14-23' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-985' class='srclink' href='../../src/tetrs/src/options.rs.html#14-44' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Options {
     pub das: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
-    pub preview_count: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>,
-    pub ghost_enabled: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
+    pub are: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
+    pub gravity: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
+    pub arr: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
+    pub has_hold: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
+    pub hold_limit: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
+    pub has_hard_drop: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
+    pub has_soft_drop: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
+    pub soft_drop_speed: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
+    pub preview_count: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
 }</pre><div class='docblock'><p>Stores a number of internal options that may be useful during a games
 execution.</p>
 
@@ -63,9 +70,23 @@ to determine exactly what is required.</p>
 <table><tr class='stab '>
                              <td id='structfield.das'><code>das</code></td><td><div class='docblock'><p>DAS setting (in ms)</p>
 </div></td></tr><tr class='stab '>
-                             <td id='structfield.preview_count'><code>preview_count</code></td><td><div class='docblock'><p>How many preview pieces are displayed</p>
+                             <td id='structfield.are'><code>are</code></td><td><div class='docblock'><p>ARE time (in ms)</p>
 </div></td></tr><tr class='stab '>
-                             <td id='structfield.ghost_enabled'><code>ghost_enabled</code></td><td><div class='docblock'><p>Should ghost be displayed</p>
+                             <td id='structfield.gravity'><code>gravity</code></td><td><div class='docblock'><p>Gravity (in ms). How many ms must pass for block to fall</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.arr'><code>arr</code></td><td><div class='docblock'><p>Auto-repeat-rate (in ms)</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.has_hold'><code>has_hold</code></td><td><div class='docblock'><p>Is hold enabled</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.hold_limit'><code>hold_limit</code></td><td><div class='docblock'><p>How many times can we hold</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.has_hard_drop'><code>has_hard_drop</code></td><td><div class='docblock'><p>Is hard drop allowed</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.has_soft_drop'><code>has_soft_drop</code></td><td><div class='docblock'><p>Has soft drop</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.soft_drop_speed'><code>soft_drop_speed</code></td><td><div class='docblock'><p>The speed soft drop works</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.preview_count'><code>preview_count</code></td><td><div class='docblock'><p>Maximum number of preview pieces</p>
 </div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../tetrs/options/struct.Options.html' title='tetrs::options::Options'>Options</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../tetrs/options/struct.Options.html' title='tetrs::options::Options'>Options</a></code></h4>
 <div class='docblock'><p>Construct a new <code>Options</code> value.</p>
 
