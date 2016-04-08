@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Options","Stores a number of internal options that may be useful during a games execution."]]});

@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `utility` mod in crate `tetrs`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, utility">
+    <meta name="description" content="API documentation for the Rust `options` mod in crate `tetrs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, options">
 
-    <title>tetrs::utility - Rust</title>
+    <title>tetrs::options - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
@@ -27,7 +27,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>tetrs</a></p><script>window.sidebarCurrent = {name: 'utility', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+        <p class='location'><a href='../index.html'>tetrs</a></p><script>window.sidebarCurrent = {name: 'options', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -42,20 +42,23 @@
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>tetrs</a>::<wbr><a class='mod' href=''>utility</a></span><span class='out-of-band'><span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>tetrs</a>::<wbr><a class='mod' href=''>options</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-956' class='srclink' href='../../src/tetrs/src/utility.rs.html#1-44' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p>Contains a number of helper methods which are composed of a number of
-structures.</p>
-</div><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+               </span><a id='src-977' class='srclink' href='../../src/tetrs/src/options.rs.html#1-56' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Defines immutable options which are used by an engine.</p>
+
+<p>Something is an option if it is immutable. Also, consider the difference
+between a <code>Player</code> option, and a <code>Mode</code> option.</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='trait' href='trait.BlockHelper.html'
-                                  title='tetrs::utility::BlockHelper'>BlockHelper</a></td>
+                           <td><a class='struct' href='struct.Options.html'
+                                  title='tetrs::options::Options'>Options</a></td>
                            <td class='docblock short'>
-                                <p>Implements new traits on a Block instance.</p>
+                                <p>Stores a number of internal options that may be useful during a games
+execution.</p>
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>

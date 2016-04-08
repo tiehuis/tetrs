@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `src/options.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
-    <title>lib.rs.html -- source</title>
+    <title>options.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
@@ -86,52 +86,74 @@
 <span id="43">43</span>
 <span id="44">44</span>
 <span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
 </pre><pre class='rust '>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>collections</span>, <span class='ident'>enumset</span>, <span class='ident'>plugin</span>)]</span>
+<span class='doccomment'>//! Defines immutable options which are used by an engine.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! Something is an option if it is immutable. Also, consider the difference</span>
+<span class='doccomment'>//! between a `Player` option, and a `Mode` option.</span>
 
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>plugin</span>(<span class='ident'>clippy</span>)]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>warn</span>(<span class='ident'>missing_docs</span>)]</span>
+<span class='doccomment'>/// Stores a number of internal options that may be useful during a games</span>
+<span class='doccomment'>/// execution.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// Unlike `NullpoMino` these are never tied to a name. This can be handled by</span>
+<span class='doccomment'>/// the caller if required.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// Currently `Options` do not manage the randomizer/rotation system etc. Need</span>
+<span class='doccomment'>/// to determine exactly what is required.</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Options</span> {
+    <span class='doccomment'>/// DAS setting (in ms)</span>
+    <span class='kw'>pub</span> <span class='ident'>das</span>: <span class='ident'>u64</span>,
 
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_name</span> <span class='op'>=</span> <span class='string'>&quot;tetrs&quot;</span>]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>doc</span>(<span class='ident'>html_root_url</span> <span class='op'>=</span> <span class='string'>&quot;https://tiehuis/github.io/tetrs/tetrs/&quot;</span>)]</span>
+    <span class='doccomment'>/// How many preview pieces are displayed</span>
+    <span class='kw'>pub</span> <span class='ident'>preview_count</span>: <span class='ident'>usize</span>,
 
-<span class='doccomment'>//! The tetrs library provides a number of low-level tasks related to movement</span>
-<span class='doccomment'>//! of blocks. The code aims to be correct and provide easy extension for new</span>
-<span class='doccomment'>//! input.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! ## Examples</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! ```ignore</span>
-<span class='doccomment'>//! use tetrs::{block, field, Rotation, Direction};</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! let field = field::new().width(12);</span>
-<span class='doccomment'>//! let block = block::new().on_field(&amp;field);</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! block.rotate(&amp;field, Rotation::R90);</span>
-<span class='doccomment'>//! block.shift_extend(&amp;field, Direction::Down);</span>
-<span class='doccomment'>//! ```</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! Intra-module dependencies are as reduced in scope as possible. For example,</span>
-<span class='doccomment'>//! a block itself has no knowledge of a wallkick, but provides functionality</span>
-<span class='doccomment'>//! in terms of rotations with offset to allow for easy use with wallkicks.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! A higher-level abstraction in terms of a game-engine is provided. This</span>
-<span class='doccomment'>//! provides DAS-like behaviour and such.</span>
+    <span class='doccomment'>/// Should ghost be displayed</span>
+    <span class='kw'>pub</span> <span class='ident'>ghost_enabled</span>: <span class='ident'>bool</span>
+}
 
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>collections</span>;
-<span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>itertools</span>;
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rand</span>;
+<span class='kw'>impl</span> <span class='ident'>Default</span> <span class='kw'>for</span> <span class='ident'>Options</span> {
+    <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='ident'>Options</span> {
+        <span class='ident'>Options</span> {
+            <span class='ident'>das</span>: <span class='number'>150</span>,
+            <span class='ident'>preview_count</span>: <span class='number'>4</span>,
+            <span class='ident'>ghost_enabled</span>: <span class='boolval'>true</span>
+        }
+    }
+}
 
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>field</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>block</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>controller</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>wallkick</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>randomizer</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>rotation</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>engine</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>utility</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>options</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>schema</span>;
+<span class='kw'>impl</span> <span class='ident'>Options</span> {
+    <span class='doccomment'>/// Construct a new `Options` value.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// If more specific options are required, make use of the `Default`</span>
+    <span class='doccomment'>/// trait impl.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// ```ignore</span>
+    <span class='doccomment'>/// use options::Options;</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// // Standard initialization</span>
+    <span class='doccomment'>/// let options = Options::new();</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// // Specific initialization overriding only the `das` field</span>
+    <span class='doccomment'>/// let options = Options {</span>
+    <span class='doccomment'>///     das: 110,</span>
+    <span class='doccomment'>///     ..Default::default()</span>
+    <span class='doccomment'>/// }</span>
+    <span class='doccomment'>/// ```</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Options</span> {
+        <span class='ident'>Options</span> { ..<span class='ident'>Default</span>::<span class='ident'>default</span>() }
+    }
+}
 </pre>
 </section>
     <section id='search' class="content hidden"></section>
