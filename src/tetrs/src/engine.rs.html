@@ -321,6 +321,31 @@
 <span id="278">278</span>
 <span id="279">279</span>
 <span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a high-level engine which composes all the components</span>
 <span class='doccomment'>//! into one abstract structure.</span>
@@ -337,6 +362,7 @@
 <span class='kw'>use</span> <span class='ident'>options</span>::<span class='ident'>Options</span>;
 <span class='kw'>use</span> <span class='ident'>statistics</span>::<span class='ident'>Statistics</span>;
 
+<span class='kw'>use</span> <span class='ident'>time</span>;
 <span class='kw'>use</span> <span class='ident'>collections</span>::<span class='ident'>enum_set</span>::<span class='ident'>CLike</span>;
 
 <span class='doccomment'>/// Which part of the game are we in. This is used to keep track of multi-frame</span>
@@ -389,6 +415,9 @@
     <span class='doccomment'>/// How many ticks have elapsed this game</span>
     <span class='kw'>pub</span> <span class='ident'>tick_count</span>: <span class='ident'>u64</span>,
 
+    <span class='doccomment'>/// Last update invocation time</span>
+    <span class='ident'>last_update_time</span>: <span class='ident'>u64</span>,
+
     <span class='doccomment'>/// The current game status. There are 5 main states that are utilized:</span>
     <span class='doccomment'>/// - Ready     -&gt; Triggers for the first 50 frames</span>
     <span class='doccomment'>/// - Go        -&gt; Triggers for the next 50 frames</span>
@@ -409,10 +438,11 @@
             <span class='ident'>block</span>: <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='prelude-val'>None</span>),
             <span class='ident'>hold</span>: <span class='prelude-val'>None</span>,
             <span class='ident'>tick_count</span>: <span class='number'>0</span>,
-            <span class='ident'>mspt</span>: <span class='number'>10</span>,
+            <span class='ident'>mspt</span>: <span class='number'>16</span>,
             <span class='ident'>running</span>: <span class='boolval'>true</span>,
             <span class='ident'>options</span>: <span class='ident'>Options</span>::<span class='ident'>new</span>(),
             <span class='ident'>statistics</span>: <span class='ident'>Statistics</span>::<span class='ident'>new</span>(),
+            <span class='ident'>last_update_time</span>: <span class='number'>0</span>,
             <span class='ident'>status</span>: <span class='ident'>Status</span>::<span class='ident'>Ready</span>
         };
 
@@ -581,6 +611,26 @@
 
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>Quit</span>) <span class='op'>==</span> <span class='number'>1</span> {
             <span class='self'>self</span>.<span class='ident'>running</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+        }
+
+        <span class='comment'>// Determine if we are lagging or being called too early</span>
+        <span class='comment'>// If outside of 5% error, warn. Note: should warn only once, or</span>
+        <span class='comment'>// limited.</span>
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>last_update_time</span> <span class='op'>==</span> <span class='number'>0</span> {
+            <span class='self'>self</span>.<span class='ident'>last_update_time</span> <span class='op'>=</span> <span class='ident'>time</span>::<span class='ident'>precise_time_ns</span>();
+        }
+        <span class='kw'>else</span> {
+            <span class='kw'>let</span> <span class='ident'>now</span> <span class='op'>=</span> <span class='ident'>time</span>::<span class='ident'>precise_time_ns</span>();
+            <span class='kw'>let</span> <span class='ident'>rate</span> <span class='op'>=</span> (<span class='ident'>now</span> <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>last_update_time</span>) <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> (<span class='self'>self</span>.<span class='ident'>mspt</span> <span class='op'>*</span> <span class='number'>1_000_000</span>) <span class='kw'>as</span> <span class='ident'>f64</span>;
+
+            <span class='kw'>if</span> <span class='ident'>rate</span> <span class='op'>&gt;</span> <span class='number'>1.05</span> {
+                <span class='macro'>warn</span><span class='macro'>!</span>(<span class='string'>&quot;Update lagging! {}% of expected update time&quot;</span>, <span class='ident'>rate</span>);
+            }
+            <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>rate</span> <span class='op'>&lt;</span> <span class='number'>0.95</span> {
+                <span class='macro'>warn</span><span class='macro'>!</span>(<span class='string'>&quot;Update called too quick! {}% of expected update time&quot;</span>, <span class='ident'>rate</span>);
+            }
+
+            <span class='self'>self</span>.<span class='ident'>last_update_time</span> <span class='op'>=</span> <span class='ident'>now</span>;
         }
     }
 
