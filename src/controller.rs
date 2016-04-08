@@ -103,6 +103,26 @@ impl Controller {
         self.active[action.to_usize()] = false;
     }
 
+    /// Deactivate all actions.
+    ///
+    /// This is useful when calculating actions based on the state of
+    /// an object, rather than explicitly via events.
+    ///
+    /// This does not reset the internal time of each action to 0.
+    ///
+    /// ## Examples
+    /// ```
+    /// use tetrs::controller::{Controller, Action};
+    ///
+    /// let mut controller = Controller::new();
+    /// controller.deactivate_all();
+    /// ```
+    pub fn deactivate_all(&mut self) {
+        for i in 0..self.active.len() {
+            self.active[i] = false;
+        }
+    }
+
     /// Update all active actions and increment their timers.
     ///
     /// ## Examples
