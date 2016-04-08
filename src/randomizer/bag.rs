@@ -56,11 +56,41 @@ impl BagRandomizer {
     /// Generate the next block in the sequence
     fn next_block(&mut self) -> Type {
         let id = self.data[self.head];
-        if self.head + 1 == self.data.len() {
+
+        self.head += 1;
+        if self.head == self.data.len() {
             self.rng.shuffle(&mut self.data[..]);
             self.head = 0;
         }
 
         id
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use randomizer::Randomizer;
+
+    macro_rules! seq_test {
+        ($r:ident) => {
+            {
+                let mut seen = Vec::new();
+                for _ in 0..7 {
+                    let piece = $r.next();
+                    assert!(!seen.contains(&piece));
+                    seen.push(piece);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn test_sequence() {
+        let mut randomizer = BagRandomizer::new(7);
+
+        seq_test!(randomizer);
+        seq_test!(randomizer);
+        seq_test!(randomizer);
     }
 }

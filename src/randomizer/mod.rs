@@ -36,7 +36,7 @@ macro_rules! gen_rand {
     ($id:ident) => {
         impl Randomizer for $id {
             fn preview(&mut self, amount: usize) -> Vec<Type> {
-                assert!(amount < self.lookahead.capacity());
+                assert!(amount <= self.lookahead.capacity());
 
                 if self.lookahead.len() < amount {
                     let randvalue = self.next_block();
@@ -51,6 +51,7 @@ macro_rules! gen_rand {
                     self.next_block()
                 }
                 else {
+                    // Always succeeds
                     self.lookahead.pop_front().unwrap()
                 }
             }
