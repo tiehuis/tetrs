@@ -53,10 +53,10 @@ pub struct Engine {
     pub running: bool,
 
     /// How many milliseconds occur per game tick.
-    mspt: u64,
+    pub mspt: u64,
 
     /// How many ticks have elapsed this game
-    ticks: u64,
+    pub ticks: u64,
 
     /// The current game status. There are 5 main states that are utilized:
     /// - Ready     -> Triggers for the first 50 frames
@@ -79,7 +79,7 @@ impl Default for Engine {
             hold: None,
             ticks: 0,
             mspt: 16,
-            das: 9,
+            das: 150,
             running: true,
             status: Status::Ready
         };
@@ -193,20 +193,24 @@ impl Engine {
                 Direction::Right
             };
 
-            if self.controller.time(Action::MoveLeft) > self.das || self.controller.time(Action::MoveRight) > self.das {
+            if self.controller.time(Action::MoveLeft) > self.ms_to_ticks(self.das as u64) as usize ||
+                self.controller.time(Action::MoveRight) > self.ms_to_ticks(self.das as u64) as usize {
                 self.block.shift(&self.field, action);
             }
         }
 
-        if self.controller.time(Action::MoveLeft) == 1 || self.controller.time(Action::MoveLeft) > self.das {
+        if self.controller.time(Action::MoveLeft) == 1 ||
+            self.controller.time(Action::MoveLeft) > self.ms_to_ticks(self.das as u64) as usize {
             self.block.shift(&self.field, Direction::Left);
         }
 
-        if self.controller.time(Action::MoveRight) == 1 || self.controller.time(Action::MoveRight) > self.das {
+        if self.controller.time(Action::MoveRight) == 1 ||
+            self.controller.time(Action::MoveRight) > self.ms_to_ticks(self.das as u64) as usize {
             self.block.shift(&self.field, Direction::Right);
         }
 
-        if self.controller.time(Action::MoveDown) == 1 || self.controller.time(Action::MoveDown) > self.das {
+        if self.controller.time(Action::MoveDown) == 1 ||
+            self.controller.time(Action::MoveDown) > self.ms_to_ticks(self.das as u64) as usize {
             self.block.shift(&self.field, Direction::Down);
         }
 
