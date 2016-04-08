@@ -197,6 +197,26 @@
 <span id="154">154</span>
 <span id="155">155</span>
 <span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! An abstract controller for specifying actions.</span>
 <span class='doccomment'>//!</span>
@@ -301,6 +321,26 @@
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>deactivate</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>action</span>: <span class='ident'>Action</span>) {
         <span class='self'>self</span>.<span class='ident'>active</span>[<span class='ident'>action</span>.<span class='ident'>to_usize</span>()] <span class='op'>=</span> <span class='boolval'>false</span>;
+    }
+
+    <span class='doccomment'>/// Deactivate all actions.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// This is useful when calculating actions based on the state of</span>
+    <span class='doccomment'>/// an object, rather than explicitly via events.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// This does not reset the internal time of each action to 0.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// ## Examples</span>
+    <span class='doccomment'>/// ```</span>
+    <span class='doccomment'>/// use tetrs::controller::{Controller, Action};</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// let mut controller = Controller::new();</span>
+    <span class='doccomment'>/// controller.deactivate_all();</span>
+    <span class='doccomment'>/// ```</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>deactivate_all</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
+        <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='self'>self</span>.<span class='ident'>active</span>.<span class='ident'>len</span>() {
+            <span class='self'>self</span>.<span class='ident'>active</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='boolval'>false</span>;
+        }
     }
 
     <span class='doccomment'>/// Update all active actions and increment their timers.</span>

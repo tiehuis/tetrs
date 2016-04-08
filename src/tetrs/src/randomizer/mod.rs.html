@@ -113,6 +113,7 @@
 <span id="70">70</span>
 <span id="71">71</span>
 <span id="72">72</span>
+<span id="73">73</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a randomizer.</span>
 <span class='doccomment'>//!</span>
@@ -152,7 +153,7 @@
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>id</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> {
         <span class='kw'>impl</span> <span class='ident'>Randomizer</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>id</span> {
             <span class='kw'>fn</span> <span class='ident'>preview</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>amount</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Type</span><span class='op'>&gt;</span> {
-                <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>amount</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>capacity</span>());
+                <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>amount</span> <span class='op'>&lt;=</span> <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>capacity</span>());
 
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='ident'>amount</span> {
                     <span class='kw'>let</span> <span class='ident'>randvalue</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>next_block</span>();
@@ -167,6 +168,7 @@
                     <span class='self'>self</span>.<span class='ident'>next_block</span>()
                 }
                 <span class='kw'>else</span> {
+                    <span class='comment'>// Always succeeds</span>
                     <span class='self'>self</span>.<span class='ident'>lookahead</span>.<span class='ident'>pop_front</span>().<span class='ident'>unwrap</span>()
                 }
             }

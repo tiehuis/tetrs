@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `controller` mod in crate `tetrs`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, controller">
+    <meta name="description" content="API documentation for the Rust `Simple` struct in crate `tetrs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, Simple">
 
-    <title>tetrs::controller - Rust</title>
+    <title>tetrs::wallkick::Simple - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
@@ -27,7 +27,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>tetrs</a></p><script>window.sidebarCurrent = {name: 'controller', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+        <p class='location'><a href='../index.html'>tetrs</a>::<wbr><a href='index.html'>wallkick</a></p><script>window.sidebarCurrent = {name: 'Simple', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -41,37 +41,18 @@
         </form>
     </nav>
 
-    <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>tetrs</a>::<wbr><a class='mod' href=''>controller</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>tetrs</a>::<wbr><a href='index.html'>wallkick</a>::<wbr><a class='struct' href=''>Simple</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-338' class='srclink' href='../../src/tetrs/src/controller.rs.html#1-176' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p>An abstract controller for specifying actions.</p>
-
-<p>This controller acts like a bridge between any physical input and the
-input which the internal gamestate can understand.</p>
-
-<p>When a key is pressed, this can be translated to a call to the controllers
-<code>activate</code> function, and when the key is removed, this corresponds to a
-call to the <code>deactivate</code> function.</p>
-</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.Controller.html'
-                                  title='tetrs::controller::Controller'>Controller</a></td>
-                           <td class='docblock short'>
-                                <p>A controller stores the internal state as a series of known actions.</p>
-                           </td>
-                       </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='enum' href='enum.Action.html'
-                                  title='tetrs::controller::Action'>Action</a></td>
-                           <td class='docblock short'>
-                                <p>Actions which are understood by the controller.</p>
-                           </td>
-                       </tr></table></section>
+               </span><a id='src-457' class='srclink' href='../../src/tetrs/src/wallkick/mod.rs.html#21' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Simple {
+}</pre><div class='docblock'><p>Wallkick</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../tetrs/wallkick/struct.Simple.html' title='tetrs::wallkick::Simple'>Simple</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; &amp;'static <a class='struct' href='../../tetrs/wallkick/struct.Simple.html' title='tetrs::wallkick::Simple'>Simple</a></code></h4>
+<div class='docblock'><p>Return a new wallkick instance</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='../../tetrs/wallkick/trait.Wallkick.html' title='tetrs::wallkick::Wallkick'>Wallkick</a> for <a class='struct' href='../../tetrs/wallkick/struct.Simple.html' title='tetrs::wallkick::Simple'>Simple</a></code></h3><div class='impl-items'><h4 id='method.test' class='method'><code>fn <a href='../../tetrs/wallkick/trait.Wallkick.html#tymethod.test' class='fnname'>test</a>(&amp;self, block: &amp;<a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a>, r: <a class='enum' href='../../tetrs/block/enum.Rotation.html' title='tetrs::block::Rotation'>Rotation</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'static [</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a></code></h4>
+</div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
