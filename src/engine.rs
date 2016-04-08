@@ -13,6 +13,7 @@ use utility::BlockHelper;
 use options::Options;
 use statistics::Statistics;
 
+use time;
 use collections::enum_set::CLike;
 
 /// Which part of the game are we in. This is used to keep track of multi-frame
@@ -65,6 +66,9 @@ pub struct Engine {
     /// How many ticks have elapsed this game
     pub tick_count: u64,
 
+    /// Last update invocation time
+    last_update_time: u64,
+
     /// The current game status. There are 5 main states that are utilized:
     /// - Ready     -> Triggers for the first 50 frames
     /// - Go        -> Triggers for the next 50 frames
@@ -85,10 +89,11 @@ impl Default for Engine {
             block: Block::new(block::Type::None),
             hold: None,
             tick_count: 0,
-            mspt: 10,
+            mspt: 16,
             running: true,
             options: Options::new(),
             statistics: Statistics::new(),
+            last_update_time: 0,
             status: Status::Ready
         };
 
@@ -257,6 +262,26 @@ impl Engine {
 
         if self.controller.time(Action::Quit) == 1 {
             self.running = false;
+        }
+
+        // Determine if we are lagging or being called too early
+        // If outside of 5% error, warn. Note: should warn only once, or
+        // limited.
+        if self.last_update_time == 0 {
+            self.last_update_time = time::precise_time_ns();
+        }
+        else {
+            let now = time::precise_time_ns();
+            let rate = (now - self.last_update_time) as f64 / (self.mspt * 1_000_000) as f64;
+
+            if rate > 1.05 {
+                warn!("Update lagging! {}% of expected update time", rate);
+            }
+            else if rate < 0.95 {
+                warn!("Update called too quick! {}% of expected update time", rate);
+            }
+
+            self.last_update_time = now;
         }
     }
 

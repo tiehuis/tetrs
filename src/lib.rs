@@ -32,6 +32,8 @@
 extern crate collections;
 #[macro_use] extern crate itertools;
 extern crate rand;
+extern crate time;
+#[macro_use] extern crate log;
 
 pub mod field;
 pub mod block;

@@ -1,5 +1,6 @@
 extern crate sdl2;
 extern crate tetrs;
+extern crate env_logger;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Scancode;
@@ -45,6 +46,8 @@ fn gather_input(engine: &mut Engine, pump: &mut sdl2::EventPump) {
 }
 
 fn main() {
+
+    env_logger::init().unwrap();
 
     let ctx = sdl2::init().unwrap();
     let video_ctx = ctx.video().unwrap();

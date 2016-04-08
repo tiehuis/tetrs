@@ -5,5 +5,7 @@ authors = ["tiehuis <marctiehuis@gmail.com>"]
 
 [dependencies]
 clippy = "*"
+time = "0.1.35"
 rand = "0.3"
+log = "0.3.6"
 itertools = "0.4"
