@@ -278,6 +278,17 @@ impl BlockBuilder for Block {
     }
 }
 
+impl Default for Block {
+    fn default() -> Block {
+        Block {
+            x: 4,
+            y: 0,
+            id: Type::I,
+            r: Rotation::R0,
+            rs: rotation::SRS::new() as &RotationSystem
+        }
+    }
+}
 
 impl Block {
     /// Construct a new default `Block` and return it.
@@ -304,12 +315,7 @@ impl Block {
     /// let block = Block::new(Type::I);
     /// ```
     pub fn new(id: Type) -> Block {
-        Block { x: 4,
-                y: 0,
-                id: id,
-                r: Rotation::R0,
-                rs: rotation::SRS::new() as &RotationSystem
-        }
+        Block { id: id, ..Default::default() }
     }
 
     /// Return `true` if the block collides with the field after applying the
@@ -320,11 +326,7 @@ impl Block {
                       (self.x + dx as i32 + xo, self.y + dy as i32 + yo)
                   })
                   .any(|(x, y)| {
-                      let maxf = self.rs.max(self.id, self.r);
-                      let minf = self.rs.min(self.id, self.r);
-
-                      x - (minf.0 as i32) < 0 || x + maxf.0 as i32 > field.width as i32 ||
-                      y - (minf.1 as i32) < 0 || y + maxf.1 as i32 > field.height as i32 ||
+                      x < 0 || x >= field.width as i32 || y < 0 || y >= field.height as i32 ||
                       field.get((x as usize, y as usize)) != Type::None.to_usize()
                   })
     }
@@ -444,8 +446,8 @@ impl Block {
     /// Check if the block occupies a particular `(x, y)` absolute location.
     pub fn occupies(&self, (a, b): (usize, usize)) -> bool {
         self.rs.data(self.id, self.r).iter()
-            .map(|&(x, y)| (self.x as usize + x, self.y as usize + y))
-            .any(|(x, y)| a == x && b == y)
+            .map(|&(x, y)| (self.x + x as i32, self.y + y as i32))
+            .any(|(x, y)| a == x as usize && b == y as usize)
     }
 
 

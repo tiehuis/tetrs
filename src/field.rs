@@ -8,7 +8,6 @@
 use block::{self, Block};
 use rotation::RotationSystem;
 
-use std::iter;
 use itertools::Itertools;
 use collections::enum_set::CLike;
 
@@ -37,7 +36,7 @@ use collections::enum_set::CLike;
 /// ```
 ///
 /// This is because the `height` field includes the specified `hidden` portion.
-#[derive(Hash, Clone, Debug, Default)]
+#[derive(Hash, Clone, Debug)]
 pub struct Field {
     /// The width of the field.
     pub width: usize,
@@ -111,6 +110,18 @@ impl FieldBuilder for Field {
     }
 }
 
+impl Default for Field {
+    fn default() -> Field {
+        Field {
+            width: 10,
+            height: 25,
+            hidden: 3,
+            spawn: (4, 0),
+            data: vec![vec![block::Type::None.to_usize(); 10]; 25]
+        }
+    }
+}
+
 impl Field {
     /// Construct a new field object.
     ///
@@ -143,13 +154,7 @@ impl Field {
     /// let field = Field::new();
     /// ```
     pub fn new() -> Field {
-        Field {
-            width: 10,
-            height: 25,
-            hidden: 3,
-            spawn: (4, 0),
-            data: vec![vec![block::Type::None.to_usize(); 25]; 10]
-        }
+        Field { ..Default::default() }
     }
 
     /// Clear lines from the field and return the number cleared.
@@ -162,14 +167,17 @@ impl Field {
     /// let lines_cleared = field.clear_lines();
     /// ```
     pub fn clear_lines(&mut self) -> usize {
-        // Clear all filled lines
-        self.data.retain(|ref x| x.iter().all(|&x| x != block::Type::None.to_usize()));
+        // Keep only lines with an empty cell (non-filled)
+        self.data.retain(|ref x| x.iter().any(|&x| x == block::Type::None.to_usize()));
 
         // Calculate how many lines were cleared
         let lines = self.height - self.data.len();
 
-        // Count the lines cleared and add new empty rows to the end
-        self.data.extend(iter::repeat(vec![block::Type::None.to_usize(); self.width]).take(lines));
+        // Sure this isn't optimal, but for a small array and with only 4
+        // pushses max (unless cascading) who would notice?
+        for _ in 0..lines {
+            self.data.insert(0, vec![block::Type::None.to_usize(); self.width]);
+        }
 
         lines
     }
@@ -191,7 +199,7 @@ impl Field {
     /// ```
     pub fn freeze(&mut self, block: Block) {
         for &(x, y) in block.rs.data(block.id, block.r) {
-            self.data[block.x as usize + x][block.y as usize + y] = block.id.to_usize();
+            self.data[(block.y + y as i32) as usize][(block.x + x as i32) as usize] = block.id.to_usize();
         }
     }
 
@@ -209,7 +217,7 @@ impl Field {
     /// ```
     pub fn get(&self, (x, y): (usize, usize)) -> usize {
         assert!(x < self.width && y < self.height);
-        self.data[x][y]
+        self.data[y][x]
     }
 
     /// Return true if the value at the specified location is non-empty.
@@ -218,6 +226,6 @@ impl Field {
     /// result is of empty `Type`.
     pub fn occupies(&self, (x, y): (usize, usize)) -> bool {
         assert!(x < self.width && y < self.height);
-        self.data[x][y] != block::Type::None.to_usize()
+        self.data[y][x] != block::Type::None.to_usize()
     }
 }
