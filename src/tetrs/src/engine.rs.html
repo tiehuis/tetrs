@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -346,6 +347,20 @@
 <span id="303">303</span>
 <span id="304">304</span>
 <span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a high-level engine which composes all the components</span>
 <span class='doccomment'>//! into one abstract structure.</span>
@@ -374,6 +389,19 @@
     <span class='ident'>Excellent</span>, <span class='ident'>GameOver</span>
 }
 
+<span class='doccomment'>/// Stores variables which are modified internally during execution. Namely</span>
+<span class='doccomment'>/// state counters and the like. This is namespaced to have better modularity and</span>
+<span class='doccomment'>/// general code structure.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// This is required for state that is not reliant on frame counts.</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Default</span>)]</span>
+<span class='kw'>struct</span> <span class='ident'>InternalEngineState</span> {
+    <span class='doccomment'>/// Last update invocation time</span>
+    <span class='ident'>last_update_time</span>: <span class='ident'>u64</span>,
+
+    <span class='doccomment'>/// How many successive holds have been made</span>
+    <span class='ident'>hold_count</span>: <span class='ident'>u64</span>
+}
 
 <span class='doccomment'>/// This engine allows for handling of DAS-like features and other things</span>
 <span class='doccomment'>/// which are otherwise transparent to sub-components which are only</span>
@@ -397,8 +425,8 @@
     <span class='doccomment'>/// The active block</span>
     <span class='kw'>pub</span> <span class='ident'>block</span>: <span class='ident'>Block</span>,
 
-    <span class='doccomment'>/// The current hold block</span>
-    <span class='kw'>pub</span> <span class='ident'>hold</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Block</span><span class='op'>&gt;</span>,
+    <span class='doccomment'>/// The current hold block (this doesn&#39;t store an actual block right now)</span>
+    <span class='kw'>pub</span> <span class='ident'>hold</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>block</span>::<span class='ident'>Type</span><span class='op'>&gt;</span>,
 
     <span class='doccomment'>/// Immutable game options</span>
     <span class='kw'>pub</span> <span class='ident'>options</span>: <span class='ident'>Options</span>,
@@ -415,8 +443,8 @@
     <span class='doccomment'>/// How many ticks have elapsed this game</span>
     <span class='kw'>pub</span> <span class='ident'>tick_count</span>: <span class='ident'>u64</span>,
 
-    <span class='doccomment'>/// Last update invocation time</span>
-    <span class='ident'>last_update_time</span>: <span class='ident'>u64</span>,
+    <span class='doccomment'>/// Private internal state flags</span>
+    <span class='ident'>internal</span>: <span class='ident'>InternalEngineState</span>,
 
     <span class='doccomment'>/// The current game status. There are 5 main states that are utilized:</span>
     <span class='doccomment'>/// - Ready     -&gt; Triggers for the first 50 frames</span>
@@ -442,7 +470,7 @@
             <span class='ident'>running</span>: <span class='boolval'>true</span>,
             <span class='ident'>options</span>: <span class='ident'>Options</span>::<span class='ident'>new</span>(),
             <span class='ident'>statistics</span>: <span class='ident'>Statistics</span>::<span class='ident'>new</span>(),
-            <span class='ident'>last_update_time</span>: <span class='number'>0</span>,
+            <span class='ident'>internal</span>: <span class='ident'>InternalEngineState</span> { ..<span class='ident'>Default</span>::<span class='ident'>default</span>() },
             <span class='ident'>status</span>: <span class='ident'>Status</span>::<span class='ident'>Ready</span>
         };
 
@@ -571,22 +599,22 @@
             <span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>rotate_with_wallkick</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>, <span class='self'>self</span>.<span class='ident'>wallkick</span>, <span class='ident'>Rotation</span>::<span class='ident'>R90</span>);
         }
 
-        <span class='comment'>// Handle hold: Error here generating new blocks too much</span>
-        <span class='comment'>/*
-        match self.hold.clone() {
-            Some(hold) =&gt; {
-                // TODO: May need a temporary here depending on binding
-                self.hold = Some(self.block.clone());
-                self.block = Block::new(hold.id).set_field(&amp;self.field);
-            },
-            None =&gt; {
-                self.hold = Some(self.block.clone());
-                self.block = Block::new(self.randomizer.next())
-                                   .set_field(&amp;self.field)
-                                   .set_rotation(Rotation::R0);
+        <span class='comment'>// Hold currently only stores block id. Would be interesting to store the block</span>
+        <span class='comment'>// and hold could possibly save the state of the blocks rotation?</span>
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>Hold</span>) <span class='op'>==</span> <span class='number'>1</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>internal</span>.<span class='ident'>hold_count</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>options</span>.<span class='ident'>hold_limit</span> {
+            <span class='self'>self</span>.<span class='ident'>internal</span>.<span class='ident'>hold_count</span> <span class='op'>+=</span> <span class='number'>1</span>;
+            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>hold</span>.<span class='ident'>is_none</span>() {
+                <span class='self'>self</span>.<span class='ident'>hold</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>id</span>);
+                <span class='self'>self</span>.<span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='self'>self</span>.<span class='ident'>randomizer</span>.<span class='ident'>next</span>())
+                                   .<span class='ident'>set_field</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>);
             }
-        };
-        */</span>
+            <span class='kw'>else</span> {
+                <span class='kw'>let</span> <span class='ident'>tmp</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>id</span>;
+                <span class='self'>self</span>.<span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='self'>self</span>.<span class='ident'>hold</span>.<span class='ident'>unwrap</span>())
+                                   .<span class='ident'>set_field</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>);
+                <span class='self'>self</span>.<span class='ident'>hold</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>tmp</span>);
+            }
+        }
 
         <span class='comment'>// Handle hard drop</span>
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>HardDrop</span>) <span class='op'>==</span> <span class='number'>1</span> {
@@ -595,6 +623,7 @@
             <span class='self'>self</span>.<span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='self'>self</span>.<span class='ident'>randomizer</span>.<span class='ident'>next</span>())
                                .<span class='ident'>set_field</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>)
                                .<span class='ident'>set_rotation_system</span>(<span class='ident'>rotation</span>::<span class='ident'>SRS</span>::<span class='ident'>new</span>());
+            <span class='self'>self</span>.<span class='ident'>internal</span>.<span class='ident'>hold_count</span> <span class='op'>=</span> <span class='number'>0</span>;
         }
 
         <span class='comment'>// Clear all line</span>
@@ -616,12 +645,12 @@
         <span class='comment'>// Determine if we are lagging or being called too early</span>
         <span class='comment'>// If outside of 5% error, warn. Note: should warn only once, or</span>
         <span class='comment'>// limited.</span>
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>last_update_time</span> <span class='op'>==</span> <span class='number'>0</span> {
-            <span class='self'>self</span>.<span class='ident'>last_update_time</span> <span class='op'>=</span> <span class='ident'>time</span>::<span class='ident'>precise_time_ns</span>();
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>internal</span>.<span class='ident'>last_update_time</span> <span class='op'>==</span> <span class='number'>0</span> {
+            <span class='self'>self</span>.<span class='ident'>internal</span>.<span class='ident'>last_update_time</span> <span class='op'>=</span> <span class='ident'>time</span>::<span class='ident'>precise_time_ns</span>();
         }
         <span class='kw'>else</span> {
             <span class='kw'>let</span> <span class='ident'>now</span> <span class='op'>=</span> <span class='ident'>time</span>::<span class='ident'>precise_time_ns</span>();
-            <span class='kw'>let</span> <span class='ident'>rate</span> <span class='op'>=</span> (<span class='ident'>now</span> <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>last_update_time</span>) <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> (<span class='self'>self</span>.<span class='ident'>mspt</span> <span class='op'>*</span> <span class='number'>1_000_000</span>) <span class='kw'>as</span> <span class='ident'>f64</span>;
+            <span class='kw'>let</span> <span class='ident'>rate</span> <span class='op'>=</span> (<span class='ident'>now</span> <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>internal</span>.<span class='ident'>last_update_time</span>) <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> (<span class='self'>self</span>.<span class='ident'>mspt</span> <span class='op'>*</span> <span class='number'>1_000_000</span>) <span class='kw'>as</span> <span class='ident'>f64</span>;
 
             <span class='kw'>if</span> <span class='ident'>rate</span> <span class='op'>&gt;</span> <span class='number'>1.05</span> {
                 <span class='macro'>warn</span><span class='macro'>!</span>(<span class='string'>&quot;Update lagging! {}% of expected update time&quot;</span>, <span class='ident'>rate</span>);
@@ -630,7 +659,7 @@
                 <span class='macro'>warn</span><span class='macro'>!</span>(<span class='string'>&quot;Update called too quick! {}% of expected update time&quot;</span>, <span class='ident'>rate</span>);
             }
 
-            <span class='self'>self</span>.<span class='ident'>last_update_time</span> <span class='op'>=</span> <span class='ident'>now</span>;
+            <span class='self'>self</span>.<span class='ident'>internal</span>.<span class='ident'>last_update_time</span> <span class='op'>=</span> <span class='ident'>now</span>;
         }
     }
 
