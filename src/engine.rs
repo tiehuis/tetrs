@@ -297,6 +297,11 @@ impl Engine {
 
             self.internal.last_update_time = now;
         }
+
+        // Perform gravity
+        if self.tick_count % self.ticks(self.options.gravity) == 0 {
+            self.block.shift(&self.field, Direction::Down);
+        }
     }
 
     fn update_gameover(&self) {

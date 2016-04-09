@@ -48,7 +48,7 @@ impl Default for Options {
         Options {
             das: 180,
             are: 0,
-            gravity: 100,
+            gravity: 1000,
             arr: 16,
             has_hold: true,
             hold_limit: 1,
