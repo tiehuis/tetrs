@@ -25,6 +25,19 @@ enum Status {
     Excellent, GameOver
 }
 
+/// Stores variables which are modified internally during execution. Namely
+/// state counters and the like. This is namespaced to have better modularity and
+/// general code structure.
+///
+/// This is required for state that is not reliant on frame counts.
+#[derive(Default)]
+struct InternalEngineState {
+    /// Last update invocation time
+    last_update_time: u64,
+
+    /// How many successive holds have been made
+    hold_count: u64
+}
 
 /// This engine allows for handling of DAS-like features and other things
 /// which are otherwise transparent to sub-components which are only
@@ -48,8 +61,8 @@ pub struct Engine {
     /// The active block
     pub block: Block,
 
-    /// The current hold block
-    pub hold: Option<Block>,
+    /// The current hold block (this doesn't store an actual block right now)
+    pub hold: Option<block::Type>,
 
     /// Immutable game options
     pub options: Options,
@@ -66,8 +79,8 @@ pub struct Engine {
     /// How many ticks have elapsed this game
     pub tick_count: u64,
 
-    /// Last update invocation time
-    last_update_time: u64,
+    /// Private internal state flags
+    internal: InternalEngineState,
 
     /// The current game status. There are 5 main states that are utilized:
     /// - Ready     -> Triggers for the first 50 frames
@@ -93,7 +106,7 @@ impl Default for Engine {
             running: true,
             options: Options::new(),
             statistics: Statistics::new(),
-            last_update_time: 0,
+            internal: InternalEngineState { ..Default::default() },
             status: Status::Ready
         };
 
@@ -222,22 +235,22 @@ impl Engine {
             self.block.rotate_with_wallkick(&self.field, self.wallkick, Rotation::R90);
         }
 
-        // Handle hold: Error here generating new blocks too much
-        /*
-        match self.hold.clone() {
-            Some(hold) => {
-                // TODO: May need a temporary here depending on binding
-                self.hold = Some(self.block.clone());
-                self.block = Block::new(hold.id).set_field(&self.field);
-            },
-            None => {
-                self.hold = Some(self.block.clone());
+        // Hold currently only stores block id. Would be interesting to store the block
+        // and hold could possibly save the state of the blocks rotation?
+        if self.controller.time(Action::Hold) == 1 && self.internal.hold_count < self.options.hold_limit {
+            self.internal.hold_count += 1;
+            if self.hold.is_none() {
+                self.hold = Some(self.block.id);
                 self.block = Block::new(self.randomizer.next())
-                                   .set_field(&self.field)
-                                   .set_rotation(Rotation::R0);
+                                   .set_field(&self.field);
             }
-        };
-        */
+            else {
+                let tmp = self.block.id;
+                self.block = Block::new(self.hold.unwrap())
+                                   .set_field(&self.field);
+                self.hold = Some(tmp);
+            }
+        }
 
         // Handle hard drop
         if self.controller.time(Action::HardDrop) == 1 {
@@ -246,6 +259,7 @@ impl Engine {
             self.block = Block::new(self.randomizer.next())
                                .set_field(&self.field)
                                .set_rotation_system(rotation::SRS::new());
+            self.internal.hold_count = 0;
         }
 
         // Clear all line
@@ -267,12 +281,12 @@ impl Engine {
         // Determine if we are lagging or being called too early
         // If outside of 5% error, warn. Note: should warn only once, or
         // limited.
-        if self.last_update_time == 0 {
-            self.last_update_time = time::precise_time_ns();
+        if self.internal.last_update_time == 0 {
+            self.internal.last_update_time = time::precise_time_ns();
         }
         else {
             let now = time::precise_time_ns();
-            let rate = (now - self.last_update_time) as f64 / (self.mspt * 1_000_000) as f64;
+            let rate = (now - self.internal.last_update_time) as f64 / (self.mspt * 1_000_000) as f64;
 
             if rate > 1.05 {
                 warn!("Update lagging! {}% of expected update time", rate);
@@ -281,7 +295,7 @@ impl Engine {
                 warn!("Update called too quick! {}% of expected update time", rate);
             }
 
-            self.last_update_time = now;
+            self.internal.last_update_time = now;
         }
     }
 

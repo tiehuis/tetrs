@@ -45,6 +45,12 @@ fn gather_input(engine: &mut Engine, pump: &mut sdl2::EventPump) {
     }
 }
 
+macro_rules! sq {
+    ($x:expr, $y:expr, $s:expr) => {
+        Rect::new($x as i32, $y as i32, $s as u32, $s as u32)
+    }
+}
+
 fn main() {
 
     env_logger::init().unwrap();
@@ -91,22 +97,28 @@ fn main() {
                     (false, false, false) => Color::RGB(0, 0, 0)
                 });
 
-                let _ = renderer.fill_rect(Rect::new(100 + 15 * x as i32,
-                                                     10 + 15 * (y - engine.field.hidden) as i32, 15, 15));
+                let _ = renderer.fill_rect(sq!(100 + 15 * x, 10 + 15 * (y - engine.field.hidden), 15));
             }
         }
 
         let xoffset = 115 + 15 * engine.field.width as u32;
         let mut yoffset = 25;
 
-        renderer.set_draw_color(Color::RGB(150, 108, 246));
-
         // Draw preview pieces
+        renderer.set_draw_color(Color::RGB(150, 108, 246));
         for id in engine.randomizer.preview(engine.options.preview_count as usize) {
             for &(x, y) in engine.block.rs.data(id, Rotation::R0) {
-                let _ = renderer.fill_rect(Rect::new((xoffset + 15 * x as u32) as i32, (yoffset + 15 * y as u32) as i32, 15, 15));
+                let _ = renderer.fill_rect(sq!(xoffset + 15 * x as u32, yoffset + 15 * y as u32, 15));
             }
             yoffset += 4 * 15 + 15;
+        }
+
+        // Draw hold piece
+        renderer.set_draw_color(Color::RGB(150, 108, 246));
+        if engine.hold.is_some() {
+            for &(x, y) in engine.block.rs.data(engine.hold.unwrap(), Rotation::R0) {
+                let _ = renderer.fill_rect(sq!(100 - 15 * 5 + 15 * x as u32, 25 + 15 * y as u32, 15));
+            }
         }
 
         renderer.set_draw_color(Color::RGB(255, 255, 255));
