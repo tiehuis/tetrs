@@ -51,6 +51,12 @@ macro_rules! sq {
     }
 }
 
+const LEFT_FIELD_POSITION: u32 = 230;
+
+const UPPER_MARGIN: u32 = 60;
+
+const UPPER_MARGIN2: u32 = 80;
+
 fn main() {
 
     env_logger::init().unwrap();
@@ -97,12 +103,18 @@ fn main() {
                     (false, false, false) => Color::RGB(0, 0, 0)
                 });
 
-                let _ = renderer.fill_rect(sq!(100 + 15 * x, 10 + 15 * (y - engine.field.hidden), 15));
+                let _ = renderer.fill_rect(sq!(LEFT_FIELD_POSITION + 15 * x as u32,
+                                               UPPER_MARGIN + 15 * (y - engine.field.hidden) as u32, 15));
             }
         }
 
-        let xoffset = 115 + 15 * engine.field.width as u32;
-        let mut yoffset = 25;
+        renderer.set_draw_color(Color::RGB(255, 255, 255));
+        let _ = renderer.draw_rect(Rect::new(LEFT_FIELD_POSITION as i32 - 1, UPPER_MARGIN as i32 - 1, 15 * engine.field.width as u32 + 2,
+                                             15 * (engine.field.height - engine.field.hidden) as u32 + 2));
+
+
+        let xoffset = LEFT_FIELD_POSITION + 20 + 15 * engine.field.width as u32;
+        let mut yoffset = UPPER_MARGIN2;
 
         // Draw preview pieces
         renderer.set_draw_color(Color::RGB(150, 108, 246));
@@ -117,13 +129,9 @@ fn main() {
         renderer.set_draw_color(Color::RGB(150, 108, 246));
         if engine.hold.is_some() {
             for &(x, y) in engine.block.rs.data(engine.hold.unwrap(), Rotation::R0) {
-                let _ = renderer.fill_rect(sq!(100 - 15 * 5 + 15 * x as u32, 25 + 15 * y as u32, 15));
+                let _ = renderer.fill_rect(sq!(LEFT_FIELD_POSITION - 15 * 4 - 20 + 15 * x as u32, UPPER_MARGIN2 + 15 * y as u32, 15));
             }
         }
-
-        renderer.set_draw_color(Color::RGB(255, 255, 255));
-        let _ = renderer.draw_rect(Rect::new(100 - 1, 10 - 1, 15 * engine.field.width as u32 + 2,
-                                             15 * (engine.field.height - engine.field.hidden) as u32 + 2));
 
         renderer.present();
 
