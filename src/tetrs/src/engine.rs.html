@@ -366,6 +366,8 @@
 <span id="322">322</span>
 <span id="323">323</span>
 <span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a high-level engine which composes all the components</span>
 <span class='doccomment'>//! into one abstract structure.</span>
@@ -628,7 +630,9 @@
             <span class='self'>self</span>.<span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='self'>self</span>.<span class='ident'>randomizer</span>.<span class='ident'>next</span>())
                                .<span class='ident'>set_field</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>)
                                .<span class='ident'>set_rotation_system</span>(<span class='ident'>rotation</span>::<span class='ident'>SRS</span>::<span class='ident'>new</span>());
+
             <span class='self'>self</span>.<span class='ident'>internal</span>.<span class='ident'>hold_count</span> <span class='op'>=</span> <span class='number'>0</span>;
+            <span class='self'>self</span>.<span class='ident'>statistics</span>.<span class='ident'>pieces</span> <span class='op'>+=</span> <span class='number'>1</span>;
         }
 
         <span class='comment'>// Clear all line</span>

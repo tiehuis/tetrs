@@ -69,6 +69,9 @@
 <span id="25">25</span>
 <span id="26">26</span>
 <span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Stores statistics about the current game.</span>
 
@@ -77,6 +80,9 @@
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Statistics</span> {
     <span class='doccomment'>/// How many lines have been cleared</span>
     <span class='kw'>pub</span> <span class='ident'>lines</span>: <span class='ident'>u64</span>,
+
+    <span class='doccomment'>/// How many pieces have been placed</span>
+    <span class='kw'>pub</span> <span class='ident'>pieces</span>: <span class='ident'>u64</span>,
 
     <span class='doccomment'>/// Total single line clears</span>
     <span class='kw'>pub</span> <span class='ident'>singles</span>: <span class='ident'>u64</span>,
