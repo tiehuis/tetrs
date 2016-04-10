@@ -692,7 +692,7 @@
                 <span class='comment'>// needs to be adjusted.</span>
                 <span class='kw'>let</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>ty</span>)
                                   .<span class='ident'>set_rotation</span>(<span class='ident'>ro</span>)
-                                  .<span class='ident'>set_position</span>((<span class='ident'>ox</span>, <span class='ident'>field</span>.<span class='ident'>height</span> <span class='op'>-</span> <span class='ident'>oy</span> <span class='op'>-</span> <span class='number'>1</span>));
+                                  .<span class='ident'>set_position</span>((<span class='macro'>i32</span><span class='macro'>!</span>(<span class='ident'>ox</span>), <span class='macro'>i32</span><span class='macro'>!</span>(<span class='ident'>field</span>.<span class='ident'>height</span> <span class='op'>-</span> <span class='ident'>oy</span> <span class='op'>-</span> <span class='number'>1</span>)));
 
                 <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>block</span>.<span class='ident'>collides</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>));
                 <span class='kw'>return</span> <span class='ident'>block</span>;

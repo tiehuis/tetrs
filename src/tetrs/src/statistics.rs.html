@@ -76,19 +76,19 @@
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Default</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Statistics</span> {
     <span class='doccomment'>/// How many lines have been cleared</span>
-    <span class='kw'>pub</span> <span class='ident'>lines</span>: <span class='ident'>u32</span>,
+    <span class='kw'>pub</span> <span class='ident'>lines</span>: <span class='ident'>u64</span>,
 
     <span class='doccomment'>/// Total single line clears</span>
-    <span class='kw'>pub</span> <span class='ident'>singles</span>: <span class='ident'>u32</span>,
+    <span class='kw'>pub</span> <span class='ident'>singles</span>: <span class='ident'>u64</span>,
 
     <span class='doccomment'>/// Total double line clears</span>
-    <span class='kw'>pub</span> <span class='ident'>doubles</span>: <span class='ident'>u32</span>,
+    <span class='kw'>pub</span> <span class='ident'>doubles</span>: <span class='ident'>u64</span>,
 
     <span class='doccomment'>/// Total triple line clears</span>
-    <span class='kw'>pub</span> <span class='ident'>triples</span>: <span class='ident'>u32</span>,
+    <span class='kw'>pub</span> <span class='ident'>triples</span>: <span class='ident'>u64</span>,
 
     <span class='doccomment'>/// Total tetrises</span>
-    <span class='kw'>pub</span> <span class='ident'>fours</span>: <span class='ident'>u32</span>,
+    <span class='kw'>pub</span> <span class='ident'>fours</span>: <span class='ident'>u64</span>,
 }
 
 <span class='kw'>impl</span> <span class='ident'>Statistics</span> {

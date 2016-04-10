@@ -361,6 +361,11 @@
 <span id="317">317</span>
 <span id="318">318</span>
 <span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a high-level engine which composes all the components</span>
 <span class='doccomment'>//! into one abstract structure.</span>
@@ -569,8 +574,8 @@
                 <span class='ident'>Direction</span>::<span class='ident'>Right</span>
             };
 
-            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>MoveLeft</span>) <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>options</span>.<span class='ident'>das</span>) <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>||</span>
-                <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>MoveRight</span>) <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>options</span>.<span class='ident'>das</span>) <span class='kw'>as</span> <span class='ident'>usize</span> {
+            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>MoveLeft</span>) <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>options</span>.<span class='ident'>das</span>) <span class='op'>||</span>
+                <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>MoveRight</span>) <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>options</span>.<span class='ident'>das</span>) {
                 <span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>, <span class='ident'>action</span>);
             }
         }
@@ -586,7 +591,7 @@
         <span class='comment'>// Drop has no DAS and is immediate</span>
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>active</span>(<span class='ident'>Action</span>::<span class='ident'>MoveDown</span>) {
             <span class='kw'>let</span> <span class='ident'>down</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>MoveDown</span>);
-            <span class='kw'>if</span> (<span class='ident'>down</span> <span class='op'>-</span> <span class='number'>1</span>) <span class='op'>%</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>options</span>.<span class='ident'>soft_drop_speed</span>) <span class='kw'>as</span> <span class='ident'>usize</span> <span class='op'>==</span> <span class='number'>0</span> {
+            <span class='kw'>if</span> (<span class='ident'>down</span> <span class='op'>-</span> <span class='number'>1</span>) <span class='op'>%</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>options</span>.<span class='ident'>soft_drop_speed</span>) <span class='op'>==</span> <span class='number'>0</span> {
                 <span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>, <span class='ident'>Direction</span>::<span class='ident'>Down</span>);
             }
         }
@@ -628,7 +633,7 @@
 
         <span class='comment'>// Clear all line</span>
         <span class='kw'>let</span> <span class='ident'>cleared</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>field</span>.<span class='ident'>clear_lines</span>();
-        <span class='self'>self</span>.<span class='ident'>statistics</span>.<span class='ident'>lines</span> <span class='op'>+=</span> <span class='ident'>cleared</span> <span class='kw'>as</span> <span class='ident'>u32</span>;
+        <span class='self'>self</span>.<span class='ident'>statistics</span>.<span class='ident'>lines</span> <span class='op'>+=</span> <span class='ident'>cleared</span> <span class='kw'>as</span> <span class='ident'>u64</span>;
 
         <span class='kw'>match</span> <span class='ident'>cleared</span> {
             <span class='number'>4</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>statistics</span>.<span class='ident'>fours</span> <span class='op'>+=</span> <span class='number'>1</span>,
@@ -660,6 +665,11 @@
             }
 
             <span class='self'>self</span>.<span class='ident'>internal</span>.<span class='ident'>last_update_time</span> <span class='op'>=</span> <span class='ident'>now</span>;
+        }
+
+        <span class='comment'>// Perform gravity</span>
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>tick_count</span> <span class='op'>%</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>options</span>.<span class='ident'>gravity</span>) <span class='op'>==</span> <span class='number'>0</span> {
+            <span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>, <span class='ident'>Direction</span>::<span class='ident'>Down</span>);
         }
     }
 

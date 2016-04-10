@@ -327,7 +327,7 @@
     <span class='kw'>pub</span> <span class='ident'>hidden</span>: <span class='ident'>usize</span>,
 
     <span class='doccomment'>/// The initial spawn of a `Block` on this field.</span>
-    <span class='kw'>pub</span> <span class='ident'>spawn</span>: (<span class='ident'>usize</span>, <span class='ident'>usize</span>),
+    <span class='kw'>pub</span> <span class='ident'>spawn</span>: (<span class='ident'>i32</span>, <span class='ident'>i32</span>),
 
     <span class='doccomment'>/// The current field state.</span>
     <span class='kw'>pub</span> <span class='ident'>data</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;&gt;</span>,
@@ -357,7 +357,7 @@
     <span class='kw'>fn</span> <span class='ident'>set_hidden</span>(<span class='self'>self</span>, <span class='ident'>hidden</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Field</span>;
 
     <span class='doccomment'>/// Alter the block spawn point of the field and return the modified.</span>
-    <span class='kw'>fn</span> <span class='ident'>set_spawn</span>(<span class='self'>self</span>, <span class='ident'>spawn</span>: (<span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='ident'>Field</span>;
+    <span class='kw'>fn</span> <span class='ident'>set_spawn</span>(<span class='self'>self</span>, <span class='ident'>spawn</span>: (<span class='ident'>i32</span>, <span class='ident'>i32</span>)) <span class='op'>-&gt;</span> <span class='ident'>Field</span>;
 }
 
 <span class='kw'>impl</span> <span class='ident'>FieldBuilder</span> <span class='kw'>for</span> <span class='ident'>Field</span> {
@@ -380,7 +380,7 @@
         <span class='self'>self</span>
     }
 
-    <span class='kw'>fn</span> <span class='ident'>set_spawn</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>spawn</span>: (<span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='ident'>Field</span> {
+    <span class='kw'>fn</span> <span class='ident'>set_spawn</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>spawn</span>: (<span class='ident'>i32</span>, <span class='ident'>i32</span>)) <span class='op'>-&gt;</span> <span class='ident'>Field</span> {
         <span class='self'>self</span>.<span class='ident'>spawn</span> <span class='op'>=</span> <span class='ident'>spawn</span>;
         <span class='self'>self</span>
     }
@@ -475,7 +475,7 @@
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>freeze</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>block</span>: <span class='ident'>Block</span>) {
         <span class='kw'>for</span> <span class='kw-2'>&amp;</span>(<span class='ident'>x</span>, <span class='ident'>y</span>) <span class='kw'>in</span> <span class='ident'>block</span>.<span class='ident'>rs</span>.<span class='ident'>data</span>(<span class='ident'>block</span>.<span class='ident'>id</span>, <span class='ident'>block</span>.<span class='ident'>r</span>) {
-            <span class='self'>self</span>.<span class='ident'>data</span>[(<span class='ident'>block</span>.<span class='ident'>y</span> <span class='op'>+</span> <span class='ident'>y</span> <span class='kw'>as</span> <span class='ident'>i32</span>) <span class='kw'>as</span> <span class='ident'>usize</span>][(<span class='ident'>block</span>.<span class='ident'>x</span> <span class='op'>+</span> <span class='ident'>x</span> <span class='kw'>as</span> <span class='ident'>i32</span>) <span class='kw'>as</span> <span class='ident'>usize</span>] <span class='op'>=</span> <span class='ident'>block</span>.<span class='ident'>id</span>.<span class='ident'>to_usize</span>();
+            <span class='self'>self</span>.<span class='ident'>data</span>[<span class='macro'>usize</span><span class='macro'>!</span>(<span class='ident'>block</span>.<span class='ident'>y</span> <span class='op'>+</span> <span class='macro'>i32</span><span class='macro'>!</span>(<span class='ident'>y</span>))][<span class='macro'>usize</span><span class='macro'>!</span>(<span class='ident'>block</span>.<span class='ident'>x</span> <span class='op'>+</span> <span class='macro'>i32</span><span class='macro'>!</span>(<span class='ident'>x</span>))] <span class='op'>=</span> <span class='ident'>block</span>.<span class='ident'>id</span>.<span class='ident'>to_usize</span>();
         }
     }
 
