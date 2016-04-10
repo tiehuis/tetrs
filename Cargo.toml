@@ -4,8 +4,11 @@ version = "0.1.0"
 authors = ["tiehuis <marctiehuis@gmail.com>"]
 
 [dependencies]
-clippy = "*"
+clippy = {version = "*", optional = true}
 time = "0.1.35"
 rand = "0.3"
 log = "0.3.6"
 itertools = "0.4"
+
+[features]
+default = []

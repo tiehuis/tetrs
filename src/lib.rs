@@ -1,6 +1,8 @@
-#![feature(collections, enumset, plugin)]
+#![feature(collections, enumset)]
 
-#![plugin(clippy)]
+#![cfg_attr(feature = "clippy", feature(plugin))]
+#![cfg_attr(feature = "clippy", plugin(clippy))]
+
 #![warn(missing_docs)]
 
 #![crate_name = "tetrs"]

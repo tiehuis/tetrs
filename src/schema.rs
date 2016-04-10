@@ -59,7 +59,7 @@ pub struct Schema {
 
 impl Schema {
     /// Construct a schema representation from an game primitives.
-    #[allow(needless_range_loop)]
+    #[cfg_attr(feature = "clippy", allow(needless_range_loop))]
     pub fn from_state(field: &Field, block: &Block) -> Schema {
         let mut grid = vec![vec![' '; field.width]; field.height];
         let mut failure = false;
