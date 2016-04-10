@@ -1,6 +1,7 @@
 extern crate sdl2;
-extern crate tetrs;
+extern crate sdl2_ttf;
 extern crate env_logger;
+extern crate tetrs;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Scancode;
@@ -12,8 +13,10 @@ use tetrs::controller::Action;
 use tetrs::block::Rotation;
 use tetrs::randomizer::Randomizer;
 use tetrs::options::Options;
+
 use std::thread;
 use std::time::Duration;
+use std::path::Path;
 
 static KEYMAP: [(Scancode, Action); 9] = [
     (Scancode::Left,  Action::MoveLeft),
@@ -51,7 +54,17 @@ macro_rules! sq {
     }
 }
 
-const LEFT_FIELD_POSITION: u32 = 230;
+macro_rules! render_text {
+    ($renderer:expr, $font:expr; $msg:expr, $rect:expr) => {
+        {
+            let surface = $font.render($msg).blended(Color::RGBA(255, 255, 255, 255)).unwrap();
+            let mut texture = $renderer.create_texture_from_surface(&surface).unwrap();
+            $renderer.copy(&mut texture, None, Some($rect));
+        }
+    }
+}
+
+const LEFT_FIELD_POSITION: u32 = 130;
 
 const UPPER_MARGIN: u32 = 60;
 
@@ -63,6 +76,7 @@ fn main() {
 
     let ctx = sdl2::init().unwrap();
     let video_ctx = ctx.video().unwrap();
+    let ttf_ctx = sdl2_ttf::init().unwrap();
 
     let window = match video_ctx.window("tetrs", 640, 480).position_centered().opengl().build() {
         Ok(window) => window,
@@ -75,6 +89,8 @@ fn main() {
     };
 
     let mut events = ctx.event_pump().unwrap();
+
+    let font = ttf_ctx.load_font(Path::new("res/font/font.ttf"), 128).unwrap();
 
     let options = Options {
         ..Default::default()
@@ -132,6 +148,27 @@ fn main() {
                 let _ = renderer.fill_rect(sq!(LEFT_FIELD_POSITION - 15 * 4 - 20 + 15 * x as u32, UPPER_MARGIN2 + 15 * y as u32, 15));
             }
         }
+
+        // Place text past the right previews
+        let right_position = (xoffset + 15 * 5 + 40) as i32;
+        let mut yoffset2 = (UPPER_MARGIN2 + 15) as i32;
+
+        // Draw informational text
+        render_text!(renderer, font; &format!("Lines Cleared: {}", engine.statistics.lines),
+                     Rect::new(right_position, yoffset2, 150, 30));
+        yoffset2 += 60;
+
+        render_text!(renderer, font; &format!("Pieces: {}", engine.statistics.pieces),
+                     Rect::new(right_position, yoffset2, 150, 30));
+        yoffset2 += 60;
+
+        render_text!(renderer, font; &format!("PPM: {:.5}", (engine.statistics.pieces as f64 /
+                                                         (engine.tick_count * engine.mspt) as f64) * 1000_f64),
+                     Rect::new(right_position, yoffset2, 150, 30));
+        yoffset2 += 60;
+
+        render_text!(renderer, font; &format!("Ticks: {}", engine.tick_count),
+                     Rect::new(right_position, yoffset2, 150, 30));
 
         renderer.present();
 

@@ -259,7 +259,9 @@ impl Engine {
             self.block = Block::new(self.randomizer.next())
                                .set_field(&self.field)
                                .set_rotation_system(rotation::SRS::new());
+
             self.internal.hold_count = 0;
+            self.statistics.pieces += 1;
         }
 
         // Clear all line

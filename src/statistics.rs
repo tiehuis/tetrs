@@ -6,6 +6,9 @@ pub struct Statistics {
     /// How many lines have been cleared
     pub lines: u64,
 
+    /// How many pieces have been placed
+    pub pieces: u64,
+
     /// Total single line clears
     pub singles: u64,
 
