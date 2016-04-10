@@ -241,7 +241,7 @@ pub struct Block {
 /// See `block::new()` for what default values are used.
 pub trait BlockBuilder {
     /// Alter the initial position of the block.
-    fn set_position(self, position: (usize, usize)) -> Block;
+    fn set_position(self, position: (i32, i32)) -> Block;
 
     /// Alter the initial rotation of the block.
     fn set_rotation(self, rotation: Rotation) -> Block;
@@ -255,9 +255,9 @@ pub trait BlockBuilder {
 }
 
 impl BlockBuilder for Block {
-    fn set_position(mut self, position: (usize, usize)) -> Block {
-        self.x = position.0 as i32;
-        self.y = position.1 as i32;
+    fn set_position(mut self, position: (i32, i32)) -> Block {
+        self.x = position.0;
+        self.y = position.1;
         self
     }
 
@@ -267,8 +267,8 @@ impl BlockBuilder for Block {
     }
 
     fn set_field(mut self, field: &Field) -> Block {
-        self.x = field.spawn.0 as i32;
-        self.y = field.spawn.1 as i32;
+        self.x = field.spawn.0;
+        self.y = field.spawn.1;
         self
     }
 
@@ -323,11 +323,12 @@ impl Block {
     fn collides_at_offset(&self, field: &Field, (xo, yo): (i32, i32)) -> bool {
         self.rs.data(self.id, self.r).iter()
                   .map(|&(dx, dy)| {
-                      (self.x + dx as i32 + xo, self.y + dy as i32 + yo)
+                      (self.x + i32!(dx) + xo, self.y + i32!(dy) + yo)
                   })
                   .any(|(x, y)| {
-                      x < 0 || x >= field.width as i32 || y < 0 || y >= field.height as i32 ||
-                      field.get((x as usize, y as usize)) != Type::None.to_usize()
+                      x < 0 || usize!(x) >= field.width ||
+                      y < 0 || usize!(y) >= field.height ||
+                      field.get((usize!(x), usize!(y))) != Type::None.to_usize()
                   })
     }
 
@@ -446,8 +447,8 @@ impl Block {
     /// Check if the block occupies a particular `(x, y)` absolute location.
     pub fn occupies(&self, (a, b): (usize, usize)) -> bool {
         self.rs.data(self.id, self.r).iter()
-            .map(|&(x, y)| (self.x + x as i32, self.y + y as i32))
-            .any(|(x, y)| a == x as usize && b == y as usize)
+            .map(|&(x, y)| (self.x + i32!(x), self.y + i32!(y)))
+            .any(|(x, y)| a == usize!(x) && b == usize!(y))
     }
 
 

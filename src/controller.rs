@@ -37,7 +37,7 @@ impl CLike for Action {
 #[derive(Default)]
 pub struct Controller {
     /// The length each action has occured for in ticks.
-    pub time: [usize; 8],
+    pub time: [u64; 8],
 
     /// Which actions are currently active.
     pub active: [bool; 8]
@@ -65,7 +65,7 @@ impl Controller {
     }
 
     /// Query how long an action has been active for.
-    pub fn time(&self, action: Action) -> usize {
+    pub fn time(&self, action: Action) -> u64 {
         self.time[action.to_usize()]
     }
 

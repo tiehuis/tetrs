@@ -4,19 +4,19 @@
 #[derive(Default)]
 pub struct Statistics {
     /// How many lines have been cleared
-    pub lines: u32,
+    pub lines: u64,
 
     /// Total single line clears
-    pub singles: u32,
+    pub singles: u64,
 
     /// Total double line clears
-    pub doubles: u32,
+    pub doubles: u64,
 
     /// Total triple line clears
-    pub triples: u32,
+    pub triples: u64,
 
     /// Total tetrises
-    pub fours: u32,
+    pub fours: u64,
 }
 
 impl Statistics {

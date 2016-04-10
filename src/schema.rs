@@ -255,7 +255,7 @@ impl Schema {
                 // needs to be adjusted.
                 let block = Block::new(ty)
                                   .set_rotation(ro)
-                                  .set_position((ox, field.height - oy - 1));
+                                  .set_position((i32!(ox), i32!(field.height - oy - 1)));
 
                 assert!(!block.collides(&field));
                 return block;

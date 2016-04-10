@@ -51,7 +51,7 @@ pub struct Field {
     pub hidden: usize,
 
     /// The initial spawn of a `Block` on this field.
-    pub spawn: (usize, usize),
+    pub spawn: (i32, i32),
 
     /// The current field state.
     pub data: Vec<Vec<usize>>,
@@ -81,7 +81,7 @@ pub trait FieldBuilder {
     fn set_hidden(self, hidden: usize) -> Field;
 
     /// Alter the block spawn point of the field and return the modified.
-    fn set_spawn(self, spawn: (usize, usize)) -> Field;
+    fn set_spawn(self, spawn: (i32, i32)) -> Field;
 }
 
 impl FieldBuilder for Field {
@@ -104,7 +104,7 @@ impl FieldBuilder for Field {
         self
     }
 
-    fn set_spawn(mut self, spawn: (usize, usize)) -> Field {
+    fn set_spawn(mut self, spawn: (i32, i32)) -> Field {
         self.spawn = spawn;
         self
     }
@@ -199,7 +199,7 @@ impl Field {
     /// ```
     pub fn freeze(&mut self, block: Block) {
         for &(x, y) in block.rs.data(block.id, block.r) {
-            self.data[(block.y + y as i32) as usize][(block.x + x as i32) as usize] = block.id.to_usize();
+            self.data[usize!(block.y + i32!(y))][usize!(block.x + i32!(x))] = block.id.to_usize();
         }
     }
 

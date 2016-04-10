@@ -205,8 +205,8 @@ impl Engine {
                 Direction::Right
             };
 
-            if self.controller.time(Action::MoveLeft) > self.ticks(self.options.das) as usize ||
-                self.controller.time(Action::MoveRight) > self.ticks(self.options.das) as usize {
+            if self.controller.time(Action::MoveLeft) > self.ticks(self.options.das) ||
+                self.controller.time(Action::MoveRight) > self.ticks(self.options.das) {
                 self.block.shift(&self.field, action);
             }
         }
@@ -222,7 +222,7 @@ impl Engine {
         // Drop has no DAS and is immediate
         if self.controller.active(Action::MoveDown) {
             let down = self.controller.time(Action::MoveDown);
-            if (down - 1) % self.ticks(self.options.soft_drop_speed) as usize == 0 {
+            if (down - 1) % self.ticks(self.options.soft_drop_speed) == 0 {
                 self.block.shift(&self.field, Direction::Down);
             }
         }
@@ -264,7 +264,7 @@ impl Engine {
 
         // Clear all line
         let cleared = self.field.clear_lines();
-        self.statistics.lines += cleared as u32;
+        self.statistics.lines += cleared as u64;
 
         match cleared {
             4 => self.statistics.fours += 1,

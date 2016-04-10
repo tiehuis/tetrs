@@ -35,6 +35,25 @@ extern crate rand;
 extern crate time;
 #[macro_use] extern crate log;
 
+/// Perform a safe conversion to i32, panicing if the current type does not
+/// lie within the required bounds.
+macro_rules! usize {
+    ($x:expr) => {
+        if $x < 0 {
+            panic!("cannot construct usize from value: {}", $x);
+        }
+        else {
+            $x as usize
+        }
+    }
+}
+
+macro_rules! i32 {
+    ($x:expr) => {
+        $x as i32
+    }
+}
+
 pub mod field;
 pub mod block;
 pub mod controller;
