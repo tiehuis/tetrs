@@ -47,17 +47,17 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-0' class='srclink' href='../src/tetrs/src/lib.rs.html#1-69' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-0' class='srclink' href='../src/tetrs/src/lib.rs.html#1-73' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>The tetrs library provides a number of low-level tasks related to movement
 of blocks. The code aims to be correct and provide easy extension for new
 input.</p>
 
 <h2 id='examples' class='section-header'><a href='#examples'>Examples</a></h2>
 <pre class='rust rust-example-rendered'>
-<span class='kw'>use</span> <span class='ident'>tetrs</span>::{<span class='ident'>block</span>, <span class='ident'>field</span>, <span class='ident'>Rotation</span>, <span class='ident'>Direction</span>};
+<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>import</span>::<span class='op'>*</span>;
 
-<span class='kw'>let</span> <span class='ident'>field</span> <span class='op'>=</span> <span class='ident'>field</span>::<span class='ident'>new</span>().<span class='ident'>width</span>(<span class='number'>12</span>);
-<span class='kw'>let</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>block</span>::<span class='ident'>new</span>().<span class='ident'>on_field</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>);
+<span class='kw'>let</span> <span class='ident'>field</span> <span class='op'>=</span> <span class='ident'>Field</span>::<span class='ident'>new</span>();
+<span class='kw'>let</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='ident'>I</span>, <span class='kw-2'>&amp;</span><span class='ident'>field</span>);
 
 <span class='ident'>block</span>.<span class='ident'>rotate</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>, <span class='ident'>Rotation</span>::<span class='ident'>R90</span>);
 <span class='ident'>block</span>.<span class='ident'>shift_extend</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>, <span class='ident'>Direction</span>::<span class='ident'>Down</span>);</pre>
@@ -66,8 +66,8 @@ input.</p>
 a block itself has no knowledge of a wallkick, but provides functionality
 in terms of rotations with offset to allow for easy use with wallkicks.</p>
 
-<p>A higher-level abstraction in terms of a game-engine is provided. This
-provides DAS-like behaviour and such.</p>
+<p>A high-level abstraction over these primitives is provided in terms of an
+<code>Engine</code> class.</p>
 </div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
@@ -100,10 +100,10 @@ into one abstract structure.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='mod' href='options/index.html'
-                                  title='tetrs::options'>options</a></td>
+                           <td><a class='mod' href='import/index.html'
+                                  title='tetrs::import'>import</a></td>
                            <td class='docblock short'>
-                                <p>Defines immutable options which are used by an engine.</p>
+                                <p>Convenience module providing default imports.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -114,8 +114,8 @@ into one abstract structure.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='mod' href='rotation/index.html'
-                                  title='tetrs::rotation'>rotation</a></td>
+                           <td><a class='mod' href='rotation_system/index.html'
+                                  title='tetrs::rotation_system'>rotation_system</a></td>
                            <td class='docblock short'>
                                 <p>This modules provides an interface for dealing with different block offsets.</p>
                            </td>

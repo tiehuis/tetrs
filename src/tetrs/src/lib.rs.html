@@ -111,8 +111,14 @@
 <span id="67">67</span>
 <span id="68">68</span>
 <span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>collections</span>, <span class='ident'>enumset</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>custom_derive</span>, <span class='ident'>plugin</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>plugin</span>(<span class='ident'>serde_macros</span>)]</span>
 
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;clippy&quot;</span>, <span class='ident'>feature</span>(<span class='ident'>plugin</span>))]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;clippy&quot;</span>, <span class='ident'>plugin</span>(<span class='ident'>clippy</span>))]</span>
@@ -129,10 +135,10 @@
 <span class='doccomment'>//! ## Examples</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```ignore</span>
-<span class='doccomment'>//! use tetrs::{block, field, Rotation, Direction};</span>
+<span class='doccomment'>//! use tetrs::import::*;</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! let field = field::new().width(12);</span>
-<span class='doccomment'>//! let block = block::new().on_field(&amp;field);</span>
+<span class='doccomment'>//! let field = Field::new();</span>
+<span class='doccomment'>//! let block = Block::new(block::Type::I, &amp;field);</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! block.rotate(&amp;field, Rotation::R90);</span>
 <span class='doccomment'>//! block.shift_extend(&amp;field, Direction::Down);</span>
@@ -142,14 +148,16 @@
 <span class='doccomment'>//! a block itself has no knowledge of a wallkick, but provides functionality</span>
 <span class='doccomment'>//! in terms of rotations with offset to allow for easy use with wallkicks.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! A higher-level abstraction in terms of a game-engine is provided. This</span>
-<span class='doccomment'>//! provides DAS-like behaviour and such.</span>
+<span class='doccomment'>//! A high-level abstraction over these primitives is provided in terms of an</span>
+<span class='doccomment'>//! `Engine` class.</span>
 
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>collections</span>;
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>itertools</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rand</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>time</span>;
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>log</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>serde</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>serde_json</span>;
 
 <span class='doccomment'>/// Perform a safe conversion to i32, panicing if the current type does not</span>
 <span class='doccomment'>/// lie within the required bounds.</span>
@@ -175,12 +183,12 @@
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>controller</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>wallkick</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>randomizer</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>rotation</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>rotation_system</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>engine</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>utility</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>options</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>statistics</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>schema</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>import</span>;
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

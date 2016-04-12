@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Field","A `Field` is simply a 2-D `Vec` with some corresponding options."]],"trait":[["FieldBuilder","Handles building of more complicated fields than can be constructed with `new` itself."]]});
+initSidebarItems({"struct":[["Field","A `Field` is simply a 2-D `Vec` with some corresponding options."],["FieldOptions","Options for use when constructing a field."]]});

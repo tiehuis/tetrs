@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `import` mod in crate `tetrs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, import">
+
+    <title>tetrs::import - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'><a href='../index.html'>tetrs</a></p><script>window.sidebarCurrent = {name: 'import', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>tetrs</a>::<wbr><a class='mod' href=''>import</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-1735' class='srclink' href='../../src/tetrs/src/import.rs.html#1-29' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Convenience module providing default imports.</p>
+
+<p>This imports all structs into the current scope, and imports
+all other functions/enums namespaced by their base module.</p>
+
+<h2 id='examples' class='section-header'><a href='#examples'>Examples</a></h2>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>import</span>::<span class='op'>*</span>;
+
+<span class='comment'>// Engine and Field are in scope</span>
+<span class='kw'>let</span> <span class='ident'>engine</span> <span class='op'>=</span> <span class='ident'>Engine</span>::<span class='ident'>new</span>(<span class='ident'>EngineOptions</span> { ..<span class='ident'>Default</span>::<span class='ident'>default</span>() });
+<span class='kw'>let</span> <span class='ident'>field</span> <span class='op'>=</span> <span class='ident'>Field</span>::<span class='ident'>new</span>();</pre>
+
+<p>This would otherwise require the following import.</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>engine</span>::{<span class='ident'>Engine</span>, <span class='ident'>EngineOptions</span>};
+<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>field</span>::<span class='ident'>Field</span>;</pre>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+<table><tr><td><code>pub use engine::{<a class='struct' href='../../tetrs/engine/struct.Engine.html' title='tetrs::engine::Engine'>Engine</a>, <a class='struct' href='../../tetrs/engine/struct.EngineOptions.html' title='tetrs::engine::EngineOptions'>EngineOptions</a>, <a class='struct' href='../../tetrs/engine/struct.EngineSettings.html' title='tetrs::engine::EngineSettings'>EngineSettings</a>};</code></td></tr><tr><td><code>pub use block::{<a class='mod' href='../../tetrs/block/index.html' title='tetrs::block'>self</a>, <a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a>, <a class='struct' href='../../tetrs/block/struct.BlockOptions.html' title='tetrs::block::BlockOptions'>BlockOptions</a>, <a class='enum' href='../../tetrs/block/enum.Rotation.html' title='tetrs::block::Rotation'>Rotation</a>, <a class='enum' href='../../tetrs/block/enum.Direction.html' title='tetrs::block::Direction'>Direction</a>};</code></td></tr><tr><td><code>pub use field::{<a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a>, <a class='struct' href='../../tetrs/field/struct.FieldOptions.html' title='tetrs::field::FieldOptions'>FieldOptions</a>};</code></td></tr><tr><td><code>pub use <a class='mod' href='../../tetrs/controller/index.html' title='tetrs::controller'>controller</a>;</code></td></tr><tr><td><code>pub use randomizer::{<a class='mod' href='../../tetrs/randomizer/index.html' title='tetrs::randomizer'>self</a>, <a class='trait' href='../../tetrs/randomizer/trait.Randomizer.html' title='tetrs::randomizer::Randomizer'>Randomizer</a>};</code></td></tr><tr><td><code>pub use wallkick::{<a class='mod' href='../../tetrs/wallkick/index.html' title='tetrs::wallkick'>self</a>, <a class='trait' href='../../tetrs/wallkick/trait.Wallkick.html' title='tetrs::wallkick::Wallkick'>Wallkick</a>};</code></td></tr><tr><td><code>pub use rotation_system::{<a class='mod' href='../../tetrs/rotation_system/index.html' title='tetrs::rotation_system'>self</a>, <a class='trait' href='../../tetrs/rotation_system/trait.RotationSystem.html' title='tetrs::rotation_system::RotationSystem'>RotationSystem</a>};</code></td></tr></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../../";
+        window.currentCrate = "tetrs";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
+    
+    <script defer src="../../search-index.js"></script>
+</body>
+</html>

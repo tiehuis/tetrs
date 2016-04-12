@@ -520,39 +520,6 @@
 <span id="476">476</span>
 <span id="477">477</span>
 <span id="478">478</span>
-<span id="479">479</span>
-<span id="480">480</span>
-<span id="481">481</span>
-<span id="482">482</span>
-<span id="483">483</span>
-<span id="484">484</span>
-<span id="485">485</span>
-<span id="486">486</span>
-<span id="487">487</span>
-<span id="488">488</span>
-<span id="489">489</span>
-<span id="490">490</span>
-<span id="491">491</span>
-<span id="492">492</span>
-<span id="493">493</span>
-<span id="494">494</span>
-<span id="495">495</span>
-<span id="496">496</span>
-<span id="497">497</span>
-<span id="498">498</span>
-<span id="499">499</span>
-<span id="500">500</span>
-<span id="501">501</span>
-<span id="502">502</span>
-<span id="503">503</span>
-<span id="504">504</span>
-<span id="505">505</span>
-<span id="506">506</span>
-<span id="507">507</span>
-<span id="508">508</span>
-<span id="509">509</span>
-<span id="510">510</span>
-<span id="511">511</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! A single tetrimino.</span>
 <span class='doccomment'>//!</span>
@@ -563,7 +530,7 @@
 <span class='doccomment'>//! ```ignore</span>
 <span class='doccomment'>//! use tetrs::{Rotation, Direction};</span>
 <span class='doccomment'>//! use tetrs::field::Field;</span>
-<span class='doccomment'>//! use tetrs::block::{Block, BlockBuilder};</span>
+<span class='doccomment'>//! use tetrs::block::{Block, BlockOptions};</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! let field = Field::new();</span>
 <span class='doccomment'>//!</span>
@@ -575,7 +542,7 @@
 <span class='doccomment'>//! ```</span>
 
 <span class='kw'>use</span> <span class='ident'>field</span>::<span class='ident'>Field</span>;
-<span class='kw'>use</span> <span class='ident'>rotation</span>::{<span class='self'>self</span>, <span class='ident'>RotationSystem</span>};
+<span class='kw'>use</span> <span class='ident'>rotation_system</span>::{<span class='self'>self</span>, <span class='ident'>RotationSystem</span>};
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 <span class='kw'>use</span> <span class='ident'>collections</span>::<span class='ident'>enum_set</span>::<span class='ident'>CLike</span>;
@@ -603,7 +570,9 @@
     <span class='doccomment'>/// Returns all `non-None` `Type` variants.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// let types = tetrs::block::Type::variants();</span>
+    <span class='doccomment'>/// use tetrs::import::*;</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// let types = block::Type::variants();</span>
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>variants</span>() <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [<span class='ident'>Type</span>] {
         <span class='kw'>static</span> <span class='ident'>VARIANTS</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [<span class='ident'>Type</span>; <span class='number'>7</span>] <span class='op'>=</span> <span class='kw-2'>&amp;</span>[
@@ -655,7 +624,9 @@
     <span class='doccomment'>/// Returns all available `Rotation` variants.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// let rotations = tetrs::block::Rotation::variants();</span>
+    <span class='doccomment'>/// use tetrs::import::*;</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// let rotations = Rotation::variants();</span>
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>variants</span>() <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Rotation</span><span class='op'>&gt;</span> {
         <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>Rotation</span>::<span class='ident'>R0</span>, <span class='ident'>Rotation</span>::<span class='ident'>R90</span>, <span class='ident'>Rotation</span>::<span class='ident'>R180</span>, <span class='ident'>Rotation</span>::<span class='ident'>R270</span>]
@@ -664,7 +635,7 @@
     <span class='doccomment'>/// Returns the next clockwise rotation.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::block::Rotation;</span>
+    <span class='doccomment'>/// use tetrs::import::*;</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let rotation = Rotation::R0;</span>
     <span class='doccomment'>/// assert_eq!(rotation.clockwise(), Rotation::R90);</span>
@@ -676,7 +647,7 @@
     <span class='doccomment'>/// Returns the next anticlockwise rotation.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::block::Rotation;</span>
+    <span class='doccomment'>/// use tetrs::import::*;</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let rotation = Rotation::R270;</span>
     <span class='doccomment'>/// assert_eq!(rotation.anticlockwise(), Rotation::R180);</span>
@@ -771,77 +742,37 @@
     <span class='kw'>pub</span> <span class='ident'>rs</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>RotationSystem</span>
 }
 
-
-<span class='doccomment'>/// Traits for building a block.</span>
+<span class='doccomment'>/// Values used for initializing a block.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// This is used to override given default block values to more specific</span>
-<span class='doccomment'>/// values if required.</span>
+<span class='doccomment'>/// This is similar to a builder structure, but instead of chained method calls</span>
+<span class='doccomment'>/// we rely on the `Default` trait.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// These should only be used on construction of a new block with</span>
-<span class='doccomment'>/// `block::new()`. This is not enforced, but limited checking is done</span>
-<span class='doccomment'>/// internally and the results may not be as one would expect.</span>
+<span class='doccomment'>/// This can be used to initialize a block with more fine-grained details than</span>
+<span class='doccomment'>/// standard, whilst retaining useful defaults of values which may not want to</span>
+<span class='doccomment'>/// be changed.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// No collision testing is done on the resulting block, so it is up to the</span>
-<span class='doccomment'>/// caller to perform this.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// ## Examples</span>
 <span class='doccomment'>/// ```ignore</span>
-<span class='doccomment'>/// use tetrs::block::{Type, Rotation, Block, BlockBuilder};</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// let block = Block::new(Type::I)</span>
-<span class='doccomment'>///                   .set_rotation(Rotation::R270);</span>
-<span class='doccomment'>///                   .set_position((5, 10))</span>
-<span class='doccomment'>///                   .set_rotation_system(rotation::SRS::new());</span>
+<span class='doccomment'>/// // Create an option set with default options besides the initial rotation</span>
+<span class='doccomment'>/// let bopt = BlockOptions { rotation: Rotation::R90, ..Default::default() }</span>
 <span class='doccomment'>/// ```</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// See `block::new()` for what default values are used.</span>
-<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>BlockBuilder</span> {
-    <span class='doccomment'>/// Alter the initial position of the block.</span>
-    <span class='kw'>fn</span> <span class='ident'>set_position</span>(<span class='self'>self</span>, <span class='ident'>position</span>: (<span class='ident'>i32</span>, <span class='ident'>i32</span>)) <span class='op'>-&gt;</span> <span class='ident'>Block</span>;
+<span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>missing_docs</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>BlockOptions</span> {
+    <span class='kw'>pub</span> <span class='ident'>x</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>i32</span><span class='op'>&gt;</span>,
 
-    <span class='doccomment'>/// Alter the initial rotation of the block.</span>
-    <span class='kw'>fn</span> <span class='ident'>set_rotation</span>(<span class='self'>self</span>, <span class='ident'>rotation</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> <span class='ident'>Block</span>;
+    <span class='kw'>pub</span> <span class='ident'>y</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>i32</span><span class='op'>&gt;</span>,
 
-    <span class='doccomment'>/// Alter the initial position of the block, setting it to the spawn</span>
-    <span class='doccomment'>/// position as specified by `field`.</span>
-    <span class='kw'>fn</span> <span class='ident'>set_field</span>(<span class='self'>self</span>, <span class='ident'>field</span>: <span class='kw-2'>&amp;</span><span class='ident'>Field</span>) <span class='op'>-&gt;</span> <span class='ident'>Block</span>;
+    <span class='kw'>pub</span> <span class='ident'>rotation</span>: <span class='ident'>Rotation</span>,
 
-    <span class='doccomment'>/// Alter the default RotationSystem used by the block.</span>
-    <span class='kw'>fn</span> <span class='ident'>set_rotation_system</span><span class='op'>&lt;</span><span class='ident'>R</span>: <span class='ident'>RotationSystem</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>rs</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='ident'>Block</span>;
+    <span class='kw'>pub</span> <span class='ident'>rotation_system</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>
 }
 
-<span class='kw'>impl</span> <span class='ident'>BlockBuilder</span> <span class='kw'>for</span> <span class='ident'>Block</span> {
-    <span class='kw'>fn</span> <span class='ident'>set_position</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>position</span>: (<span class='ident'>i32</span>, <span class='ident'>i32</span>)) <span class='op'>-&gt;</span> <span class='ident'>Block</span> {
-        <span class='self'>self</span>.<span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>position</span>.<span class='number'>0</span>;
-        <span class='self'>self</span>.<span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>position</span>.<span class='number'>1</span>;
-        <span class='self'>self</span>
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>set_rotation</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>rotation</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> <span class='ident'>Block</span> {
-        <span class='self'>self</span>.<span class='ident'>r</span> <span class='op'>=</span> <span class='ident'>rotation</span>;
-        <span class='self'>self</span>
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>set_field</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>field</span>: <span class='kw-2'>&amp;</span><span class='ident'>Field</span>) <span class='op'>-&gt;</span> <span class='ident'>Block</span> {
-        <span class='self'>self</span>.<span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>field</span>.<span class='ident'>spawn</span>.<span class='number'>0</span>;
-        <span class='self'>self</span>.<span class='ident'>y</span> <span class='op'>=</span> <span class='ident'>field</span>.<span class='ident'>spawn</span>.<span class='number'>1</span>;
-        <span class='self'>self</span>
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>set_rotation_system</span><span class='op'>&lt;</span><span class='ident'>R</span>: <span class='ident'>RotationSystem</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>rs</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='ident'>Block</span> {
-        <span class='self'>self</span>.<span class='ident'>rs</span> <span class='op'>=</span> <span class='ident'>rs</span>;
-        <span class='self'>self</span>
-    }
-}
-
-<span class='kw'>impl</span> <span class='ident'>Default</span> <span class='kw'>for</span> <span class='ident'>Block</span> {
-    <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='ident'>Block</span> {
-        <span class='ident'>Block</span> {
-            <span class='ident'>x</span>: <span class='number'>4</span>,
-            <span class='ident'>y</span>: <span class='number'>0</span>,
-            <span class='ident'>id</span>: <span class='ident'>Type</span>::<span class='ident'>I</span>,
-            <span class='ident'>r</span>: <span class='ident'>Rotation</span>::<span class='ident'>R0</span>,
-            <span class='ident'>rs</span>: <span class='ident'>rotation</span>::<span class='ident'>SRS</span>::<span class='ident'>new</span>() <span class='kw'>as</span> <span class='kw-2'>&amp;</span><span class='ident'>RotationSystem</span>
+<span class='kw'>impl</span> <span class='ident'>Default</span> <span class='kw'>for</span> <span class='ident'>BlockOptions</span> {
+    <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='ident'>BlockOptions</span> {
+        <span class='ident'>BlockOptions</span> {
+            <span class='ident'>x</span>: <span class='prelude-val'>None</span>,
+            <span class='ident'>y</span>: <span class='prelude-val'>None</span>,
+            <span class='ident'>rotation</span>: <span class='ident'>Rotation</span>::<span class='ident'>R0</span>,
+            <span class='ident'>rotation_system</span>: <span class='string'>&quot;srs&quot;</span>
         }
     }
 }
@@ -861,17 +792,29 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ---</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// If values are required to be overridden, look at the `BlockBuilder`</span>
-    <span class='doccomment'>/// trait implementation.</span>
+    <span class='doccomment'>/// If values are required to be overridden, look at the `with_options`</span>
+    <span class='doccomment'>/// function.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ## Examples</span>
     <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::block::{Block, Type};</span>
+    <span class='doccomment'>/// use tetrs::import::*;</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// let block = Block::new(Type::I);</span>
+    <span class='doccomment'>/// let field = Field::new();</span>
+    <span class='doccomment'>/// let block = Block::new(block::Type::I, &amp;field);</span>
     <span class='doccomment'>/// ```</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>id</span>: <span class='ident'>Type</span>) <span class='op'>-&gt;</span> <span class='ident'>Block</span> {
-        <span class='ident'>Block</span> { <span class='ident'>id</span>: <span class='ident'>id</span>, ..<span class='ident'>Default</span>::<span class='ident'>default</span>() }
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>id</span>: <span class='ident'>Type</span>, <span class='ident'>field</span>: <span class='kw-2'>&amp;</span><span class='ident'>Field</span>) <span class='op'>-&gt;</span> <span class='ident'>Block</span> {
+        <span class='ident'>Block</span>::<span class='ident'>with_options</span>(<span class='ident'>id</span>, <span class='kw-2'>&amp;</span><span class='ident'>field</span>, <span class='ident'>BlockOptions</span> { ..<span class='ident'>Default</span>::<span class='ident'>default</span>() })
+    }
+
+    <span class='doccomment'>/// Construct a new block with the specified options.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>with_options</span>(<span class='ident'>id</span>: <span class='ident'>Type</span>, <span class='ident'>field</span>: <span class='kw-2'>&amp;</span><span class='ident'>Field</span>, <span class='ident'>options</span>: <span class='ident'>BlockOptions</span>) <span class='op'>-&gt;</span> <span class='ident'>Block</span> {
+        <span class='ident'>Block</span> {
+            <span class='ident'>id</span>: <span class='ident'>id</span>,
+            <span class='ident'>x</span>: <span class='kw'>if</span> <span class='ident'>options</span>.<span class='ident'>x</span>.<span class='ident'>is_none</span>() { <span class='ident'>field</span>.<span class='ident'>spawn</span>.<span class='number'>0</span> } <span class='kw'>else</span> { <span class='ident'>options</span>.<span class='ident'>x</span>.<span class='ident'>unwrap</span>() },
+            <span class='ident'>y</span>: <span class='kw'>if</span> <span class='ident'>options</span>.<span class='ident'>y</span>.<span class='ident'>is_none</span>() { <span class='ident'>field</span>.<span class='ident'>spawn</span>.<span class='number'>1</span> } <span class='kw'>else</span> { <span class='ident'>options</span>.<span class='ident'>y</span>.<span class='ident'>unwrap</span>() },
+            <span class='ident'>r</span>: <span class='ident'>options</span>.<span class='ident'>rotation</span>,
+            <span class='ident'>rs</span>: <span class='ident'>rotation_system</span>::<span class='ident'>new</span>(<span class='ident'>options</span>.<span class='ident'>rotation_system</span>)
+        }
     }
 
     <span class='doccomment'>/// Return `true` if the block collides with the field after applying the</span>
@@ -914,12 +857,10 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ## Examples</span>
     <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::field::Field;</span>
-    <span class='doccomment'>/// use tetrs::block::{Block, BlockBuilder, Direction, Type};</span>
+    <span class='doccomment'>/// use tetrs::import::*;</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let field = Field::new();</span>
-    <span class='doccomment'>/// let mut block = Block::new(Type::Z)</span>
-    <span class='doccomment'>///                       .set_field(&amp;field);</span>
+    <span class='doccomment'>/// let mut block = Block::new(block::Type::Z, &amp;field);</span>
     <span class='doccomment'>/// block.shift(&amp;field, Direction::Left);</span>
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>field</span>: <span class='kw-2'>&amp;</span><span class='ident'>Field</span>, <span class='ident'>direction</span>: <span class='ident'>Direction</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
@@ -939,11 +880,10 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ## Examples</span>
     <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::field::Field;</span>
-    <span class='doccomment'>/// use tetrs::block::{Block, BlockBuilder, Direction, Type};</span>
+    <span class='doccomment'>/// use tetrs::import::*;</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let field = Field::new();</span>
-    <span class='doccomment'>/// let mut block = Block::new(Type::Z).set_field(&amp;field);</span>
+    <span class='doccomment'>/// let mut block = Block::new(block::Type::Z, &amp;field);</span>
     <span class='doccomment'>/// block.shift_extend(&amp;field, Direction::Left);</span>
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>shift_extend</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>field</span>: <span class='kw-2'>&amp;</span><span class='ident'>Field</span>, <span class='ident'>direction</span>: <span class='ident'>Direction</span>) {
@@ -956,11 +896,10 @@
     <span class='doccomment'>/// done only after an offset is applied.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::field::Field;</span>
-    <span class='doccomment'>/// use tetrs::block::{Rotation, Block, BlockBuilder, Type};</span>
+    <span class='doccomment'>/// use tetrs::import::*;</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let field = Field::new();</span>
-    <span class='doccomment'>/// let mut block = Block::new(Type::Z).set_field(&amp;field);</span>
+    <span class='doccomment'>/// let mut block = Block::new(block::Type::Z, &amp;field);</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// // Rotate then move down 2 and right 1 and test for collision</span>
     <span class='doccomment'>/// block.rotate_at_offset(&amp;field, Rotation::R90, (2, 1));</span>
@@ -989,11 +928,10 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ## Examples</span>
     <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::field::Field;</span>
-    <span class='doccomment'>/// use tetrs::block::{Rotation, Block, BlockBuilder, Type};</span>
+    <span class='doccomment'>/// use tetrs::import::*;</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let field = Field::new();</span>
-    <span class='doccomment'>/// let mut block = Block::new(Type::Z).set_field(&amp;field);</span>
+    <span class='doccomment'>/// let mut block = Block::new(block::Type::Z, &amp;field);</span>
     <span class='doccomment'>/// block.rotate(&amp;field, Rotation::R90);</span>
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>rotate</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>field</span>: <span class='kw-2'>&amp;</span><span class='ident'>Field</span>, <span class='ident'>rotation</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
@@ -1012,11 +950,10 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ## Examples</span>
     <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::field::Field;</span>
-    <span class='doccomment'>/// use tetrs::block::{Type, Block, BlockBuilder};</span>
+    <span class='doccomment'>/// use tetrs::import::*;</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let field = Field::new();</span>
-    <span class='doccomment'>/// let block = Block::new(Type::Z).set_field(&amp;field);</span>
+    <span class='doccomment'>/// let block = Block::new(block::Type::Z, &amp;field);</span>
     <span class='doccomment'>/// let ghost = block.ghost(&amp;field);</span>
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>ghost</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>field</span>: <span class='kw-2'>&amp;</span><span class='ident'>Field</span>) <span class='op'>-&gt;</span> <span class='ident'>Block</span> {
@@ -1028,15 +965,13 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
-
     <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>field</span>::<span class='ident'>Field</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_shift</span>() {
         <span class='kw'>let</span> <span class='ident'>field</span> <span class='op'>=</span> <span class='ident'>Field</span>::<span class='ident'>new</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>Type</span>::<span class='ident'>Z</span>)
-                              .<span class='ident'>set_field</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>Type</span>::<span class='ident'>Z</span>, <span class='kw-2'>&amp;</span><span class='ident'>field</span>);
 
         <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='ident'>block</span>.<span class='ident'>x</span>;
         <span class='ident'>block</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>, <span class='ident'>Direction</span>::<span class='ident'>Left</span>);
@@ -1049,8 +984,7 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_rotation</span>() {
         <span class='kw'>let</span> <span class='ident'>field</span> <span class='op'>=</span> <span class='ident'>Field</span>::<span class='ident'>new</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>Type</span>::<span class='ident'>S</span>)
-                              .<span class='ident'>set_field</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>Type</span>::<span class='ident'>S</span>, <span class='kw-2'>&amp;</span><span class='ident'>field</span>);
 
         <span class='ident'>block</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>, <span class='ident'>Direction</span>::<span class='ident'>Down</span>);
         <span class='ident'>block</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>, <span class='ident'>Direction</span>::<span class='ident'>Down</span>);
