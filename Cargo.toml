@@ -9,6 +9,9 @@ time = "0.1.35"
 rand = "0.3"
 log = "0.3.6"
 itertools = "0.4"
+serde = "*"
+serde_json = "*"
+serde_macros = "*"
 
 [features]
 default = []

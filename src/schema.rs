@@ -27,9 +27,9 @@
 //! "));
 //! ```
 
-use rotation::{self, RotationSystem};
+use rotation_system::{self, RotationSystem};
 use field::Field;
-use block::{self, Rotation, Block, BlockBuilder};
+use block::{self, Rotation, Block, BlockOptions};
 
 use std::{fmt, iter};
 use std::cmp::PartialEq;
@@ -234,7 +234,7 @@ impl Schema {
         //
         // We also require setting the correct to state, which should also require
         // a `RotationSystem` argument.
-        let rs = rotation::SRS{};
+        let rs = rotation_system::SRS{};
 
         for (&ty, &ro) in iproduct!(block::Type::variants().iter(), Rotation::variants().iter()) {
             let data = rs.data(ty, ro);
@@ -253,9 +253,12 @@ impl Schema {
 
                 // (xo, yo) are not normalized based on the field so the block
                 // needs to be adjusted.
-                let block = Block::new(ty)
-                                  .set_rotation(ro)
-                                  .set_position((i32!(ox), i32!(field.height - oy - 1)));
+                let block = Block::with_options(ty, &field, BlockOptions {
+                    x: Some(i32!(ox)),
+                    y: Some(i32!(field.height - oy - 1)),
+                    rotation: ro,
+                    ..Default::default()
+                });
 
                 assert!(!block.collides(&field));
                 return block;
@@ -314,8 +317,7 @@ impl PartialEq for Schema {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use block::{Type, Direction, Rotation};
-    use collections::enum_set::CLike;
+    use block::Direction;
 
     #[test]
     fn test_from_string1() {

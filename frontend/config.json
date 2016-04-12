@@ -1,0 +1,28 @@
+{
+  "field_options": {
+    "width": 10,
+    "height": 25,
+    "hidden": 3,
+    "spawn": [
+      4,
+      0
+    ]
+  },
+  "randomizer_name": "bag",
+  "randomizer_lookahead": 7,
+  "rotation_system_name": "srs",
+  "wallkick_name": "srs",
+  "mspt": 16,
+  "engine_settings": {
+    "das": 150,
+    "are": 0,
+    "gravity": 1000,
+    "arr": 16,
+    "has_hold": true,
+    "hold_limit": 1,
+    "has_hard_drop": true,
+    "has_soft_drop": true,
+    "soft_drop_speed": 16,
+    "preview_count": 3
+  }
+}

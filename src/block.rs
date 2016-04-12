@@ -7,7 +7,7 @@
 //! ```ignore
 //! use tetrs::{Rotation, Direction};
 //! use tetrs::field::Field;
-//! use tetrs::block::{Block, BlockBuilder};
+//! use tetrs::block::{Block, BlockOptions};
 //!
 //! let field = Field::new();
 //!
@@ -19,7 +19,7 @@
 //! ```
 
 use field::Field;
-use rotation::{self, RotationSystem};
+use rotation_system::{self, RotationSystem};
 
 use std::mem;
 use collections::enum_set::CLike;
@@ -47,7 +47,9 @@ impl Type {
     /// Returns all `non-None` `Type` variants.
     ///
     /// ```
-    /// let types = tetrs::block::Type::variants();
+    /// use tetrs::import::*;
+    ///
+    /// let types = block::Type::variants();
     /// ```
     pub fn variants() -> &'static [Type] {
         static VARIANTS: &'static [Type; 7] = &[
@@ -99,7 +101,9 @@ impl Rotation {
     /// Returns all available `Rotation` variants.
     ///
     /// ```
-    /// let rotations = tetrs::block::Rotation::variants();
+    /// use tetrs::import::*;
+    ///
+    /// let rotations = Rotation::variants();
     /// ```
     pub fn variants() -> Vec<Rotation> {
         vec![Rotation::R0, Rotation::R90, Rotation::R180, Rotation::R270]
@@ -108,7 +112,7 @@ impl Rotation {
     /// Returns the next clockwise rotation.
     ///
     /// ```
-    /// use tetrs::block::Rotation;
+    /// use tetrs::import::*;
     ///
     /// let rotation = Rotation::R0;
     /// assert_eq!(rotation.clockwise(), Rotation::R90);
@@ -120,7 +124,7 @@ impl Rotation {
     /// Returns the next anticlockwise rotation.
     ///
     /// ```
-    /// use tetrs::block::Rotation;
+    /// use tetrs::import::*;
     ///
     /// let rotation = Rotation::R270;
     /// assert_eq!(rotation.anticlockwise(), Rotation::R180);
@@ -215,77 +219,37 @@ pub struct Block {
     pub rs: &'static RotationSystem
 }
 
-
-/// Traits for building a block.
+/// Values used for initializing a block.
 ///
-/// This is used to override given default block values to more specific
-/// values if required.
+/// This is similar to a builder structure, but instead of chained method calls
+/// we rely on the `Default` trait.
 ///
-/// These should only be used on construction of a new block with
-/// `block::new()`. This is not enforced, but limited checking is done
-/// internally and the results may not be as one would expect.
+/// This can be used to initialize a block with more fine-grained details than
+/// standard, whilst retaining useful defaults of values which may not want to
+/// be changed.
 ///
-/// No collision testing is done on the resulting block, so it is up to the
-/// caller to perform this.
-///
-/// ## Examples
 /// ```ignore
-/// use tetrs::block::{Type, Rotation, Block, BlockBuilder};
-///
-/// let block = Block::new(Type::I)
-///                   .set_rotation(Rotation::R270);
-///                   .set_position((5, 10))
-///                   .set_rotation_system(rotation::SRS::new());
+/// // Create an option set with default options besides the initial rotation
+/// let bopt = BlockOptions { rotation: Rotation::R90, ..Default::default() }
 /// ```
-///
-/// See `block::new()` for what default values are used.
-pub trait BlockBuilder {
-    /// Alter the initial position of the block.
-    fn set_position(self, position: (i32, i32)) -> Block;
+#[allow(missing_docs)]
+pub struct BlockOptions {
+    pub x: Option<i32>,
 
-    /// Alter the initial rotation of the block.
-    fn set_rotation(self, rotation: Rotation) -> Block;
+    pub y: Option<i32>,
 
-    /// Alter the initial position of the block, setting it to the spawn
-    /// position as specified by `field`.
-    fn set_field(self, field: &Field) -> Block;
+    pub rotation: Rotation,
 
-    /// Alter the default RotationSystem used by the block.
-    fn set_rotation_system<R: RotationSystem>(mut self, rs: &'static R) -> Block;
+    pub rotation_system: &'static str
 }
 
-impl BlockBuilder for Block {
-    fn set_position(mut self, position: (i32, i32)) -> Block {
-        self.x = position.0;
-        self.y = position.1;
-        self
-    }
-
-    fn set_rotation(mut self, rotation: Rotation) -> Block {
-        self.r = rotation;
-        self
-    }
-
-    fn set_field(mut self, field: &Field) -> Block {
-        self.x = field.spawn.0;
-        self.y = field.spawn.1;
-        self
-    }
-
-    fn set_rotation_system<R: RotationSystem>(mut self, rs: &'static R) -> Block {
-        self.rs = rs;
-        self
-    }
-}
-
-impl Default for Block {
-    fn default() -> Block {
-        Block {
-            x: 4,
-            y: 0,
-            id: Type::I,
-            r: Rotation::R0,
-            rs: rotation::SRS::new() as &RotationSystem
+impl Default for BlockOptions {
+    fn default() -> BlockOptions {
+        BlockOptions {
+            x: None,
+            y: None,
+            rotation: Rotation::R0,
+            rotation_system: "srs"
         }
     }
 }
@@ -305,17 +269,29 @@ impl Block {
     ///
     /// ---
     ///
-    /// If values are required to be overridden, look at the `BlockBuilder`
-    /// trait implementation.
+    /// If values are required to be overridden, look at the `with_options`
+    /// function.
     ///
     /// ## Examples
     /// ```
-    /// use tetrs::block::{Block, Type};
+    /// use tetrs::import::*;
     ///
-    /// let block = Block::new(Type::I);
+    /// let field = Field::new();
+    /// let block = Block::new(block::Type::I, &field);
     /// ```
-    pub fn new(id: Type) -> Block {
-        Block { id: id, ..Default::default() }
+    pub fn new(id: Type, field: &Field) -> Block {
+        Block::with_options(id, &field, BlockOptions { ..Default::default() })
+    }
+
+    /// Construct a new block with the specified options.
+    pub fn with_options(id: Type, field: &Field, options: BlockOptions) -> Block {
+        Block {
+            id: id,
+            x: if options.x.is_none() { field.spawn.0 } else { options.x.unwrap() },
+            y: if options.y.is_none() { field.spawn.1 } else { options.y.unwrap() },
+            r: options.rotation,
+            rs: rotation_system::new(options.rotation_system)
+        }
     }
 
     /// Return `true` if the block collides with the field after applying the
@@ -358,12 +334,10 @@ impl Block {
     ///
     /// ## Examples
     /// ```
-    /// use tetrs::field::Field;
-    /// use tetrs::block::{Block, BlockBuilder, Direction, Type};
+    /// use tetrs::import::*;
     ///
     /// let field = Field::new();
-    /// let mut block = Block::new(Type::Z)
-    ///                       .set_field(&field);
+    /// let mut block = Block::new(block::Type::Z, &field);
     /// block.shift(&field, Direction::Left);
     /// ```
     pub fn shift(&mut self, field: &Field, direction: Direction) -> bool {
@@ -383,11 +357,10 @@ impl Block {
     ///
     /// ## Examples
     /// ```
-    /// use tetrs::field::Field;
-    /// use tetrs::block::{Block, BlockBuilder, Direction, Type};
+    /// use tetrs::import::*;
     ///
     /// let field = Field::new();
-    /// let mut block = Block::new(Type::Z).set_field(&field);
+    /// let mut block = Block::new(block::Type::Z, &field);
     /// block.shift_extend(&field, Direction::Left);
     /// ```
     pub fn shift_extend(&mut self, field: &Field, direction: Direction) {
@@ -400,11 +373,10 @@ impl Block {
     /// done only after an offset is applied.
     ///
     /// ```
-    /// use tetrs::field::Field;
-    /// use tetrs::block::{Rotation, Block, BlockBuilder, Type};
+    /// use tetrs::import::*;
     ///
     /// let field = Field::new();
-    /// let mut block = Block::new(Type::Z).set_field(&field);
+    /// let mut block = Block::new(block::Type::Z, &field);
     ///
     /// // Rotate then move down 2 and right 1 and test for collision
     /// block.rotate_at_offset(&field, Rotation::R90, (2, 1));
@@ -433,11 +405,10 @@ impl Block {
     ///
     /// ## Examples
     /// ```
-    /// use tetrs::field::Field;
-    /// use tetrs::block::{Rotation, Block, BlockBuilder, Type};
+    /// use tetrs::import::*;
     ///
     /// let field = Field::new();
-    /// let mut block = Block::new(Type::Z).set_field(&field);
+    /// let mut block = Block::new(block::Type::Z, &field);
     /// block.rotate(&field, Rotation::R90);
     /// ```
     pub fn rotate(&mut self, field: &Field, rotation: Rotation) -> bool {
@@ -456,11 +427,10 @@ impl Block {
     ///
     /// ## Examples
     /// ```
-    /// use tetrs::field::Field;
-    /// use tetrs::block::{Type, Block, BlockBuilder};
+    /// use tetrs::import::*;
     ///
     /// let field = Field::new();
-    /// let block = Block::new(Type::Z).set_field(&field);
+    /// let block = Block::new(block::Type::Z, &field);
     /// let ghost = block.ghost(&field);
     /// ```
     pub fn ghost(&self, field: &Field) -> Block {
@@ -472,15 +442,13 @@ impl Block {
 
 #[cfg(test)]
 mod tests {
-
     use super::*;
     use field::Field;
 
     #[test]
     fn test_shift() {
         let field = Field::new();
-        let mut block = Block::new(Type::Z)
-                              .set_field(&field);
+        let mut block = Block::new(Type::Z, &field);
 
         let x = block.x;
         block.shift(&field, Direction::Left);
@@ -493,8 +461,7 @@ mod tests {
     #[test]
     fn test_rotation() {
         let field = Field::new();
-        let mut block = Block::new(Type::S)
-                              .set_field(&field);
+        let mut block = Block::new(Type::S, &field);
 
         block.shift(&field, Direction::Down);
         block.shift(&field, Direction::Down);

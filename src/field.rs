@@ -6,9 +6,8 @@
 //! gameplay to be built from this structure.
 
 use block::{self, Block};
-use rotation::RotationSystem;
+use rotation_system::RotationSystem;
 
-use itertools::Itertools;
 use collections::enum_set::CLike;
 
 /// A `Field` is simply a 2-D `Vec` with some corresponding options.
@@ -57,111 +56,70 @@ pub struct Field {
     pub data: Vec<Vec<usize>>,
 }
 
-/// Handles building of more complicated fields than can be constructed with
-/// `new` itself.
-///
-/// More options may be added in the future whilst keeping
-/// backwards-compatibility.
-///
-/// ## Examples
-/// ```
-/// use tetrs::field::{Field, FieldBuilder};
-///
-/// // Constructs a field with a width of 12 and height of 30
-/// let field = Field::new().set_width(12).set_height(30);
-/// ```
-pub trait FieldBuilder {
-    /// Alter the width of the field and return the modified field.
-    fn set_width(self, width: usize) -> Field;
+/// Options for use when constructing a field.
+#[derive(Serialize, Deserialize, Debug)]
+#[allow(missing_docs)]
+pub struct FieldOptions {
+    pub width: usize,
 
-    /// Alter the height of the field and return the modified field.
-    fn set_height(self, height: usize) -> Field;
+    pub height: usize,
 
-    /// Alter the hidden height of the field and return the modified field.
-    fn set_hidden(self, hidden: usize) -> Field;
+    pub hidden: usize,
 
-    /// Alter the block spawn point of the field and return the modified.
-    fn set_spawn(self, spawn: (i32, i32)) -> Field;
+    pub spawn: (i32, i32)
 }
 
-impl FieldBuilder for Field {
-    fn set_width(mut self, width: usize) -> Field {
-        self.width = width;
-        self.data.iter_mut().foreach(|x| x.resize(width, block::Type::None.to_usize()));
-        self
-    }
-
-    fn set_height(mut self, height: usize) -> Field {
-        assert!(height > self.hidden);
-        let width = self.width;
-        self.height = height;
-        self.data.resize(height, vec![block::Type::None.to_usize(); width]);
-        self
-    }
-
-    fn set_hidden(mut self, hidden: usize) -> Field {
-        self.hidden = hidden;
-        self
-    }
-
-    fn set_spawn(mut self, spawn: (i32, i32)) -> Field {
-        self.spawn = spawn;
-        self
-    }
-}
-
-impl Default for Field {
-    fn default() -> Field {
-        Field {
+impl Default for FieldOptions {
+    fn default() -> FieldOptions {
+        FieldOptions {
             width: 10,
             height: 25,
             hidden: 3,
-            spawn: (4, 0),
-            data: vec![vec![block::Type::None.to_usize(); 10]; 25]
+            spawn: (4, 0)
         }
     }
 }
 
 impl Field {
-    /// Construct a new field object.
-    ///
-    /// This is often combined with the `FieldBuilder` trait impl's to provide
-    /// custom parameters for a `Field`.
-    ///
-    /// A `Field` can be constructed with no arguments, in which case the
-    /// following defaults are used:
-    ///
-    /// ## Width
-    /// Default width is 10 columns.
-    ///
-    /// ## Height
-    /// Default height is 25 rows.
-    ///
-    /// ## Hidden
-    /// The hidden segment takes up 3 rows.
-    ///
-    /// ## Spawn
-    /// The default spawn is at coordinates `(4, 0)`.
-    ///
-    /// ---
-    ///
-    /// If values are to be overridden, look at the `FieldBuilder` trait impl.
+    /// Construct a `Field` object with default values.
     ///
     /// ## Examples
     /// ```
-    /// use tetrs::field::Field;
+    /// use tetrs::import::*;
     ///
     /// let field = Field::new();
     /// ```
     pub fn new() -> Field {
-        Field { ..Default::default() }
+        Field::with_options(FieldOptions { ..Default::default() })
+    }
+
+    /// Construct a `Field` object with specific values.
+    ///
+    /// ## Examples
+    ///
+    /// ```
+    /// use tetrs::import::*;
+    ///
+    /// let field = Field::with_options(FieldOptions {
+    ///                 width: 15, height: 22,
+    ///                 ..Default::default()
+    ///             });
+    /// ```
+    pub fn with_options(options: FieldOptions) -> Field {
+        Field {
+            width: options.width,
+            height: options.height,
+            hidden: options.hidden,
+            spawn: options.spawn,
+            data: vec![vec![block::Type::None.to_usize(); options.width]; options.height]
+        }
     }
 
     /// Clear lines from the field and return the number cleared.
     ///
     /// ## Examples
     /// ```
-    /// use tetrs::field::Field;
+    /// use tetrs::import::*;
     ///
     /// let mut field = Field::new();
     /// let lines_cleared = field.clear_lines();
@@ -187,11 +145,10 @@ impl Field {
     ///
     /// ## Examples
     /// ```
-    /// use tetrs::field::{Field};
-    /// use tetrs::block::{Block, Direction, Type};
+    /// use tetrs::import::*;
     ///
     /// let mut field = Field::new();
-    /// let mut block = Block::new(Type::I);
+    /// let mut block = Block::new(block::Type::I, &field);
     ///
     /// field.freeze(block);
     ///
@@ -210,7 +167,7 @@ impl Field {
     ///
     /// ## Examples
     /// ```
-    /// use tetrs::field::Field;
+    /// use tetrs::import::*;
     ///
     /// let field = Field::new();
     /// let value = field.get((5, 10));

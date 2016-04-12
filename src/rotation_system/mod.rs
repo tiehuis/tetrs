@@ -22,95 +22,22 @@ pub trait RotationSystem {
     /// and `Rotation`.
     fn data(&self, ty: Type, rotation: Rotation) -> &'static [(usize, usize)];
 
-    /// Returns a tuple containing the leading empty `(x, y)` columns.
-    ///
-    /// ## Examples
-    /// ```
-    /// use tetrs::block::{Rotation, Type};
-    /// use tetrs::rotation::{self, RotationSystem};
-    ///
-    /// let rs = rotation::SRS{};
-    ///
-    /// // An L-block can have the following representation
-    /// // .#.
-    /// // .#.
-    /// // .##
-    ///
-    /// let (x1, y1) = rs.min(Type::L, Rotation::R90);
-    /// assert_eq!((x1, y1), (1, 0));
-    ///
-    /// // An I-block can have the following representation
-    /// // ....
-    /// // ....
-    /// // ####
-    /// // ....
-    ///
-    /// let (x2, y2) = rs.min(Type::I, Rotation::R180);
-    /// assert_eq!((x2, y2), (0, 2));
-    ///
-    /// ```
-    fn min(&self, id: Type, r: Rotation) -> (usize, usize) {
-        use std::cmp;
-        self.data(id, r).iter()
-            .fold((!0, !0), |(a, b), &(x, y)| {
-                (cmp::min(a, x), cmp::min(b, y))
-            })
-    }
-
-    /// Returns an `(x, y)` tuple containing the maximum offsets for the
-    /// specified block.
-    ///
-    /// ## Examples
-    /// ```
-    /// use tetrs::block::{Rotation, Type};
-    /// use tetrs::rotation::{self, RotationSystem};
-    ///
-    /// let rs = rotation::SRS{};
-    ///
-    /// // An L-block can have the following representation
-    /// // .#.
-    /// // .#.
-    /// // .##
-    ///
-    /// let (x1, y1) = rs.max(Type::L, Rotation::R90);
-    /// assert_eq!((x1, y1), (2, 2));
-    ///
-    /// // An I-block can have the following representation
-    /// // ....
-    /// // ....
-    /// // ####
-    /// // ....
-    ///
-    /// let (x2, y2) = rs.max(Type::I, Rotation::R180);
-    /// assert_eq!((x2, y2), (3, 2));
-    ///
-    /// ```
-    fn max(&self, id: Type, r: Rotation) -> (usize, usize) {
-        use std::cmp;
-        self.data(id, r).iter()
-            .fold((0, 0), |(a, b), &(x, y)| {
-                (cmp::max(a, x), cmp::max(b, y))
-            })
-    }
-
     /// Returns the minimum offset of the first piece in a block.
     ///
     /// Return the offset from the `(x, y)` bounding coordinate to the first
     /// non-empty piece in a block. This row by row from `y = 0` onwards.
     ///
     /// ```
-    /// use tetrs::block::{Rotation, Type};
-    /// use tetrs::rotation;
-    /// use tetrs::rotation::RotationSystem;
+    /// use tetrs::import::*;
     ///
     /// // The piece marked '@' is the first encountered piece.
     /// // ...
     /// // @##
     /// // .#.
     ///
-    /// let rs = rotation::SRS{};
+    /// let rs = rotation_system::new("srs");
     ///
-    /// let (x1, y1) = rs.minp(Type::T, Rotation::R180);
+    /// let (x1, y1) = rs.minp(block::Type::T, Rotation::R180);
     /// assert_eq!((x1, y1), (0, 1));
     ///
     /// ```
@@ -138,7 +65,7 @@ macro_rules! rs_gen {
     ($id:ident) => {
         use collections::enum_set::CLike;
         use block::{Type, Rotation};
-        use rotation::RotationSystem;
+        use rotation_system::RotationSystem;
 
         #[derive(Clone, Debug, Default, Hash)]
         #[allow(missing_docs)]
@@ -183,17 +110,28 @@ pub mod tengen;
 pub use self::dtet::DTET;
 pub mod dtet;
 
+/// Factory function for returning appropriate rotation systems based on their
+/// names
+pub fn new(name: &str) -> &'static RotationSystem {
+    match name {
+        "srs" => SRS::new(),
+        "dtet" => DTET::new(),
+        "arika" => Arika::new(),
+        "tengen" => Tengen::new(),
+        _ => panic!("unknown rotation system: {}", name)
+    }
+}
+
 // If we can guarantee `max`, `min`, and `minp` from `rs_gen!()` work, then we
 // only require testing for one case (`SRS` in this example).
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use rotation;
-    use block::{Rotation, Type};
+    use ::import::*;
+    use ::block::Type;
 
     #[test]
     fn test_offset_to_first1() {
-        let rs = rotation::SRS::new();
+        let rs = rotation_system::SRS::new();
 
         assert_eq!((1, 0), rs.minp(Type::T, Rotation::R0));
         assert_eq!((1, 0), rs.minp(Type::T, Rotation::R90));

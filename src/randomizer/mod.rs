@@ -71,3 +71,10 @@ mod gameboy;
 mod tgm1;
 mod tgm2;
 
+/// Factory function for generating randomizers.
+pub fn new(name: &str, lookahead: usize) -> BagRandomizer {
+    match name {
+        "bag" => BagRandomizer::new(lookahead),
+        _ => panic!("unknown randomizer name")
+    }
+}

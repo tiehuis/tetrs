@@ -8,11 +8,8 @@ use sdl2::keyboard::Scancode;
 use sdl2::rect::Rect;
 use sdl2::pixels::Color;
 
-use tetrs::engine::Engine;
+use tetrs::import::*;
 use tetrs::controller::Action;
-use tetrs::block::Rotation;
-use tetrs::randomizer::Randomizer;
-use tetrs::options::Options;
 
 use std::thread;
 use std::time::Duration;
@@ -92,10 +89,7 @@ fn main() {
 
     let font = ttf_ctx.load_font(Path::new("res/font/font.ttf"), 128).unwrap();
 
-    let options = Options {
-        ..Default::default()
-    };
-
+    let options = EngineOptions::load_file("config.json");
     let mut engine = Engine::new(options);
 
     while engine.running {

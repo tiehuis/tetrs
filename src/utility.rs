@@ -26,14 +26,12 @@ impl BlockHelper for Block {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use block::{self, Rotation, Direction, Block, BlockBuilder};
-    use field::Field;
-    use wallkick;
+    use ::import::*;
 
     #[test]
     fn test_rotate_with_wallkick() {
         let field = Field::new();
-        let mut block = Block::new(block::Type::S).set_field(&field);
+        let mut block = Block::new(block::Type::S, &field);
         let wk = wallkick::SRS::new();
 
         block.shift(&field, Direction::Down);

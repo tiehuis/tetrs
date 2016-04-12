@@ -3,15 +3,122 @@
 
 #![allow(dead_code)]
 
-use field::{Field, FieldBuilder};
+use field::{Field, FieldOptions};
 use controller::{Action, Controller};
-use block::{self, Rotation, Direction, Block, BlockBuilder};
-use randomizer::{Randomizer, BagRandomizer};
-use rotation::{self, RotationSystem};
+use block::{self, Rotation, Direction, Block};
+use randomizer::{self, Randomizer, BagRandomizer};
+use rotation_system::{self, RotationSystem};
 use wallkick::{self, Wallkick};
 use utility::BlockHelper;
-use options::Options;
 use statistics::Statistics;
+
+use std::io::prelude::*;
+use std::fs::File;
+use serde_json;
+
+/// Stores a number of internal options that may be useful during a games
+/// execution.
+///
+/// Unlike `NullpoMino` these are never tied to a name. This can be handled by
+/// the caller if required.
+///
+/// Currently `Options` do not manage the randomizer/rotation system etc. Need
+/// to determine exactly what is required.
+#[derive(Serialize, Deserialize, Debug)]
+#[allow(missing_docs)]
+pub struct EngineOptions {
+    pub field_options: FieldOptions,
+
+    pub randomizer_name: String,
+
+    pub randomizer_lookahead: usize,
+
+    pub rotation_system_name: String,
+
+    pub wallkick_name: String,
+
+    pub mspt: u64,
+
+    pub engine_settings: EngineSettings
+}
+
+impl Default for EngineOptions {
+    fn default() -> EngineOptions {
+        EngineOptions {
+            field_options: FieldOptions { ..Default::default() },
+            randomizer_name: "bag".to_string(),
+            randomizer_lookahead: 7,
+            rotation_system_name: "srs".to_string(),
+            wallkick_name: "srs".to_string(),
+            mspt: 16,
+            engine_settings: EngineSettings { ..Default::default() }
+        }
+    }
+}
+
+impl EngineOptions {
+    /// Construct an `EngineOptions` from a file.
+    pub fn load_file(name: &str) -> EngineOptions {
+        let mut f = match File::open(name) {
+            Ok(f) => f,
+            Err(e) => panic!("Failed to open file: {}", e)
+        };
+        let mut buffer = String::new();
+        let _ = f.read_to_string(&mut buffer);
+        serde_json::from_str(&buffer).unwrap()
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+/// Settings used internally by an `Engine`.
+pub struct EngineSettings {
+    /// DAS setting (in ms)
+    pub das: u64,
+
+    /// ARE time (in ms)
+    pub are: u64,
+
+    /// Gravity (in ms). How many ms must pass for block to fall
+    pub gravity: u64,
+
+    /// Auto-repeat-rate (in ms)
+    pub arr: u64,
+
+    /// Is hold enabled
+    pub has_hold: bool,
+
+    /// How many times can we hold
+    pub hold_limit: u64,
+
+    /// Is hard drop allowed
+    pub has_hard_drop: bool,
+
+    /// Has soft drop
+    pub has_soft_drop: bool,
+
+    /// The speed soft drop works
+    pub soft_drop_speed: u64,
+
+    /// Maximum number of preview pieces
+    pub preview_count: u64
+}
+
+impl Default for EngineSettings {
+    fn default() -> EngineSettings {
+        EngineSettings {
+            das: 180,
+            are: 0,
+            gravity: 1000,
+            arr: 16,
+            has_hold: true,
+            hold_limit: 1,
+            has_hard_drop: true,
+            has_soft_drop: true,
+            soft_drop_speed: 16, // 1G
+            preview_count: 3
+        }
+    }
+}
 
 use time;
 use collections::enum_set::CLike;
@@ -31,7 +138,7 @@ enum Status {
 ///
 /// This is required for state that is not reliant on frame counts.
 #[derive(Default)]
-struct InternalEngineState {
+struct EngineState {
     /// Last update invocation time
     last_update_time: u64,
 
@@ -53,7 +160,7 @@ pub struct Engine {
     pub wallkick: &'static Wallkick,
 
     /// The rotation system used by this engine.
-    pub rs: &'static RotationSystem,
+    pub rotation_system: &'static RotationSystem,
 
     /// The field which the game is played on
     pub field: Field,
@@ -64,8 +171,8 @@ pub struct Engine {
     /// The current hold block (this doesn't store an actual block right now)
     pub hold: Option<block::Type>,
 
-    /// Immutable game options
-    pub options: Options,
+    /// Settings used internally by the engine
+    pub options: EngineSettings,
 
     /// Statistics of the current game
     pub statistics: Statistics,
@@ -80,7 +187,7 @@ pub struct Engine {
     pub tick_count: u64,
 
     /// Private internal state flags
-    internal: InternalEngineState,
+    internal: EngineState,
 
     /// The current game status. There are 5 main states that are utilized:
     /// - Ready     -> Triggers for the first 50 frames
@@ -89,35 +196,6 @@ pub struct Engine {
     /// - GameOver  -> Occurs on game failure
     /// - Excellent -> Occurs on goal reached
     status: Status
-}
-
-impl Default for Engine {
-    fn default() -> Engine {
-        let mut engine = Engine {
-            randomizer: BagRandomizer::new(7),
-            controller: Controller::new(),
-            rs: rotation::SRS::new(),
-            wallkick: wallkick::SRS::new(),
-            field: Field::new().set_hidden(2),
-            block: Block::new(block::Type::None),
-            hold: None,
-            tick_count: 0,
-            mspt: 16,
-            running: true,
-            options: Options::new(),
-            statistics: Statistics::new(),
-            internal: InternalEngineState { ..Default::default() },
-            status: Status::Ready
-        };
-
-        // Cannot initialize in struct due to lifetime problems
-        // TODO: Use engine rotation on block initialization
-        let block = Block::new(engine.randomizer.next())
-                          .set_field(&engine.field)
-                          .set_rotation_system(rotation::SRS::new());
-        engine.block = block;
-        engine
-    }
 }
 
 impl Engine {
@@ -130,8 +208,27 @@ impl Engine {
     ///
     /// An engine is constructed in an initialized state and is ready to be
     /// used right from the beginning.
-    pub fn new(options: Options) -> Engine {
-        Engine { options: options, ..Default::default() }
+    pub fn new(options: EngineOptions) -> Engine {
+        let mut engine = Engine {
+            field: Field::with_options(options.field_options),
+            randomizer: randomizer::new(&options.randomizer_name, options.randomizer_lookahead),
+            controller: Controller::new(),
+            rotation_system: rotation_system::new(&options.rotation_system_name),
+            wallkick: wallkick::new(&options.wallkick_name),
+            block: Block { id: block::Type::None, x: 0, y: 0, r: Rotation::R0, rs: rotation_system::new("srs") },
+            hold: None,
+            tick_count: 0,
+            mspt: options.mspt,
+            running: true,
+            options: options.engine_settings,
+            statistics: Statistics::new(),
+            internal: EngineState { ..Default::default() },
+            status: Status::Ready,
+        };
+
+        // Can we utilize internal data when constructing the block?
+        engine.block = Block::new(engine.randomizer.next(), &engine.field);
+        engine
     }
 
     /// Adjusts a constant value to ticks for the current gamestate.
@@ -241,13 +338,11 @@ impl Engine {
             self.internal.hold_count += 1;
             if self.hold.is_none() {
                 self.hold = Some(self.block.id);
-                self.block = Block::new(self.randomizer.next())
-                                   .set_field(&self.field);
+                self.block = Block::new(self.randomizer.next(), &self.field);
             }
             else {
                 let tmp = self.block.id;
-                self.block = Block::new(self.hold.unwrap())
-                                   .set_field(&self.field);
+                self.block = Block::new(self.hold.unwrap(), &self.field);
                 self.hold = Some(tmp);
             }
         }
@@ -256,9 +351,7 @@ impl Engine {
         if self.controller.time(Action::HardDrop) == 1 {
             self.block.shift_extend(&self.field, Direction::Down);
             self.field.freeze(self.block.clone());
-            self.block = Block::new(self.randomizer.next())
-                               .set_field(&self.field)
-                               .set_rotation_system(rotation::SRS::new());
+            self.block = Block::new(self.randomizer.next(), &self.field);
 
             self.internal.hold_count = 0;
             self.statistics.pieces += 1;
@@ -315,12 +408,10 @@ impl Engine {
 
 #[cfg(test)]
 mod tests {
-
-    use super::*;
-    use options::Options;
+    use ::import::*;
 
     #[test]
     fn test_engine() {
-        let _ = Engine::new(Options::new());
+        let _ = Engine::new(EngineOptions { ..Default::default() });
     }
 }

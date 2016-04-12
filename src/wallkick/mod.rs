@@ -42,3 +42,15 @@ mod simple;
 
 pub use self::dtet::DTET;
 mod dtet;
+
+/// Factory function for returning appropriate rotation systems based on their
+/// names
+pub fn new(name: &str) -> &'static Wallkick {
+    match name {
+        "srs" => SRS::new(),
+        "empty" => Empty::new(),
+        "simple" => Simple::new(),
+        "dtet" => DTET::new(),
+        _ => panic!("unknown wallkick")
+    }
+}
