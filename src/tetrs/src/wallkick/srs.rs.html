@@ -114,6 +114,8 @@
 <span id="70">70</span>
 <span id="71">71</span>
 <span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements the wallkicks for the SRS rotation system.</span>
 <span class='doccomment'>//!</span>
@@ -122,13 +124,15 @@
 <span class='doccomment'>//! different rules depending on the block type.</span>
 
 <span class='kw'>use</span> <span class='ident'>block</span>::{<span class='self'>self</span>, <span class='ident'>Rotation</span>, <span class='ident'>Block</span>};
+<span class='kw'>use</span> <span class='ident'>field</span>::<span class='ident'>Field</span>;
 <span class='kw'>use</span> <span class='ident'>wallkick</span>::<span class='ident'>Wallkick</span>;
 <span class='kw'>use</span> <span class='ident'>collections</span>::<span class='ident'>enum_set</span>::<span class='ident'>CLike</span>;
 
 <span class='macro'>gen_wallkick</span><span class='macro'>!</span>(<span class='ident'>SRS</span>);
 
 <span class='kw'>impl</span> <span class='ident'>Wallkick</span> <span class='kw'>for</span> <span class='ident'>SRS</span> {
-    <span class='kw'>fn</span> <span class='ident'>test</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>block</span>: <span class='kw-2'>&amp;</span><span class='ident'>Block</span>, <span class='ident'>r</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [(<span class='ident'>i32</span>, <span class='ident'>i32</span>)] {
+    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused_variables</span>)]</span>
+    <span class='kw'>fn</span> <span class='ident'>test</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>block</span>: <span class='kw-2'>&amp;</span><span class='ident'>Block</span>, <span class='ident'>field</span>: <span class='kw-2'>&amp;</span><span class='ident'>Field</span>, <span class='ident'>r</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [(<span class='ident'>i32</span>, <span class='ident'>i32</span>)] {
         <span class='comment'>// O block does not have any special wallkick data.</span>
         <span class='kw'>if</span> <span class='ident'>block</span>.<span class='ident'>id</span> <span class='op'>==</span> <span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>O</span> {
             <span class='kw'>return</span> <span class='kw-2'>&amp;</span><span class='ident'>RIGHT_JLSTZ</span>[<span class='number'>0</span>][..<span class='number'>1</span>]
