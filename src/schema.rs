@@ -27,13 +27,12 @@
 //! "));
 //! ```
 
-use rotation_system::{self, RotationSystem};
-use field::Field;
+use rotation_system::RotationSystem;
+use field::{Field, FieldOptions};
 use block::{self, Rotation, Block, BlockOptions};
 
 use std::{fmt, iter};
 use std::cmp::PartialEq;
-use collections::enum_set::CLike;
 use itertools::Itertools;
 
 /// A schema is a simple 2d textual representation of a field and a block.
@@ -110,7 +109,7 @@ impl Schema {
     ///     |         |
     ///     |    #    |
     ///     -----------
-    /// ");
+    /// ", rotation_system::new("dtet"));
     ///
     /// let schema2 = Schema::from_string("|          |
     ///    |    #     |
@@ -156,6 +155,9 @@ impl Schema {
     /// ## Examples
     /// ```text
     /// use tetrs::schema::Schema;
+    /// use tetrs::rotation_system;
+    ///
+    /// let rs = rotation_system::new("srs");
     ///
     /// let schema1 = Schema::from_string("
     ///     |         |
@@ -163,7 +165,7 @@ impl Schema {
     ///     -----------
     /// ");
     ///
-    /// // let (field, block) = schema1.to_state(); // Panic!
+    /// // let (field, block) = schema1.to_state(rs); // Panic!
     ///
     /// let schema2 = Schema::from_string("
     ///     |    @    |
@@ -172,27 +174,26 @@ impl Schema {
     /// ");
     /// let (field, block) = schema2.to_state(); // Okay
     /// ```
-    pub fn to_state(&self) -> (Field, Block) {
+    pub fn to_state(&self, rotation_system: &'static RotationSystem) -> (Field, Block) {
         let mut schema = self.clone();
 
-        // Currently cannot return a tuple-structure due to invalid lifetime
-        // even though the lifetime theoretically has same scope.
-        let mut field = Field::new();
+        let mut field = Field::with_options(FieldOptions {
+                            height: schema.height,
+                            width: schema.width,
+                            ..Default::default()
+                        });
         let mut block = None;
-
-        // A schema may have a different height to the field
-        let ydiff = field.height - schema.height;
 
         for (y, x) in iproduct!(0..schema.height, 0..schema.width) {
             match schema.data[y][x] {
                 '@' => {
-                    block = Some(schema.match_block(&field, (x, y)));
+                    block = Some(schema.match_block(&field, rotation_system, (x, y)));
                 },
                 '#' => {
-                    field.data[x][y + ydiff] = block::Id::I.to_usize();
+                    field.data[y][x] = block::Id::I;
                 },
                 ' ' => {
-                    ()
+                    ();
                 },
                 _ => {
                     panic!("Encountered unknown character: \n{}", self);
@@ -233,17 +234,17 @@ impl Schema {
     // If it is required for exact rotations, then we could add support for
     // rotation specification in the input string, but this adds complexity
     // and more rules which are not needed currently.
-    fn match_block(&mut self, field: &Field, (x, y): (usize, usize)) -> Block {
+    fn match_block(&mut self, field: &Field, rotation_system: &'static RotationSystem,
+                   (x, y): (usize, usize)) -> Block {
         // For the moment, always assume SRS rotation. We require an option to
         // specify which `RotationSystem` to use with the input schema.
         //
         // We also require setting the correct to state, which should also require
         // a `RotationSystem` argument.
-        let rs = rotation_system::SRS{};
 
         for (&ty, &ro) in iproduct!(block::Id::variants().iter(), Rotation::variants().iter()) {
-            let data = rs.data(ty, ro);
-            let (xo, yo) = rs.minp(ty, ro);
+            let data = rotation_system.data(ty, ro);
+            let (xo, yo) = rotation_system.minp(ty, ro);
 
             if x < xo || y < yo {
                 continue;
@@ -322,7 +323,7 @@ impl PartialEq for Schema {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use block::Direction;
+    use import::*;
 
     #[test]
     fn test_from_string1() {
@@ -364,7 +365,7 @@ mod tests {
                 ------------
             ");
 
-        let (field, mut block) = schema.to_state();
+        let (field, mut block) = schema.to_state(rotation_system::new("srs"));
         block.shift(&field, Direction::Left);
 
         assert_eq!(Schema::from_state(&field, &block),
@@ -376,7 +377,6 @@ mod tests {
                    "));
     }
 
-    /* Currently disabled due to field/block changes
     #[test]
     fn test_from_string_to_state() {
         let schema = Schema::from_string("
@@ -386,14 +386,15 @@ mod tests {
                 ------------
             ");
 
-        let (field, block) = schema.to_state();
+        let (field, block) = schema.to_state(rotation_system::new("srs"));
 
-        assert_eq!(block.id, Id::T);
+        assert_eq!(block.id, block::Id::T);
         assert_eq!(block.r, Rotation::R0);
+        assert_eq!(block.x, 2);
+        assert_eq!(block.y, i32!(field.height - 2));
 
-        assert!(field.data[0][field.height-1] != Id::None.to_usize());
-        assert!(field.data[1][field.height-1] != Id::None.to_usize());
-        assert!(field.data[1][field.height-2] != Id::None.to_usize());
+        assert_eq!(field.data[field.height-1][0], block::Id::I);
+        assert_eq!(field.data[field.height-1][1], block::Id::I);
+        assert_eq!(field.data[field.height-2][1], block::Id::I);
     }
-    */
 }

@@ -3,10 +3,8 @@
 //! A `Field` manages the state of previously placed blocks. A `Field` is not
 //! aware of blocks themselves for the most part, besides the `freeze` function.
 
-use block::{self, Block};
+use block::{Block, Id};
 use rotation_system::RotationSystem;
-
-use collections::enum_set::CLike;
 
 /// A `Field` is simply a 2-D `Vec` with some corresponding options.
 ///
@@ -51,7 +49,7 @@ pub struct Field {
     pub spawn: (i32, i32),
 
     /// The current field state.
-    pub data: Vec<Vec<usize>>,
+    pub data: Vec<Vec<Id>>,
 }
 
 /// Optional values which can be set when initializing a `Field`.
@@ -125,14 +123,14 @@ impl Field {
             height: options.height,
             hidden: options.hidden,
             spawn: options.spawn,
-            data: vec![vec![block::Id::None.to_usize(); options.width]; options.height]
+            data: vec![vec![Id::None; options.width]; options.height]
         }
     }
 
     /// Clear lines from the field and return the number cleared.
     pub fn clear_lines(&mut self) -> usize {
         // Keep only lines with an empty cell (non-filled)
-        self.data.retain(|ref x| x.iter().any(|&x| x == block::Id::None.to_usize()));
+        self.data.retain(|ref x| x.iter().any(|&x| x == Id::None));
 
         // Calculate how many lines were cleared
         let lines = self.height - self.data.len();
@@ -140,7 +138,7 @@ impl Field {
         // Sure this isn't optimal, but for a small array and with only 4
         // pushses max (unless cascading) who would notice?
         for _ in 0..lines {
-            self.data.insert(0, vec![block::Id::None.to_usize(); self.width]);
+            self.data.insert(0, vec![Id::None; self.width]);
         }
 
         lines
@@ -162,7 +160,7 @@ impl Field {
     /// ```
     pub fn freeze(&mut self, block: Block) {
         for &(x, y) in block.rs.data(block.id, block.r) {
-            self.data[usize!(block.y + i32!(y))][usize!(block.x + i32!(x))] = block.id.to_usize();
+            self.data[usize!(block.y + i32!(y))][usize!(block.x + i32!(x))] = block.id;
         }
     }
 
@@ -178,7 +176,7 @@ impl Field {
     /// let field = Field::new();
     /// let value = field.get((5, 10));
     /// ```
-    pub fn get(&self, (x, y): (usize, usize)) -> usize {
+    pub fn get(&self, (x, y): (usize, usize)) -> Id {
         assert!(x < self.width && y < self.height);
         self.data[y][x]
     }
@@ -189,6 +187,6 @@ impl Field {
     /// result is of empty `Id`.
     pub fn occupies(&self, (x, y): (usize, usize)) -> bool {
         assert!(x < self.width && y < self.height);
-        self.data[y][x] != block::Id::None.to_usize()
+        self.data[y][x] != Id::None
     }
 }

@@ -269,7 +269,7 @@ impl Block {
                   .any(|(x, y)| {
                       x < 0 || usize!(x) >= field.width ||
                       y < 0 || usize!(y) >= field.height ||
-                      field.get((usize!(x), usize!(y))) != Id::None.to_usize()
+                      field.get((usize!(x), usize!(y))) != Id::None
                   })
     }
 
