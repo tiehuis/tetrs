@@ -1,13 +1,16 @@
-//! Contains a number of helper methods which are composed of a number of
-//! structures.
+//! Contains helper methods which expose more specific functions for
+//! particular primitives.
 
 use block::{Rotation, Block};
 use field::Field;
 use wallkick::Wallkick;
 
-/// Implements new traits on a Block instance.
+/// Helper traits for the `Block` struct.
 pub trait BlockHelper {
-    /// Rotate a block applying the specified wallkick on failures.
+    /// Rotate a `Block` using the specified `Wallkick` class.
+    ///
+    /// This iterates over all tests for the specified wallkick and attempts
+    /// rotations until one is succcessful.
     fn rotate_with_wallkick(&mut self, field: &Field, wallkick: &Wallkick, rotation: Rotation) -> bool;
 }
 
@@ -31,7 +34,7 @@ mod tests {
     #[test]
     fn test_rotate_with_wallkick() {
         let field = Field::new();
-        let mut block = Block::new(block::Type::S, &field);
+        let mut block = Block::new(block::Id::S, &field);
         let wk = wallkick::SRS::new();
 
         block.shift(&field, Direction::Down);

@@ -5,7 +5,7 @@
 //!
 //! ## Examples
 //!
-//! ```ignore
+//! ```text
 //! use tetrs::schema::Schema;
 //!
 //! let (field, mut block) = Schema::from_string("
@@ -103,7 +103,9 @@ impl Schema {
     /// ignored so different strings may produce the same schema.
     ///
     /// ## Examples
-    /// ```ignore
+    /// ```text
+    /// use tetrs::schema::Schema;
+    ///
     /// let schema1 = Schema::from_string("
     ///     |         |
     ///     |    #    |
@@ -152,20 +154,23 @@ impl Schema {
     /// in most cases.
     ///
     /// ## Examples
-    /// ```ignore
+    /// ```text
+    /// use tetrs::schema::Schema;
+    ///
     /// let schema1 = Schema::from_string("
     ///     |         |
     ///     |    @    |
     ///     -----------
     /// ");
-    /// let (mut field, mut block) = schema1.to_state(); // Panic!
+    ///
+    /// // let (field, block) = schema1.to_state(); // Panic!
     ///
     /// let schema2 = Schema::from_string("
     ///     |    @    |
     ///     |   @@@   |
     ///     -----------
     /// ");
-    /// let (mut field, mut block) = schema2.to_state(); // Okay
+    /// let (field, block) = schema2.to_state(); // Okay
     /// ```
     pub fn to_state(&self) -> (Field, Block) {
         let mut schema = self.clone();
@@ -184,7 +189,7 @@ impl Schema {
                     block = Some(schema.match_block(&field, (x, y)));
                 },
                 '#' => {
-                    field.data[x][y + ydiff] = block::Type::I.to_usize();
+                    field.data[x][y + ydiff] = block::Id::I.to_usize();
                 },
                 ' ' => {
                     ()
@@ -236,7 +241,7 @@ impl Schema {
         // a `RotationSystem` argument.
         let rs = rotation_system::SRS{};
 
-        for (&ty, &ro) in iproduct!(block::Type::variants().iter(), Rotation::variants().iter()) {
+        for (&ty, &ro) in iproduct!(block::Id::variants().iter(), Rotation::variants().iter()) {
             let data = rs.data(ty, ro);
             let (xo, yo) = rs.minp(ty, ro);
 
@@ -383,12 +388,12 @@ mod tests {
 
         let (field, block) = schema.to_state();
 
-        assert_eq!(block.id, Type::T);
+        assert_eq!(block.id, Id::T);
         assert_eq!(block.r, Rotation::R0);
 
-        assert!(field.data[0][field.height-1] != Type::None.to_usize());
-        assert!(field.data[1][field.height-1] != Type::None.to_usize());
-        assert!(field.data[1][field.height-2] != Type::None.to_usize());
+        assert!(field.data[0][field.height-1] != Id::None.to_usize());
+        assert!(field.data[1][field.height-1] != Id::None.to_usize());
+        assert!(field.data[1][field.height-2] != Id::None.to_usize());
     }
     */
 }

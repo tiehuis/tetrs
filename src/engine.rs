@@ -169,7 +169,7 @@ pub struct Engine {
     pub block: Block,
 
     /// The current hold block (this doesn't store an actual block right now)
-    pub hold: Option<block::Type>,
+    pub hold: Option<block::Id>,
 
     /// Settings used internally by the engine
     pub options: EngineSettings,
@@ -215,7 +215,7 @@ impl Engine {
             controller: Controller::new(),
             rotation_system: rotation_system::new(&options.rotation_system_name),
             wallkick: wallkick::new(&options.wallkick_name),
-            block: Block { id: block::Type::None, x: 0, y: 0, r: Rotation::R0, rs: rotation_system::new("srs") },
+            block: Block { id: block::Id::None, x: 0, y: 0, r: Rotation::R0, rs: rotation_system::new("srs") },
             hold: None,
             tick_count: 0,
             mspt: options.mspt,
@@ -238,7 +238,7 @@ impl Engine {
     /// as an identifier to a member function of `self`. This is cuts down
     /// on repeated self references in a single call.
     ///
-    /// ```ignore
+    /// ```text
     /// let ticks_to_wait = self.ticks(self, 789);
     ///
     /// // Access the options.das field and convert to ticks

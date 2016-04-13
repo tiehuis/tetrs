@@ -1,4 +1,4 @@
-//! Rotation offsrts for the DTET rotation system.
+//! Rotation offsets for the DTET rotation system.
 
 rs_gen!(DTET);
 

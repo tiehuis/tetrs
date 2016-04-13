@@ -1,6 +1,8 @@
-//! Stores statistics about the current game.
+//! Stores statistics about an individual game.
 
-/// Stores statistics about the current game.
+/// `Statistics` is a 'dumb' struct, and does not provide any methods
+/// upon it. Its primary use is as a namespacing tool to avoid
+/// over-complicating struct such as `Engine`.
 #[derive(Default)]
 pub struct Statistics {
     /// How many lines have been cleared
@@ -24,6 +26,8 @@ pub struct Statistics {
 
 impl Statistics {
     /// Construct a new `Statistics` object.
+    ///
+    /// Values are zeroed.
     pub fn new() -> Statistics {
         Statistics { ..Default::default() }
     }

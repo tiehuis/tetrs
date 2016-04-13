@@ -47,14 +47,7 @@ impl Controller {
     /// Return a new controller instance.
     ///
     /// The controller specified will start with all actions in the inactive
-    /// state.
-    ///
-    /// ## Examples
-    /// ```
-    /// use tetrs::controller;
-    ///
-    /// let mut controller = controller::Controller::new();
-    /// ```
+    /// state, and time values zeroed.
     pub fn new() -> Controller {
         Controller { time: [0; 8], active: [false; 8] }
     }
@@ -71,18 +64,8 @@ impl Controller {
 
     /// Activate the specified action.
     ///
-    /// The action will be set to active and all subsequent updates will
-    /// now trigger this actions timer.
-    /// Reactivating an already active action has no effect and will not
-    /// restart the timer.
-    ///
-    /// ## Examples
-    /// ```
-    /// use tetrs::controller;
-    ///
-    /// let mut controller = controller::Controller::new();
-    /// controller.activate(controller::Action::MoveLeft);
-    /// ```
+    /// The action will be set to active.
+    /// Activating an already active timer has no effect.
     pub fn activate(&mut self, action: Action) {
         self.active[action.to_usize()] = true;
     }
@@ -91,14 +74,6 @@ impl Controller {
     ///
     /// The action will be set to inactive.
     /// Deactivating an already inactive action has no effect.
-    ///
-    /// ## Examples
-    /// ```
-    /// use tetrs::controller;
-    ///
-    /// let mut controller = controller::Controller::new();
-    /// controller.deactivate(controller::Action::MoveLeft);
-    /// ```
     pub fn deactivate(&mut self, action: Action) {
         self.active[action.to_usize()] = false;
     }
@@ -109,14 +84,6 @@ impl Controller {
     /// an object, rather than explicitly via events.
     ///
     /// This does not reset the internal time of each action to 0.
-    ///
-    /// ## Examples
-    /// ```
-    /// use tetrs::controller::{Controller, Action};
-    ///
-    /// let mut controller = Controller::new();
-    /// controller.deactivate_all();
-    /// ```
     pub fn deactivate_all(&mut self) {
         for i in 0..self.active.len() {
             self.active[i] = false;
@@ -134,6 +101,12 @@ impl Controller {
     /// // active[Action::MoveRight] == 0
     /// controller.update();
     /// // active[Action::MoveRight] == 1
+    /// controller.update();
+    /// controller.update();
+    /// // active[Action::MoveRight] == 3
+    /// controller.deactivate(Action::MoveRight);
+    /// controller.update();
+    /// // active[Action::MoveRight] == 0
     /// ```
     pub fn update(&mut self) {
         for i in 0..self.active.len() {

@@ -1,4 +1,7 @@
-//! Implements the DTET wallkick
+//! Implements the DTET wallkick.
+//!
+//! The DTET wallkick is a symmetric wallkick initially appearing
+//! in the DTET tetris game.
 
 use block::{Rotation, Block};
 use wallkick::Wallkick;

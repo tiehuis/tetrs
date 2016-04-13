@@ -1,4 +1,7 @@
-//! Implements the empty wallkick
+//! Implements the empty wallkick.
+//!
+//! The empty wallkick only tests the trivial offset (0, 0) and if this
+//! fails then the rotation will fail.
 
 use block::{Rotation, Block};
 use wallkick::Wallkick;

@@ -1,21 +1,21 @@
-//! A single tetrimino.
+//! Defines a single tetrimino and actions for modifying it.
 //!
-//! A `Block` consists of a `Type`, `Location` and `Rotation`. It does not
-//! have to be considered part of a `Field`, however most movement functions
-//! take a `Field` with which movement is verified against.
+//! A `Block` consists of a type, location and rotation. Each block does not
+//! store an internal reference to a `Field`, but it is required in most
+//! useful functions.
 //!
-//! ```ignore
-//! use tetrs::{Rotation, Direction};
-//! use tetrs::field::Field;
-//! use tetrs::block::{Block, BlockOptions};
+//! ```
+//! use tetrs::import::*;
 //!
 //! let field = Field::new();
+//! // A block must be spawned on a field
+//! let block1 = Block::new(block::Id::I, &field);
 //!
-//! // Can spawn a block on a field directly...
-//! let block = Block::new().set_field(&field);
-//!
-//! // ...or independently
-//! let block = Block::new().set_position((5, 10));
+//! // This position can be overridden if required (still requires a field)
+//! let block2 = Block::with_options(block::Id::I, &field, BlockOptions {
+//!                 x: Some(3), y: Some(4),
+//!                 ..Default::default()
+//!             });
 //! ```
 
 use field::Field;
@@ -24,36 +24,32 @@ use rotation_system::{self, RotationSystem};
 use std::mem;
 use collections::enum_set::CLike;
 
-/// The identifier for a particular block.
+/// The identifier for a particular `Block`.
 #[repr(usize)]
 #[derive(Hash, Clone, Debug, Copy, PartialEq, Eq)]
 #[allow(missing_docs)]
-pub enum Type {
+pub enum Id {
     I, T, L, J, S, Z, O, None
 }
 
-impl CLike for Type {
+impl CLike for Id {
     fn to_usize(&self) -> usize {
         *self as usize
     }
 
-    fn from_usize(v: usize) -> Type {
+    fn from_usize(v: usize) -> Id {
         assert!(v < 7);
         unsafe { mem::transmute(v) }
     }
 }
 
-impl Type {
-    /// Returns all `non-None` `Type` variants.
+impl Id {
+    /// Returns all `Id` variants known.
     ///
-    /// ```
-    /// use tetrs::import::*;
-    ///
-    /// let types = block::Type::variants();
-    /// ```
-    pub fn variants() -> &'static [Type] {
-        static VARIANTS: &'static [Type; 7] = &[
-            Type::I, Type::T, Type::L, Type::J, Type::S, Type::Z, Type::O
+    /// This does not return the `None` variant.
+    pub fn variants() -> &'static [Id] {
+        static VARIANTS: &'static [Id; 7] = &[
+            Id::I, Id::T, Id::L, Id::J, Id::S, Id::Z, Id::O
         ];
 
         VARIANTS
@@ -63,13 +59,12 @@ impl Type {
 /// Represents all rotation statuses a block can be. This is used both as
 /// a rotation state, and to indicate how much relative movement shoud be
 /// applied for various functions.
-/// A rotation state.
 ///
 /// Rotations states are available in 90 degree increments and internally all
 /// follow a clockwise direction.
 ///
 /// ## Examples
-/// ```ignore
+/// ```text
 ///
 /// Rotation::R90  Rotation::R270
 ///
@@ -98,37 +93,17 @@ impl CLike for Rotation {
 }
 
 impl Rotation {
-    /// Returns all available `Rotation` variants.
-    ///
-    /// ```
-    /// use tetrs::import::*;
-    ///
-    /// let rotations = Rotation::variants();
-    /// ```
+    /// Returns all known `Rotation` variants.
     pub fn variants() -> Vec<Rotation> {
         vec![Rotation::R0, Rotation::R90, Rotation::R180, Rotation::R270]
     }
 
     /// Returns the next clockwise rotation.
-    ///
-    /// ```
-    /// use tetrs::import::*;
-    ///
-    /// let rotation = Rotation::R0;
-    /// assert_eq!(rotation.clockwise(), Rotation::R90);
-    /// ```
     pub fn clockwise(&self) -> Rotation {
         Rotation::from_usize((self.to_usize() + 4 + 1) % 4)
     }
 
     /// Returns the next anticlockwise rotation.
-    ///
-    /// ```
-    /// use tetrs::import::*;
-    ///
-    /// let rotation = Rotation::R270;
-    /// assert_eq!(rotation.anticlockwise(), Rotation::R180);
-    /// ```
     pub fn anticlockwise(&self) -> Rotation {
         Rotation::from_usize((self.to_usize() + 4 - 1) % 4)
     }
@@ -139,15 +114,11 @@ impl Rotation {
 #[derive(Hash, Clone, Debug, Copy, PartialEq)]
 #[allow(missing_docs)]
 pub enum Direction {
-    None, Left, Right, Up, Down
+    Left, Right, Up, Down
 }
 
 impl Direction {
-    /// Return all `non-None` `Direction` variants.
-    ///
-    /// ```
-    /// let directions = tetrs::block::Direction::variants();
-    /// ```
+    /// Return all known `Direction` variants.
     pub fn variants() -> Vec<Direction> {
         vec![Direction::Left, Direction::Right, Direction::Up, Direction::Down]
     }
@@ -155,7 +126,7 @@ impl Direction {
 
 /// A struct representing a single tetrimino.
 ///
-/// Blocks are defined by an `(x, y)` coordinate pair, a `Rotation`, `Type`,
+/// Blocks are defined by an `(x, y)` coordinate pair, a `Rotation`, `Id`,
 /// and an accompanying set of offset data which specifies exactly which
 /// pieces in the field this block occupies.
 ///
@@ -163,7 +134,7 @@ impl Direction {
 /// right of the grid, to preserve some compatibility with GUI systems. All
 /// internal block calculations follow this as well:
 ///
-/// ```ignore
+/// ```text
 /// (0, 0)-----------------(10, 0)
 ///   |                       |
 ///   |                       |
@@ -176,16 +147,16 @@ impl Direction {
 ///
 /// Internally, the `(x, y)` and `data` fields look like the following:
 ///
-/// ```ignore
+/// ```text
 ///   (x, y) = (4, 4)
 ///     data = [(1, 0), (0, 1), (1, 1), (2, 1)]
 /// ```
 ///
 /// When calculating a block's position, the data offsets are added to the
-/// base coordinates to produce the block. The previous block is a `Type::T`,
+/// base coordinates to produce the block. The previous block is a `Id::T`,
 /// with `Rotation::R0`, as the final data represented is:
 ///
-/// ```ignore
+/// ```text
 ///  block = [(5, 4), (4, 5), (5, 5), (6, 5)]
 /// ```
 ///
@@ -202,35 +173,42 @@ pub struct Block {
     /// Y-coordinate of the piece
     pub y:  i32,
 
-    /// Type of the block
-    pub id: Type,
+    /// Id of the block
+    pub id: Id,
 
     /// Rotation state of the block
     pub r: Rotation,
 
-    /// Rotation system used internally
-    // All Rotation Systems are not instatiated directly, but use a static
-    // instance. This makes storing the trait object much easier and ensures
-    // that we use the builder properly.
-    //
-    // A `Block` requires a `RotationSystem` since moving and dealing with
-    // blocks is an integral part. This could be argued the same as well for
-    // a `Field`, which may happen.
+    /// Rotation system used to calculate block offsets.
     pub rs: &'static RotationSystem
 }
 
-/// Values used for initializing a block.
+/// Optional values which can be set when initializing a `Block`.
 ///
-/// This is similar to a builder structure, but instead of chained method calls
-/// we rely on the `Default` trait.
+/// The default values are:
 ///
-/// This can be used to initialize a block with more fine-grained details than
-/// standard, whilst retaining useful defaults of values which may not want to
-/// be changed.
+/// ```text
+/// BlockOptions {
+///     x: None,
+///     y: None,
+///     rotation: Rotation::R0,
+///     rotation_system: "srs"
+/// }
+/// ```
 ///
-/// ```ignore
-/// // Create an option set with default options besides the initial rotation
-/// let bopt = BlockOptions { rotation: Rotation::R90, ..Default::default() }
+/// If an `x` or `y` value is `Some(..)` then it will override the fields spawn
+/// position, which is usually used on `Block` construction.
+///
+/// ## Examples
+///
+/// ```
+/// use tetrs::import::*;
+///
+/// // Has x: None, y: None, rotation: Rotation::R0, rotation_system: "dtet"
+/// let options = BlockOptions {
+///     rotation_system: "dtet",
+///     ..Default::default()
+/// };
 /// ```
 #[allow(missing_docs)]
 pub struct BlockOptions {
@@ -255,36 +233,24 @@ impl Default for BlockOptions {
 }
 
 impl Block {
-    /// Construct a new default `Block` and return it.
-    ///
-    /// The only required value for a block is `Type`, otherwise the following
-    /// default values are used:
-    ///
-    /// ### (`x`, `y`)
-    /// The default spawn value is `(4, 0)`. This is a common spawn position
-    /// for fields of standard size.
-    ///
-    /// ### Rotation
-    /// The default rotation is `Rotation::R0`.
-    ///
-    /// ---
-    ///
-    /// If values are required to be overridden, look at the `with_options`
-    /// function.
+    /// Construct a `Block` object with default values.
+    pub fn new(id: Id, field: &Field) -> Block {
+        Block::with_options(id, &field, BlockOptions { ..Default::default() })
+    }
+
+    /// Construct a `Block` object with specific values.
     ///
     /// ## Examples
     /// ```
     /// use tetrs::import::*;
     ///
     /// let field = Field::new();
-    /// let block = Block::new(block::Type::I, &field);
+    /// let block = Block::with_options(block::Id::I, &field, BlockOptions {
+    ///                 rotation: Rotation::R180,
+    ///                 ..Default::default()
+    ///             });
     /// ```
-    pub fn new(id: Type, field: &Field) -> Block {
-        Block::with_options(id, &field, BlockOptions { ..Default::default() })
-    }
-
-    /// Construct a new block with the specified options.
-    pub fn with_options(id: Type, field: &Field, options: BlockOptions) -> Block {
+    pub fn with_options(id: Id, field: &Field, options: BlockOptions) -> Block {
         Block {
             id: id,
             x: if options.x.is_none() { field.spawn.0 } else { options.x.unwrap() },
@@ -294,8 +260,7 @@ impl Block {
         }
     }
 
-    /// Return `true` if the block collides with the field after applying the
-    /// specified offset.
+    /// Return whether the block collides with `field` at the specified offset.
     fn collides_at_offset(&self, field: &Field, (xo, yo): (i32, i32)) -> bool {
         self.rs.data(self.id, self.r).iter()
                   .map(|&(dx, dy)| {
@@ -304,21 +269,20 @@ impl Block {
                   .any(|(x, y)| {
                       x < 0 || usize!(x) >= field.width ||
                       y < 0 || usize!(y) >= field.height ||
-                      field.get((usize!(x), usize!(y))) != Type::None.to_usize()
+                      field.get((usize!(x), usize!(y))) != Id::None.to_usize()
                   })
     }
 
-    /// Return `true` if the block currently collides with any pieces on the
-    /// field.
+    /// Return whether the current `Block` collides with `field` at its current
+    /// position.
     pub fn collides(&self, field: &Field) -> bool {
         self.collides_at_offset(&field, (0, 0))
     }
 
-
     /// Shift the block by the specified coordinates.
     ///
-    /// This does not check intermediate steps for collisions, so is not
-    /// used for general multi-shifting.
+    /// ## Note
+    /// This does not check intermediate steps for collisions.
     fn shift_raw(&mut self, field: &Field, (x, y): (i32, i32)) -> bool {
         if self.collides_at_offset(&field, (x, y)) {
             false
@@ -337,7 +301,7 @@ impl Block {
     /// use tetrs::import::*;
     ///
     /// let field = Field::new();
-    /// let mut block = Block::new(block::Type::Z, &field);
+    /// let mut block = Block::new(block::Id::Z, &field);
     /// block.shift(&field, Direction::Left);
     /// ```
     pub fn shift(&mut self, field: &Field, direction: Direction) -> bool {
@@ -352,16 +316,16 @@ impl Block {
     }
 
     /// Repeatedly shift a block as far as we can until a collision occurs.
-    /// A HardDrop can be performed for example by calling
-    /// `Block.shift_extend(&field, Direction::Down)`.
     ///
     /// ## Examples
     /// ```
     /// use tetrs::import::*;
     ///
     /// let field = Field::new();
-    /// let mut block = Block::new(block::Type::Z, &field);
-    /// block.shift_extend(&field, Direction::Left);
+    /// let mut block = Block::new(block::Id::Z, &field);
+    ///
+    /// // Performs a 'HardDrop'
+    /// block.shift_extend(&field, Direction::Down);
     /// ```
     pub fn shift_extend(&mut self, field: &Field, direction: Direction) {
         while self.shift(&field, direction) {}
@@ -369,16 +333,17 @@ impl Block {
 
     /// Rotate the block by a specified amount and then apply an offset.
     ///
-    /// This is useful for calculating wallkicks, where a collision check is
-    /// done only after an offset is applied.
+    /// This is useful for calculating wallkicks. See the `rotate_with_wallkick`
+    /// function in the `utility` module for an easier function.
     ///
     /// ```
     /// use tetrs::import::*;
     ///
     /// let field = Field::new();
-    /// let mut block = Block::new(block::Type::Z, &field);
+    /// let mut block = Block::new(block::Id::Z, &field);
     ///
-    /// // Rotate then move down 2 and right 1 and test for collision
+    /// // Rotate then move down 2 and right 1 and test for collision.
+    /// // If we collide, then do not move the piece.
     /// block.rotate_at_offset(&field, Rotation::R90, (2, 1));
     /// ```
     pub fn rotate_at_offset(&mut self, field: &Field, rotation: Rotation, (x, y): (i32, i32)) -> bool {
@@ -402,15 +367,6 @@ impl Block {
     }
 
     /// Rotate the block by the specified amount.
-    ///
-    /// ## Examples
-    /// ```
-    /// use tetrs::import::*;
-    ///
-    /// let field = Field::new();
-    /// let mut block = Block::new(block::Type::Z, &field);
-    /// block.rotate(&field, Rotation::R90);
-    /// ```
     pub fn rotate(&mut self, field: &Field, rotation: Rotation) -> bool {
         self.rotate_at_offset(&field, rotation, (0, 0))
     }
@@ -423,14 +379,14 @@ impl Block {
     }
 
 
-    /// Return a `Block` which is a ghost of the current.
+    /// Returns a new `Block` which is the current blocks ghost.
     ///
     /// ## Examples
     /// ```
     /// use tetrs::import::*;
     ///
     /// let field = Field::new();
-    /// let block = Block::new(block::Type::Z, &field);
+    /// let block = Block::new(block::Id::Z, &field);
     /// let ghost = block.ghost(&field);
     /// ```
     pub fn ghost(&self, field: &Field) -> Block {
@@ -448,7 +404,7 @@ mod tests {
     #[test]
     fn test_shift() {
         let field = Field::new();
-        let mut block = Block::new(Type::Z, &field);
+        let mut block = Block::new(Id::Z, &field);
 
         let x = block.x;
         block.shift(&field, Direction::Left);
@@ -461,7 +417,7 @@ mod tests {
     #[test]
     fn test_rotation() {
         let field = Field::new();
-        let mut block = Block::new(Type::S, &field);
+        let mut block = Block::new(Id::S, &field);
 
         block.shift(&field, Direction::Down);
         block.shift(&field, Direction::Down);

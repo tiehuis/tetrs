@@ -1,9 +1,7 @@
-//! A generic playfield.
+//! A tetris playfield.
 //!
-//! A `Field` stores the state of previously placed blocks, and is used to
-//! determine collisions for any `Block`. A `Field` is not actually aware
-//! of what blocks belong to it, tis generality allows for more advanced
-//! gameplay to be built from this structure.
+//! A `Field` manages the state of previously placed blocks. A `Field` is not
+//! aware of blocks themselves for the most part, besides the `freeze` function.
 
 use block::{self, Block};
 use rotation_system::RotationSystem;
@@ -21,7 +19,7 @@ use collections::enum_set::CLike;
 /// If one wants to only iterate over the viewable portion of the array, this
 /// can be done with the following bounds:
 ///
-/// ```ignore
+/// ```text
 /// for y in self.hidden..self.height {
 ///     ...
 /// }
@@ -29,7 +27,7 @@ use collections::enum_set::CLike;
 ///
 /// instead of the more presumed
 ///
-/// ```ignore
+/// ```text
 /// for y in 0..self.height {
 /// }
 /// ```
@@ -56,7 +54,30 @@ pub struct Field {
     pub data: Vec<Vec<usize>>,
 }
 
-/// Options for use when constructing a field.
+/// Optional values which can be set when initializing a `Field`.
+///
+/// The default values are:
+///
+/// ```text
+/// FieldOptions {
+///     width: 10,
+///     height: 25,
+///     hidden: 3,
+///     spawn: (4, 0)
+/// }
+/// ```
+///
+/// ## Examples
+///
+/// ```
+/// use tetrs::import::*;
+///
+/// // Has width: 10, height: 14, hidden: 3, spawn (4, 0)
+/// let options = FieldOptions {
+///     width: 14,
+///     ..Default::default()
+/// };
+/// ```
 #[derive(Serialize, Deserialize, Debug)]
 #[allow(missing_docs)]
 pub struct FieldOptions {
@@ -82,13 +103,6 @@ impl Default for FieldOptions {
 
 impl Field {
     /// Construct a `Field` object with default values.
-    ///
-    /// ## Examples
-    /// ```
-    /// use tetrs::import::*;
-    ///
-    /// let field = Field::new();
-    /// ```
     pub fn new() -> Field {
         Field::with_options(FieldOptions { ..Default::default() })
     }
@@ -111,22 +125,14 @@ impl Field {
             height: options.height,
             hidden: options.hidden,
             spawn: options.spawn,
-            data: vec![vec![block::Type::None.to_usize(); options.width]; options.height]
+            data: vec![vec![block::Id::None.to_usize(); options.width]; options.height]
         }
     }
 
     /// Clear lines from the field and return the number cleared.
-    ///
-    /// ## Examples
-    /// ```
-    /// use tetrs::import::*;
-    ///
-    /// let mut field = Field::new();
-    /// let lines_cleared = field.clear_lines();
-    /// ```
     pub fn clear_lines(&mut self) -> usize {
         // Keep only lines with an empty cell (non-filled)
-        self.data.retain(|ref x| x.iter().any(|&x| x == block::Type::None.to_usize()));
+        self.data.retain(|ref x| x.iter().any(|&x| x == block::Id::None.to_usize()));
 
         // Calculate how many lines were cleared
         let lines = self.height - self.data.len();
@@ -134,7 +140,7 @@ impl Field {
         // Sure this isn't optimal, but for a small array and with only 4
         // pushses max (unless cascading) who would notice?
         for _ in 0..lines {
-            self.data.insert(0, vec![block::Type::None.to_usize(); self.width]);
+            self.data.insert(0, vec![block::Id::None.to_usize(); self.width]);
         }
 
         lines
@@ -148,7 +154,7 @@ impl Field {
     /// use tetrs::import::*;
     ///
     /// let mut field = Field::new();
-    /// let mut block = Block::new(block::Type::I, &field);
+    /// let mut block = Block::new(block::Id::I, &field);
     ///
     /// field.freeze(block);
     ///
@@ -162,7 +168,7 @@ impl Field {
 
     /// Return the value at the specified field location.
     ///
-    /// This currently is a `usize` value which corresponds to some `Type`
+    /// This currently is a `usize` value which corresponds to some `Id`
     /// of `Block`.
     ///
     /// ## Examples
@@ -180,9 +186,9 @@ impl Field {
     /// Return true if the value at the specified location is non-empty.
     ///
     /// This is a convenience function which queries `at` and checks if the
-    /// result is of empty `Type`.
+    /// result is of empty `Id`.
     pub fn occupies(&self, (x, y): (usize, usize)) -> bool {
         assert!(x < self.width && y < self.height);
-        self.data[y][x] != block::Type::None.to_usize()
+        self.data[y][x] != block::Id::None.to_usize()
     }
 }

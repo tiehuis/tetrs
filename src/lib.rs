@@ -10,28 +10,29 @@
 #![crate_name = "tetrs"]
 #![doc(html_root_url = "https://tiehuis/github.io/tetrs/tetrs/")]
 
-//! The tetrs library provides a number of low-level tasks related to movement
-//! of blocks. The code aims to be correct and provide easy extension for new
-//! input.
+//! The tetrs library provides a number of low-level tasks for required for
+//! tetris gameplay. This library aims to be correct and provide easy extension
+//! for new frontends/rotation-systems etc.
+//!
+//! Intra-module dependencies are reduced as much as possible. If a component
+//! does not require knowledge of another component, then it is likely not
+//! present. Some helper functions which do not adhere to this philosophy can
+//! be located in the `utility` module.
+//!
+//! Finally, a fairly general high-level abstraction over these is provided
+//! with the `engine` module.
 //!
 //! ## Examples
 //!
-//! ```ignore
+//! ```
 //! use tetrs::import::*;
 //!
 //! let field = Field::new();
-//! let block = Block::new(block::Type::I, &field);
+//! let mut block = Block::new(block::Id::I, &field);
 //!
 //! block.rotate(&field, Rotation::R90);
 //! block.shift_extend(&field, Direction::Down);
 //! ```
-//!
-//! Intra-module dependencies are as reduced in scope as possible. For example,
-//! a block itself has no knowledge of a wallkick, but provides functionality
-//! in terms of rotations with offset to allow for easy use with wallkicks.
-//!
-//! A high-level abstraction over these primitives is provided in terms of an
-//! `Engine` class.
 
 extern crate collections;
 #[macro_use] extern crate itertools;

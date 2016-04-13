@@ -1,4 +1,7 @@
-//! Implements a simple wallkick
+//! Implements a simple wallkick.
+//!
+//! The simple wallkick algorithm will only attempt one left and then right
+//! movement if the rotation fails.
 
 use block::{Rotation, Block};
 use wallkick::Wallkick;

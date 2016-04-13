@@ -1,19 +1,19 @@
-//! Implements the Gameboy randomizer
+//! Implements the Gameboy randomizer.
 
 use std::collections::VecDeque;
 use rand::{self, Rng};
-use block::Type;
+use block::Id;
 use randomizer::Randomizer;
 
 gen_rand!(GameboyRandomizer);
 
 /// A generic memoryless randomizer.
 //
-/// This generates a completely arbitrary sequence of `Type`'s.
+/// This generates a completely arbitrary sequence of `Id`'s.
 #[derive(Clone)]
 pub struct GameboyRandomizer {
     /// The lookahead buffer.
-    lookahead: VecDeque<Type>,
+    lookahead: VecDeque<Id>,
 
     /// The rng used to generate random values
     rng: rand::ThreadRng,
@@ -31,12 +31,12 @@ impl GameboyRandomizer {
             prev: 0
         };
 
-        gb.prev = gb.rng.gen_range(0, Type::variants().len());
+        gb.prev = gb.rng.gen_range(0, Id::variants().len());
         gb
     }
 
-    fn next_block(&mut self) -> Type {
-        let variants = Type::variants();
+    fn next_block(&mut self) -> Id {
+        let variants = Id::variants();
         let roll = 6 * variants.len() - 3;
         self.prev += ((self.rng.gen_range(0, roll) / 5) + 1) % variants.len();
         variants[self.prev]

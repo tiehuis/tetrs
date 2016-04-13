@@ -2,18 +2,18 @@
 
 use std::collections::VecDeque;
 use rand::{self, Rng};
-use block::Type;
+use block::Id;
 use randomizer::Randomizer;
 
 gen_rand!(MemorylessRandomizer);
 
 /// A generic memoryless randomizer.
 //
-/// This generates a completely arbitrary sequence of `Type`'s.
+/// This generates a completely arbitrary sequence of `Id`'s.
 #[derive(Clone)]
 pub struct MemorylessRandomizer {
     /// The lookahead buffer.
-    lookahead: VecDeque<Type>,
+    lookahead: VecDeque<Id>,
 
     /// The rng used to generate random values
     rng: rand::ThreadRng
@@ -28,7 +28,7 @@ impl MemorylessRandomizer {
         }
     }
 
-    fn next_block(&mut self) -> Type {
-        *self.rng.choose(Type::variants()).unwrap()
+    fn next_block(&mut self) -> Id {
+        *self.rng.choose(Id::variants()).unwrap()
     }
 }
