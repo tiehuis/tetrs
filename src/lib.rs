@@ -72,3 +72,4 @@ pub mod utility;
 pub mod statistics;
 pub mod schema;
 pub mod import;
+pub mod history;

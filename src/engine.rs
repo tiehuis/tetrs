@@ -11,7 +11,10 @@ use rotation_system::{self, RotationSystem};
 use wallkick::{self, Wallkick};
 use utility::BlockHelper;
 use statistics::Statistics;
+use history::History;
 
+use time;
+use collections::enum_set::CLike;
 use std::io::prelude::*;
 use std::fs::File;
 use serde_json;
@@ -120,9 +123,6 @@ impl Default for EngineSettings {
     }
 }
 
-use time;
-use collections::enum_set::CLike;
-
 /// Which part of the game are we in. This is used to keep track of multi-frame
 /// events that require some internal state past state to be kept.
 #[derive(Debug, Clone, Copy)]
@@ -177,6 +177,9 @@ pub struct Engine {
     /// Statistics of the current game
     pub statistics: Statistics,
 
+    /// The input history of the game
+    pub history: History,
+
     /// Is the game running
     pub running: bool,
 
@@ -221,6 +224,7 @@ impl Engine {
             mspt: options.mspt,
             running: true,
             options: options.engine_settings,
+            history: History::new(),
             statistics: Statistics::new(),
             internal: EngineState { ..Default::default() },
             status: Status::Ready,
@@ -292,8 +296,9 @@ impl Engine {
 
     /// This performs the bulk of the gameplay logic.
     fn update_move(&mut self) {
-        // Calculate movement then gravity or gravity then movement?
+        self.history.update(&self.controller);
 
+        // Calculate movement then gravity or gravity then movement?
 
         if self.controller.active(Action::MoveLeft) && self.controller.active(Action::MoveRight) {
             let action = if self.controller.time(Action::MoveLeft) < self.controller.time(Action::MoveRight) {

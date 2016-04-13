@@ -10,10 +10,21 @@
 use std::mem;
 use collections::enum_set::CLike;
 
+/// 'Controller Time' array.
+///
+/// This is defined to enforce type restrictions on external users of these
+/// arrays, e.g. `History`.
+pub type CTarray = [u64; 8];
+
+/// 'Controller Active' array
+pub type CAarray = [bool; 8];
+
 /// Actions which are understood by the controller.
 #[repr(usize)]
 #[derive(Clone, Copy, Debug, Hash)]
 #[allow(missing_docs)]
+// When adding a new Action you MUST also alter the `History` module to
+// match the new array size!
 pub enum Action {
     MoveLeft, MoveRight, MoveDown, HardDrop,
     RotateLeft, RotateRight, Hold, Quit
@@ -37,10 +48,10 @@ impl CLike for Action {
 #[derive(Default)]
 pub struct Controller {
     /// The length each action has occured for in ticks.
-    pub time: [u64; 8],
+    pub time: CTarray,
 
     /// Which actions are currently active.
-    pub active: [bool; 8]
+    pub active: CAarray
 }
 
 impl Controller {
@@ -49,7 +60,7 @@ impl Controller {
     /// The controller specified will start with all actions in the inactive
     /// state, and time values zeroed.
     pub fn new() -> Controller {
-        Controller { time: [0; 8], active: [false; 8] }
+        Controller { ..Default::default() }
     }
 
     /// Query if an action is currently active.
