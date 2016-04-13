@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["TGM2Randomizer","A TGM2 randomizer. This generates a completely arbitrary sequence of `Type`'s."]]});
+initSidebarItems({"struct":[["TGM2Randomizer","A TGM2 randomizer. This generates a completely arbitrary sequence of `Id`'s."]]});

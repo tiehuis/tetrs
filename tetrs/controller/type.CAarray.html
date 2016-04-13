@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `field` mod in crate `tetrs`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, field">
+    <meta name="description" content="API documentation for the Rust `CAarray` type in crate `tetrs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, CAarray">
 
-    <title>tetrs::field - Rust</title>
+    <title>tetrs::controller::CAarray - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
@@ -28,7 +28,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>tetrs</a></p><script>window.sidebarCurrent = {name: 'field', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+        <p class='location'><a href='../index.html'>tetrs</a>::<wbr><a href='index.html'>controller</a></p><script>window.sidebarCurrent = {name: 'CAarray', ty: 'type', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -42,32 +42,14 @@
         </form>
     </nav>
 
-    <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>tetrs</a>::<wbr><a class='mod' href=''>field</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content type">
+<h1 class='fqn'><span class='in-band'><a href='../index.html'>tetrs</a>::<wbr><a href='index.html'>controller</a>::<wbr><a class='type' href=''>CAarray</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-11' class='srclink' href='../../src/tetrs/src/field.rs.html#1-194' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p>A tetris playfield.</p>
-
-<p>A <code>Field</code> manages the state of previously placed blocks. A <code>Field</code> is not
-aware of blocks themselves for the most part, besides the <code>freeze</code> function.</p>
-</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.Field.html'
-                                  title='tetrs::field::Field'>Field</a></td>
-                           <td class='docblock short'>
-                                <p>A <code>Field</code> is simply a 2-D <code>Vec</code> with some corresponding options.</p>
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.FieldOptions.html'
-                                  title='tetrs::field::FieldOptions'>FieldOptions</a></td>
-                           <td class='docblock short'>
-                                <p>Optional values which can be set when initializing a <code>Field</code>.</p>
-                           </td>
-                       </tr></table></section>
+               </span><a id='src-472' class='srclink' href='../../src/tetrs/src/controller.rs.html#20' title='goto source code'>[src]</a></span></h1>
+<pre class='rust typedef'>type CAarray = <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>[</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>; 8]</a>;</pre><div class='docblock'><p>&#39;Controller Active&#39; array</p>
+</div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>

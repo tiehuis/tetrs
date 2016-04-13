@@ -72,10 +72,16 @@
 <span id="28">28</span>
 <span id="29">29</span>
 <span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! Stores statistics about the current game.</span>
+<span class='doccomment'>//! Stores statistics about an individual game.</span>
 
-<span class='doccomment'>/// Stores statistics about the current game.</span>
+<span class='doccomment'>/// `Statistics` is a &#39;dumb&#39; struct, and does not provide any methods</span>
+<span class='doccomment'>/// upon it. Its primary use is as a namespacing tool to avoid</span>
+<span class='doccomment'>/// over-complicating struct such as `Engine`.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Default</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Statistics</span> {
     <span class='doccomment'>/// How many lines have been cleared</span>
@@ -99,6 +105,8 @@
 
 <span class='kw'>impl</span> <span class='ident'>Statistics</span> {
     <span class='doccomment'>/// Construct a new `Statistics` object.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Values are zeroed.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Statistics</span> {
         <span class='ident'>Statistics</span> { ..<span class='ident'>Default</span>::<span class='ident'>default</span>() }
     }

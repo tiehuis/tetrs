@@ -47,33 +47,33 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1612' class='srclink' href='../../src/tetrs/src/schema.rs.html#1-394' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-1555' class='srclink' href='../../src/tetrs/src/schema.rs.html#1-399' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Methods for converting to and from a textual field representation.</p>
 
 <p>This is mostly useful for writing more complicated test cases. Other uses
 are for generating fixed start field parameters.</p>
 
 <h2 id='examples' class='section-header'><a href='#examples'>Examples</a></h2>
-<pre class='rust rust-example-rendered'>
-<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>schema</span>::<span class='ident'>Schema</span>;
+<pre><code class="language-text">use tetrs::schema::Schema;
 
-<span class='kw'>let</span> (<span class='ident'>field</span>, <span class='kw-2'>mut</span> <span class='ident'>block</span>) <span class='op'>=</span> <span class='ident'>Schema</span>::<span class='ident'>from_string</span>(<span class='string'>&quot;
+let (field, mut block) = Schema::from_string(&quot;
     |          |
     |  #       |
     | # @@     |
     |## @@     |
     ------------
-&quot;</span>).<span class='ident'>to_state</span>();
+&quot;).to_state();
 
-<span class='ident'>block</span>.<span class='ident'>rotate</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>, <span class='ident'>tetrs</span>::<span class='ident'>Rotation</span>::<span class='ident'>R90</span>);
+block.rotate(&amp;field, tetrs::Rotation::R90);
 
-<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>Schema</span>::<span class='ident'>from_state</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>, <span class='kw-2'>&amp;</span><span class='ident'>block</span>), <span class='ident'>Schema</span>::<span class='ident'>from_string</span>(<span class='string'>&quot;
+assert_eq!(Schema::from_state(&amp;field, &amp;block), Schema::from_string(&quot;
     |          |
     |  #       |
     | # @@     |
     |#  @@     |
     ------------
-&quot;</span>));</pre>
+&quot;));
+</code></pre>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                        <tr class=' module-item'>

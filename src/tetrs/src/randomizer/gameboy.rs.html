@@ -87,22 +87,22 @@
 <span id="43">43</span>
 <span id="44">44</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! Implements the Gameboy randomizer</span>
+<span class='doccomment'>//! Implements the Gameboy randomizer.</span>
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>VecDeque</span>;
 <span class='kw'>use</span> <span class='ident'>rand</span>::{<span class='self'>self</span>, <span class='ident'>Rng</span>};
-<span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Type</span>;
+<span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Id</span>;
 <span class='kw'>use</span> <span class='ident'>randomizer</span>::<span class='ident'>Randomizer</span>;
 
 <span class='macro'>gen_rand</span><span class='macro'>!</span>(<span class='ident'>GameboyRandomizer</span>);
 
 <span class='doccomment'>/// A generic memoryless randomizer.</span>
 <span class='comment'>//</span>
-<span class='doccomment'>/// This generates a completely arbitrary sequence of `Type`&#39;s.</span>
+<span class='doccomment'>/// This generates a completely arbitrary sequence of `Id`&#39;s.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>GameboyRandomizer</span> {
     <span class='doccomment'>/// The lookahead buffer.</span>
-    <span class='ident'>lookahead</span>: <span class='ident'>VecDeque</span><span class='op'>&lt;</span><span class='ident'>Type</span><span class='op'>&gt;</span>,
+    <span class='ident'>lookahead</span>: <span class='ident'>VecDeque</span><span class='op'>&lt;</span><span class='ident'>Id</span><span class='op'>&gt;</span>,
 
     <span class='doccomment'>/// The rng used to generate random values</span>
     <span class='ident'>rng</span>: <span class='ident'>rand</span>::<span class='ident'>ThreadRng</span>,
@@ -120,12 +120,12 @@
             <span class='ident'>prev</span>: <span class='number'>0</span>
         };
 
-        <span class='ident'>gb</span>.<span class='ident'>prev</span> <span class='op'>=</span> <span class='ident'>gb</span>.<span class='ident'>rng</span>.<span class='ident'>gen_range</span>(<span class='number'>0</span>, <span class='ident'>Type</span>::<span class='ident'>variants</span>().<span class='ident'>len</span>());
+        <span class='ident'>gb</span>.<span class='ident'>prev</span> <span class='op'>=</span> <span class='ident'>gb</span>.<span class='ident'>rng</span>.<span class='ident'>gen_range</span>(<span class='number'>0</span>, <span class='ident'>Id</span>::<span class='ident'>variants</span>().<span class='ident'>len</span>());
         <span class='ident'>gb</span>
     }
 
-    <span class='kw'>fn</span> <span class='ident'>next_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Type</span> {
-        <span class='kw'>let</span> <span class='ident'>variants</span> <span class='op'>=</span> <span class='ident'>Type</span>::<span class='ident'>variants</span>();
+    <span class='kw'>fn</span> <span class='ident'>next_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Id</span> {
+        <span class='kw'>let</span> <span class='ident'>variants</span> <span class='op'>=</span> <span class='ident'>Id</span>::<span class='ident'>variants</span>();
         <span class='kw'>let</span> <span class='ident'>roll</span> <span class='op'>=</span> <span class='number'>6</span> <span class='op'>*</span> <span class='ident'>variants</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='number'>3</span>;
         <span class='self'>self</span>.<span class='ident'>prev</span> <span class='op'>+=</span> ((<span class='self'>self</span>.<span class='ident'>rng</span>.<span class='ident'>gen_range</span>(<span class='number'>0</span>, <span class='ident'>roll</span>) <span class='op'>/</span> <span class='number'>5</span>) <span class='op'>+</span> <span class='number'>1</span>) <span class='op'>%</span> <span class='ident'>variants</span>.<span class='ident'>len</span>();
         <span class='ident'>variants</span>[<span class='self'>self</span>.<span class='ident'>prev</span>]

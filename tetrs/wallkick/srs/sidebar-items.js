@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["SRS","Wallkick"]]});
+initSidebarItems({"struct":[["SRS",""]]});

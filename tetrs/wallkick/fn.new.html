@@ -47,9 +47,23 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-615' class='srclink' href='../../src/tetrs/src/wallkick/mod.rs.html#48-56' title='goto source code'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn new(name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; &amp;'static <a class='trait' href='../../tetrs/wallkick/trait.Wallkick.html' title='tetrs::wallkick::Wallkick'>Wallkick</a></pre><div class='docblock'><p>Factory function for returning appropriate rotation systems based on their
-names</p>
+               </span><a id='src-616' class='srclink' href='../../src/tetrs/src/wallkick/mod.rs.html#80-88' title='goto source code'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn new(name: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; &amp;'static <a class='trait' href='../../tetrs/wallkick/trait.Wallkick.html' title='tetrs::wallkick::Wallkick'>Wallkick</a></pre><div class='docblock'><p>Factory function for constructing rotation systems from name.</p>
+
+<p>This is usually more convenient than explicit instantiation, as rotation
+systems are often stored as a name only.</p>
+
+<h1 id='names' class='section-header'><a href='#names'>Names</a></h1>
+<ul>
+<li><code>srs</code></li>
+<li><code>empty</code></li>
+<li><code>simple</code></li>
+<li><code>dtet</code></li>
+</ul>
+
+<h1 id='panics' class='section-header'><a href='#panics'>Panics</a></h1>
+<p><code>new</code> will panic if the input string is not one of the strings present in
+<code>Names</code>.</p>
 </div></section>
     <section id='search' class="content hidden"></section>
 

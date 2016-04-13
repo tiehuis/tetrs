@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1601' class='srclink' href='../../src/tetrs/src/statistics.rs.html#5-23' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-1544' class='srclink' href='../../src/tetrs/src/statistics.rs.html#7-25' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Statistics {
     pub lines: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
     pub pieces: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
@@ -55,7 +55,9 @@
     pub doubles: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
     pub triples: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
     pub fours: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
-}</pre><div class='docblock'><p>Stores statistics about the current game.</p>
+}</pre><div class='docblock'><p><code>Statistics</code> is a &#39;dumb&#39; struct, and does not provide any methods
+upon it. Its primary use is as a namespacing tool to avoid
+over-complicating struct such as <code>Engine</code>.</p>
 </div><h2 class='fields'>Fields</h2>
 <table><tr class='stab '>
                              <td id='structfield.lines'><code>lines</code></td><td><div class='docblock'><p>How many lines have been cleared</p>
@@ -71,6 +73,8 @@
                              <td id='structfield.fours'><code>fours</code></td><td><div class='docblock'><p>Total tetrises</p>
 </div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../tetrs/statistics/struct.Statistics.html' title='tetrs::statistics::Statistics'>Statistics</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../tetrs/statistics/struct.Statistics.html' title='tetrs::statistics::Statistics'>Statistics</a></code></h4>
 <div class='docblock'><p>Construct a new <code>Statistics</code> object.</p>
+
+<p>Values are zeroed.</p>
 </div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../../tetrs/statistics/struct.Statistics.html' title='tetrs::statistics::Statistics'>Statistics</a></code></h3><div class='impl-items'><h4 id='method.default' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; <a class='struct' href='../../tetrs/statistics/struct.Statistics.html' title='tetrs::statistics::Statistics'>Statistics</a></code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>

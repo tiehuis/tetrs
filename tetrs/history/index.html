@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `field` mod in crate `tetrs`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, field">
+    <meta name="description" content="API documentation for the Rust `history` mod in crate `tetrs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, history">
 
-    <title>tetrs::field - Rust</title>
+    <title>tetrs::history - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
@@ -28,7 +28,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>tetrs</a></p><script>window.sidebarCurrent = {name: 'field', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+        <p class='location'><a href='../index.html'>tetrs</a></p><script>window.sidebarCurrent = {name: 'history', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -43,29 +43,26 @@
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>tetrs</a>::<wbr><a class='mod' href=''>field</a></span><span class='out-of-band'><span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>tetrs</a>::<wbr><a class='mod' href=''>history</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-11' class='srclink' href='../../src/tetrs/src/field.rs.html#1-194' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p>A tetris playfield.</p>
-
-<p>A <code>Field</code> manages the state of previously placed blocks. A <code>Field</code> is not
-aware of blocks themselves for the most part, besides the <code>freeze</code> function.</p>
+               </span><a id='src-1687' class='srclink' href='../../src/tetrs/src/history.rs.html#1-78' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>Module which provides history management tools.</p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.Field.html'
-                                  title='tetrs::field::Field'>Field</a></td>
+                           <td><a class='struct' href='struct.Event.html'
+                                  title='tetrs::history::Event'>Event</a></td>
                            <td class='docblock short'>
-                                <p>A <code>Field</code> is simply a 2-D <code>Vec</code> with some corresponding options.</p>
+                                <p>An individual event in a history sequence.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.FieldOptions.html'
-                                  title='tetrs::field::FieldOptions'>FieldOptions</a></td>
+                           <td><a class='struct' href='struct.History.html'
+                                  title='tetrs::history::History'>History</a></td>
                            <td class='docblock short'>
-                                <p>Optional values which can be set when initializing a <code>Field</code>.</p>
+                                <p>Manages the history state of a particular game.</p>
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>

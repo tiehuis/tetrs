@@ -47,24 +47,36 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-378' class='srclink' href='../../src/tetrs/src/block.rs.html#236-244' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-376' class='srclink' href='../../src/tetrs/src/block.rs.html#214-222' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct BlockOptions {
     pub x: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>&gt;,
     pub y: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>&gt;,
     pub rotation: <a class='enum' href='../../tetrs/block/enum.Rotation.html' title='tetrs::block::Rotation'>Rotation</a>,
     pub rotation_system: &amp;'static <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>,
-}</pre><div class='docblock'><p>Values used for initializing a block.</p>
+}</pre><div class='docblock'><p>Optional values which can be set when initializing a <code>Block</code>.</p>
 
-<p>This is similar to a builder structure, but instead of chained method calls
-we rely on the <code>Default</code> trait.</p>
+<p>The default values are:</p>
 
-<p>This can be used to initialize a block with more fine-grained details than
-standard, whilst retaining useful defaults of values which may not want to
-be changed.</p>
+<pre><code class="language-text">BlockOptions {
+    x: None,
+    y: None,
+    rotation: Rotation::R0,
+    rotation_system: &quot;srs&quot;
+}
+</code></pre>
 
+<p>If an <code>x</code> or <code>y</code> value is <code>Some(..)</code> then it will override the fields spawn
+position, which is usually used on <code>Block</code> construction.</p>
+
+<h2 id='examples' class='section-header'><a href='#examples'>Examples</a></h2>
 <pre class='rust rust-example-rendered'>
-<span class='comment'>// Create an option set with default options besides the initial rotation</span>
-<span class='kw'>let</span> <span class='ident'>bopt</span> <span class='op'>=</span> <span class='ident'>BlockOptions</span> { <span class='ident'>rotation</span>: <span class='ident'>Rotation</span>::<span class='ident'>R90</span>, ..<span class='ident'>Default</span>::<span class='ident'>default</span>() }</pre>
+<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>import</span>::<span class='op'>*</span>;
+
+<span class='comment'>// Has x: None, y: None, rotation: Rotation::R0, rotation_system: &quot;dtet&quot;</span>
+<span class='kw'>let</span> <span class='ident'>options</span> <span class='op'>=</span> <span class='ident'>BlockOptions</span> {
+    <span class='ident'>rotation_system</span>: <span class='string'>&quot;dtet&quot;</span>,
+    ..<span class='ident'>Default</span>::<span class='ident'>default</span>()
+};</pre>
 </div><h2 class='fields'>Fields</h2>
 <table><tr class='stab '>
                              <td id='structfield.x'><code>x</code></td><td></td></tr><tr class='stab '>

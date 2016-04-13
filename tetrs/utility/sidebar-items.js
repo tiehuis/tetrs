@@ -1,1 +1,1 @@
-initSidebarItems({"trait":[["BlockHelper","Implements new traits on a Block instance."]]});
+initSidebarItems({"trait":[["BlockHelper","Helper traits for the `Block` struct."]]});

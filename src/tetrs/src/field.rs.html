@@ -230,13 +230,17 @@
 <span id="186">186</span>
 <span id="187">187</span>
 <span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! A generic playfield.</span>
+<span class='doccomment'>//! A tetris playfield.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! A `Field` stores the state of previously placed blocks, and is used to</span>
-<span class='doccomment'>//! determine collisions for any `Block`. A `Field` is not actually aware</span>
-<span class='doccomment'>//! of what blocks belong to it, tis generality allows for more advanced</span>
-<span class='doccomment'>//! gameplay to be built from this structure.</span>
+<span class='doccomment'>//! A `Field` manages the state of previously placed blocks. A `Field` is not</span>
+<span class='doccomment'>//! aware of blocks themselves for the most part, besides the `freeze` function.</span>
 
 <span class='kw'>use</span> <span class='ident'>block</span>::{<span class='self'>self</span>, <span class='ident'>Block</span>};
 <span class='kw'>use</span> <span class='ident'>rotation_system</span>::<span class='ident'>RotationSystem</span>;
@@ -254,7 +258,7 @@
 <span class='doccomment'>/// If one wants to only iterate over the viewable portion of the array, this</span>
 <span class='doccomment'>/// can be done with the following bounds:</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// ```ignore</span>
+<span class='doccomment'>/// ```text</span>
 <span class='doccomment'>/// for y in self.hidden..self.height {</span>
 <span class='doccomment'>///     ...</span>
 <span class='doccomment'>/// }</span>
@@ -262,7 +266,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// instead of the more presumed</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// ```ignore</span>
+<span class='doccomment'>/// ```text</span>
 <span class='doccomment'>/// for y in 0..self.height {</span>
 <span class='doccomment'>/// }</span>
 <span class='doccomment'>/// ```</span>
@@ -289,7 +293,30 @@
     <span class='kw'>pub</span> <span class='ident'>data</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;&gt;</span>,
 }
 
-<span class='doccomment'>/// Options for use when constructing a field.</span>
+<span class='doccomment'>/// Optional values which can be set when initializing a `Field`.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// The default values are:</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// ```text</span>
+<span class='doccomment'>/// FieldOptions {</span>
+<span class='doccomment'>///     width: 10,</span>
+<span class='doccomment'>///     height: 25,</span>
+<span class='doccomment'>///     hidden: 3,</span>
+<span class='doccomment'>///     spawn: (4, 0)</span>
+<span class='doccomment'>/// }</span>
+<span class='doccomment'>/// ```</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// ## Examples</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// ```</span>
+<span class='doccomment'>/// use tetrs::import::*;</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// // Has width: 10, height: 14, hidden: 3, spawn (4, 0)</span>
+<span class='doccomment'>/// let options = FieldOptions {</span>
+<span class='doccomment'>///     width: 14,</span>
+<span class='doccomment'>///     ..Default::default()</span>
+<span class='doccomment'>/// };</span>
+<span class='doccomment'>/// ```</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Serialize</span>, <span class='ident'>Deserialize</span>, <span class='ident'>Debug</span>)]</span>
 <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>missing_docs</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>FieldOptions</span> {
@@ -315,13 +342,6 @@
 
 <span class='kw'>impl</span> <span class='ident'>Field</span> {
     <span class='doccomment'>/// Construct a `Field` object with default values.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ## Examples</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::import::*;</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// let field = Field::new();</span>
-    <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Field</span> {
         <span class='ident'>Field</span>::<span class='ident'>with_options</span>(<span class='ident'>FieldOptions</span> { ..<span class='ident'>Default</span>::<span class='ident'>default</span>() })
     }
@@ -344,22 +364,14 @@
             <span class='ident'>height</span>: <span class='ident'>options</span>.<span class='ident'>height</span>,
             <span class='ident'>hidden</span>: <span class='ident'>options</span>.<span class='ident'>hidden</span>,
             <span class='ident'>spawn</span>: <span class='ident'>options</span>.<span class='ident'>spawn</span>,
-            <span class='ident'>data</span>: <span class='macro'>vec</span><span class='macro'>!</span>[<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='prelude-val'>None</span>.<span class='ident'>to_usize</span>(); <span class='ident'>options</span>.<span class='ident'>width</span>]; <span class='ident'>options</span>.<span class='ident'>height</span>]
+            <span class='ident'>data</span>: <span class='macro'>vec</span><span class='macro'>!</span>[<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='prelude-val'>None</span>.<span class='ident'>to_usize</span>(); <span class='ident'>options</span>.<span class='ident'>width</span>]; <span class='ident'>options</span>.<span class='ident'>height</span>]
         }
     }
 
     <span class='doccomment'>/// Clear lines from the field and return the number cleared.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ## Examples</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::import::*;</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// let mut field = Field::new();</span>
-    <span class='doccomment'>/// let lines_cleared = field.clear_lines();</span>
-    <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>clear_lines</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
         <span class='comment'>// Keep only lines with an empty cell (non-filled)</span>
-        <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>retain</span>(<span class='op'>|</span><span class='kw-2'>ref</span> <span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>iter</span>().<span class='ident'>any</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span> <span class='op'>==</span> <span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='prelude-val'>None</span>.<span class='ident'>to_usize</span>()));
+        <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>retain</span>(<span class='op'>|</span><span class='kw-2'>ref</span> <span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>iter</span>().<span class='ident'>any</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span> <span class='op'>==</span> <span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='prelude-val'>None</span>.<span class='ident'>to_usize</span>()));
 
         <span class='comment'>// Calculate how many lines were cleared</span>
         <span class='kw'>let</span> <span class='ident'>lines</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>height</span> <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>len</span>();
@@ -367,7 +379,7 @@
         <span class='comment'>// Sure this isn&#39;t optimal, but for a small array and with only 4</span>
         <span class='comment'>// pushses max (unless cascading) who would notice?</span>
         <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>lines</span> {
-            <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>insert</span>(<span class='number'>0</span>, <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='prelude-val'>None</span>.<span class='ident'>to_usize</span>(); <span class='self'>self</span>.<span class='ident'>width</span>]);
+            <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>insert</span>(<span class='number'>0</span>, <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='prelude-val'>None</span>.<span class='ident'>to_usize</span>(); <span class='self'>self</span>.<span class='ident'>width</span>]);
         }
 
         <span class='ident'>lines</span>
@@ -381,7 +393,7 @@
     <span class='doccomment'>/// use tetrs::import::*;</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let mut field = Field::new();</span>
-    <span class='doccomment'>/// let mut block = Block::new(block::Type::I, &amp;field);</span>
+    <span class='doccomment'>/// let mut block = Block::new(block::Id::I, &amp;field);</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// field.freeze(block);</span>
     <span class='doccomment'>///</span>
@@ -395,7 +407,7 @@
 
     <span class='doccomment'>/// Return the value at the specified field location.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// This currently is a `usize` value which corresponds to some `Type`</span>
+    <span class='doccomment'>/// This currently is a `usize` value which corresponds to some `Id`</span>
     <span class='doccomment'>/// of `Block`.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ## Examples</span>
@@ -413,10 +425,10 @@
     <span class='doccomment'>/// Return true if the value at the specified location is non-empty.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// This is a convenience function which queries `at` and checks if the</span>
-    <span class='doccomment'>/// result is of empty `Type`.</span>
+    <span class='doccomment'>/// result is of empty `Id`.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>occupies</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, (<span class='ident'>x</span>, <span class='ident'>y</span>): (<span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>x</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>width</span> <span class='op'>&amp;&amp;</span> <span class='ident'>y</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>height</span>);
-        <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>y</span>][<span class='ident'>x</span>] <span class='op'>!=</span> <span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='prelude-val'>None</span>.<span class='ident'>to_usize</span>()
+        <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>y</span>][<span class='ident'>x</span>] <span class='op'>!=</span> <span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='prelude-val'>None</span>.<span class='ident'>to_usize</span>()
     }
 }
 </pre>

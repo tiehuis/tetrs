@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Empty","Wallkick"]]});
+initSidebarItems({"struct":[["Empty",""]]});

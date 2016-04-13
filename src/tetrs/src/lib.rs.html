@@ -115,6 +115,8 @@
 <span id="71">71</span>
 <span id="72">72</span>
 <span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>collections</span>, <span class='ident'>enumset</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>custom_derive</span>, <span class='ident'>plugin</span>)]</span>
@@ -128,28 +130,29 @@
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>crate_name</span> <span class='op'>=</span> <span class='string'>&quot;tetrs&quot;</span>]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>doc</span>(<span class='ident'>html_root_url</span> <span class='op'>=</span> <span class='string'>&quot;https://tiehuis/github.io/tetrs/tetrs/&quot;</span>)]</span>
 
-<span class='doccomment'>//! The tetrs library provides a number of low-level tasks related to movement</span>
-<span class='doccomment'>//! of blocks. The code aims to be correct and provide easy extension for new</span>
-<span class='doccomment'>//! input.</span>
+<span class='doccomment'>//! The tetrs library provides a number of low-level tasks for required for</span>
+<span class='doccomment'>//! tetris gameplay. This library aims to be correct and provide easy extension</span>
+<span class='doccomment'>//! for new frontends/rotation-systems etc.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! Intra-module dependencies are reduced as much as possible. If a component</span>
+<span class='doccomment'>//! does not require knowledge of another component, then it is likely not</span>
+<span class='doccomment'>//! present. Some helper functions which do not adhere to this philosophy can</span>
+<span class='doccomment'>//! be located in the `utility` module.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! Finally, a fairly general high-level abstraction over these is provided</span>
+<span class='doccomment'>//! with the `engine` module.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ## Examples</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! ```ignore</span>
+<span class='doccomment'>//! ```</span>
 <span class='doccomment'>//! use tetrs::import::*;</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! let field = Field::new();</span>
-<span class='doccomment'>//! let block = Block::new(block::Type::I, &amp;field);</span>
+<span class='doccomment'>//! let mut block = Block::new(block::Id::I, &amp;field);</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! block.rotate(&amp;field, Rotation::R90);</span>
 <span class='doccomment'>//! block.shift_extend(&amp;field, Direction::Down);</span>
 <span class='doccomment'>//! ```</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! Intra-module dependencies are as reduced in scope as possible. For example,</span>
-<span class='doccomment'>//! a block itself has no knowledge of a wallkick, but provides functionality</span>
-<span class='doccomment'>//! in terms of rotations with offset to allow for easy use with wallkicks.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! A high-level abstraction over these primitives is provided in terms of an</span>
-<span class='doccomment'>//! `Engine` class.</span>
 
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>collections</span>;
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>itertools</span>;
@@ -189,6 +192,7 @@
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>statistics</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>schema</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>import</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>history</span>;
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

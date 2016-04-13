@@ -114,22 +114,12 @@
 <span id="70">70</span>
 <span id="71">71</span>
 <span id="72">72</span>
-<span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
-<span id="81">81</span>
-<span id="82">82</span>
-<span id="83">83</span>
-<span id="84">84</span>
-<span id="85">85</span>
-<span id="86">86</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements the wallkicks for the SRS rotation system.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! The SRS (Super Rotation System) wallkick is the current defacto standard</span>
+<span class='doccomment'>//! of wallkicks. The algorithm in question is slightly complicated and has</span>
+<span class='doccomment'>//! different rules depending on the block type.</span>
 
 <span class='kw'>use</span> <span class='ident'>block</span>::{<span class='self'>self</span>, <span class='ident'>Rotation</span>, <span class='ident'>Block</span>};
 <span class='kw'>use</span> <span class='ident'>wallkick</span>::<span class='ident'>Wallkick</span>;
@@ -138,49 +128,31 @@
 <span class='macro'>gen_wallkick</span><span class='macro'>!</span>(<span class='ident'>SRS</span>);
 
 <span class='kw'>impl</span> <span class='ident'>Wallkick</span> <span class='kw'>for</span> <span class='ident'>SRS</span> {
-    <span class='doccomment'>/// Wallkick tests for the specified id and rotation.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Wallkick test values are expected to lie in a static array currently.</span>
-    <span class='doccomment'>/// This may be changed in the future if something is more applicable.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ## Examples</span>
-    <span class='doccomment'>/// ```ignore</span>
-    <span class='doccomment'>/// let block = Block::new(...);</span>
-    <span class='doccomment'>/// let wallkick = SRS::new(...);</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// for (tx, ty) in wallkick.test(&amp;block, rotation) {</span>
-    <span class='doccomment'>///     if block.rotate_with_offset(rotation, (tx, ty)) {</span>
-    <span class='doccomment'>///         break;</span>
-    <span class='doccomment'>///     }</span>
-    <span class='doccomment'>/// }</span>
-    <span class='doccomment'>/// ```</span>
     <span class='kw'>fn</span> <span class='ident'>test</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>block</span>: <span class='kw-2'>&amp;</span><span class='ident'>Block</span>, <span class='ident'>r</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [(<span class='ident'>i32</span>, <span class='ident'>i32</span>)] {
+        <span class='comment'>// O block does not have any special wallkick data.</span>
+        <span class='kw'>if</span> <span class='ident'>block</span>.<span class='ident'>id</span> <span class='op'>==</span> <span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>O</span> {
+            <span class='kw'>return</span> <span class='kw-2'>&amp;</span><span class='ident'>RIGHT_JLSTZ</span>[<span class='number'>0</span>][..<span class='number'>1</span>]
+        }
+
         <span class='kw'>match</span> <span class='ident'>r</span> {
             <span class='ident'>Rotation</span>::<span class='ident'>R90</span> <span class='op'>=&gt;</span> {
-                <span class='kw'>if</span> <span class='ident'>block</span>.<span class='ident'>id</span> <span class='op'>==</span> <span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='ident'>I</span> {
-                    <span class='kw-2'>&amp;</span><span class='ident'>RIGHT_I</span>[<span class='ident'>block</span>.<span class='ident'>r</span>.<span class='ident'>to_usize</span>()][..<span class='ident'>SRS</span>::<span class='ident'>count</span>(<span class='ident'>block</span>.<span class='ident'>id</span>)]
+                <span class='kw'>if</span> <span class='ident'>block</span>.<span class='ident'>id</span> <span class='op'>==</span> <span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>I</span> {
+                    <span class='kw-2'>&amp;</span><span class='ident'>RIGHT_I</span>[<span class='ident'>block</span>.<span class='ident'>r</span>.<span class='ident'>to_usize</span>()]
                 }
                 <span class='kw'>else</span> {
-                    <span class='kw-2'>&amp;</span><span class='ident'>RIGHT_JLSTZ</span>[<span class='ident'>block</span>.<span class='ident'>r</span>.<span class='ident'>to_usize</span>()][..<span class='ident'>SRS</span>::<span class='ident'>count</span>(<span class='ident'>block</span>.<span class='ident'>id</span>)]
+                    <span class='kw-2'>&amp;</span><span class='ident'>RIGHT_JLSTZ</span>[<span class='ident'>block</span>.<span class='ident'>r</span>.<span class='ident'>to_usize</span>()]
                 }
             },
             <span class='ident'>Rotation</span>::<span class='ident'>R270</span> <span class='op'>=&gt;</span> {
-                <span class='kw'>if</span> <span class='ident'>block</span>.<span class='ident'>id</span> <span class='op'>==</span> <span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='ident'>I</span> {
-                    <span class='kw-2'>&amp;</span><span class='ident'>LEFT_I</span>[<span class='ident'>block</span>.<span class='ident'>r</span>.<span class='ident'>to_usize</span>()][..<span class='ident'>SRS</span>::<span class='ident'>count</span>(<span class='ident'>block</span>.<span class='ident'>id</span>)]
+                <span class='kw'>if</span> <span class='ident'>block</span>.<span class='ident'>id</span> <span class='op'>==</span> <span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>I</span> {
+                    <span class='kw-2'>&amp;</span><span class='ident'>LEFT_I</span>[<span class='ident'>block</span>.<span class='ident'>r</span>.<span class='ident'>to_usize</span>()]
                 }
                 <span class='kw'>else</span> {
-                    <span class='kw-2'>&amp;</span><span class='ident'>LEFT_JLSTZ</span>[<span class='ident'>block</span>.<span class='ident'>r</span>.<span class='ident'>to_usize</span>()][..<span class='ident'>SRS</span>::<span class='ident'>count</span>(<span class='ident'>block</span>.<span class='ident'>id</span>)]
+                    <span class='kw-2'>&amp;</span><span class='ident'>LEFT_JLSTZ</span>[<span class='ident'>block</span>.<span class='ident'>r</span>.<span class='ident'>to_usize</span>()]
                 }
             },
             _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Invalid wallkick test&quot;</span>)
         }
-    }
-}
-
-<span class='kw'>impl</span> <span class='ident'>SRS</span> {
-    <span class='comment'>// Not all pieces have the same number of tests</span>
-    <span class='kw'>fn</span> <span class='ident'>count</span>(<span class='ident'>id</span>: <span class='ident'>block</span>::<span class='ident'>Type</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
-        <span class='kw'>if</span> <span class='ident'>id</span>.<span class='ident'>to_usize</span>() <span class='op'>&lt;</span> <span class='number'>6</span> { <span class='number'>5</span> } <span class='kw'>else</span> { <span class='number'>1</span> }
     }
 }
 

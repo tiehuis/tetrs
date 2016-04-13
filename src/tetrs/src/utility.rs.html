@@ -84,17 +84,23 @@
 <span id="40">40</span>
 <span id="41">41</span>
 <span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
 </pre><pre class='rust '>
-<span class='doccomment'>//! Contains a number of helper methods which are composed of a number of</span>
-<span class='doccomment'>//! structures.</span>
+<span class='doccomment'>//! Contains helper methods which expose more specific functions for</span>
+<span class='doccomment'>//! particular primitives.</span>
 
 <span class='kw'>use</span> <span class='ident'>block</span>::{<span class='ident'>Rotation</span>, <span class='ident'>Block</span>};
 <span class='kw'>use</span> <span class='ident'>field</span>::<span class='ident'>Field</span>;
 <span class='kw'>use</span> <span class='ident'>wallkick</span>::<span class='ident'>Wallkick</span>;
 
-<span class='doccomment'>/// Implements new traits on a Block instance.</span>
+<span class='doccomment'>/// Helper traits for the `Block` struct.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>BlockHelper</span> {
-    <span class='doccomment'>/// Rotate a block applying the specified wallkick on failures.</span>
+    <span class='doccomment'>/// Rotate a `Block` using the specified `Wallkick` class.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// This iterates over all tests for the specified wallkick and attempts</span>
+    <span class='doccomment'>/// rotations until one is succcessful.</span>
     <span class='kw'>fn</span> <span class='ident'>rotate_with_wallkick</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>field</span>: <span class='kw-2'>&amp;</span><span class='ident'>Field</span>, <span class='ident'>wallkick</span>: <span class='kw-2'>&amp;</span><span class='ident'>Wallkick</span>, <span class='ident'>rotation</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span>;
 }
 
@@ -118,7 +124,7 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_rotate_with_wallkick</span>() {
         <span class='kw'>let</span> <span class='ident'>field</span> <span class='op'>=</span> <span class='ident'>Field</span>::<span class='ident'>new</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>block</span>::<span class='ident'>Type</span>::<span class='ident'>S</span>, <span class='kw-2'>&amp;</span><span class='ident'>field</span>);
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>S</span>, <span class='kw-2'>&amp;</span><span class='ident'>field</span>);
         <span class='kw'>let</span> <span class='ident'>wk</span> <span class='op'>=</span> <span class='ident'>wallkick</span>::<span class='ident'>SRS</span>::<span class='ident'>new</span>();
 
         <span class='ident'>block</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>, <span class='ident'>Direction</span>::<span class='ident'>Down</span>);

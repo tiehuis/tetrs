@@ -186,17 +186,21 @@
 <span id="142">142</span>
 <span id="143">143</span>
 <span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! This modules provides an interface for dealing with different block offsets.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! Offsets refer to particular rotation specifications. For example, the SRS</span>
 <span class='doccomment'>//! and Akira style rotation systems which each contain different offset values</span>
 <span class='doccomment'>//! which can both be used if they implement the `RotationSystem` trait.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! All `RotationsSystem`&#39;s currently use an empty struct which can be passed</span>
-<span class='doccomment'>//! around. This allows generic usage of anything which impl&#39;s `RotationSystem`.</span>
 
-<span class='kw'>use</span> <span class='ident'>block</span>::{<span class='ident'>Type</span>, <span class='ident'>Rotation</span>};
+<span class='kw'>use</span> <span class='ident'>block</span>::{<span class='ident'>Id</span>, <span class='ident'>Rotation</span>};
 
 <span class='doccomment'>/// The `RotationSystem` trait is implmented by all rotation systems.</span>
 <span class='doccomment'>///</span>
@@ -207,9 +211,9 @@
 <span class='doccomment'>/// See the `srs.rs` file for an example.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>RotationSystem</span> {
 
-    <span class='doccomment'>/// Returns a static array of offset values for the specified `Type`</span>
+    <span class='doccomment'>/// Returns a static array of offset values for the specified `Id`</span>
     <span class='doccomment'>/// and `Rotation`.</span>
-    <span class='kw'>fn</span> <span class='ident'>data</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>ty</span>: <span class='ident'>Type</span>, <span class='ident'>rotation</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [(<span class='ident'>usize</span>, <span class='ident'>usize</span>)];
+    <span class='kw'>fn</span> <span class='ident'>data</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>ty</span>: <span class='ident'>Id</span>, <span class='ident'>rotation</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [(<span class='ident'>usize</span>, <span class='ident'>usize</span>)];
 
     <span class='doccomment'>/// Returns the minimum offset of the first piece in a block.</span>
     <span class='doccomment'>///</span>
@@ -226,11 +230,11 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let rs = rotation_system::new(&quot;srs&quot;);</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// let (x1, y1) = rs.minp(block::Type::T, Rotation::R180);</span>
+    <span class='doccomment'>/// let (x1, y1) = rs.minp(block::Id::T, Rotation::R180);</span>
     <span class='doccomment'>/// assert_eq!((x1, y1), (0, 1));</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ```</span>
-    <span class='kw'>fn</span> <span class='ident'>minp</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>id</span>: <span class='ident'>Type</span>, <span class='ident'>r</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> (<span class='ident'>usize</span>, <span class='ident'>usize</span>) {
+    <span class='kw'>fn</span> <span class='ident'>minp</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>id</span>: <span class='ident'>Id</span>, <span class='ident'>r</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> (<span class='ident'>usize</span>, <span class='ident'>usize</span>) {
         <span class='self'>self</span>.<span class='ident'>data</span>(<span class='ident'>id</span>, <span class='ident'>r</span>).<span class='ident'>iter</span>()
             .<span class='ident'>fold</span>((<span class='op'>!</span><span class='number'>0</span>, <span class='op'>!</span><span class='number'>0</span>), <span class='op'>|</span>(<span class='ident'>a</span>, <span class='ident'>b</span>), <span class='kw-2'>&amp;</span>(<span class='ident'>x</span>, <span class='ident'>y</span>)<span class='op'>|</span> {
                 <span class='comment'>// We want the least-(x, y) such that y is minimized.</span>
@@ -253,10 +257,9 @@
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>rs_gen</span> {
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>id</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> {
         <span class='kw'>use</span> <span class='ident'>collections</span>::<span class='ident'>enum_set</span>::<span class='ident'>CLike</span>;
-        <span class='kw'>use</span> <span class='ident'>block</span>::{<span class='ident'>Type</span>, <span class='ident'>Rotation</span>};
+        <span class='kw'>use</span> <span class='ident'>block</span>::{<span class='ident'>Id</span>, <span class='ident'>Rotation</span>};
         <span class='kw'>use</span> <span class='ident'>rotation_system</span>::<span class='ident'>RotationSystem</span>;
 
-        <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Debug</span>, <span class='ident'>Default</span>, <span class='ident'>Hash</span>)]</span>
         <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>missing_docs</span>)]</span>
         <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>id</span>;
 
@@ -271,16 +274,16 @@
         }
 
         <span class='kw'>impl</span> <span class='ident'>RotationSystem</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>id</span> {
-            <span class='kw'>fn</span> <span class='ident'>data</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>ty</span>: <span class='ident'>Type</span>, <span class='ident'>rotation</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [(<span class='ident'>usize</span>, <span class='ident'>usize</span>)] {
+            <span class='kw'>fn</span> <span class='ident'>data</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>ty</span>: <span class='ident'>Id</span>, <span class='ident'>rotation</span>: <span class='ident'>Rotation</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [(<span class='ident'>usize</span>, <span class='ident'>usize</span>)] {
                 <span class='kw'>match</span> <span class='ident'>ty</span> {
-                    <span class='ident'>Type</span>::<span class='ident'>I</span> <span class='op'>=&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>I</span>[<span class='ident'>rotation</span>.<span class='ident'>to_usize</span>()],
-                    <span class='ident'>Type</span>::<span class='ident'>T</span> <span class='op'>=&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>T</span>[<span class='ident'>rotation</span>.<span class='ident'>to_usize</span>()],
-                    <span class='ident'>Type</span>::<span class='ident'>L</span> <span class='op'>=&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>L</span>[<span class='ident'>rotation</span>.<span class='ident'>to_usize</span>()],
-                    <span class='ident'>Type</span>::<span class='ident'>J</span> <span class='op'>=&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>J</span>[<span class='ident'>rotation</span>.<span class='ident'>to_usize</span>()],
-                    <span class='ident'>Type</span>::<span class='ident'>S</span> <span class='op'>=&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>S</span>[<span class='ident'>rotation</span>.<span class='ident'>to_usize</span>()],
-                    <span class='ident'>Type</span>::<span class='ident'>Z</span> <span class='op'>=&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>Z</span>[<span class='ident'>rotation</span>.<span class='ident'>to_usize</span>()],
-                    <span class='ident'>Type</span>::<span class='ident'>O</span> <span class='op'>=&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>O</span>[<span class='ident'>rotation</span>.<span class='ident'>to_usize</span>()],
-                    _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Attempted to get data for Type: {:?}&quot;</span>, <span class='ident'>ty</span>)
+                    <span class='ident'>Id</span>::<span class='ident'>I</span> <span class='op'>=&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>I</span>[<span class='ident'>rotation</span>.<span class='ident'>to_usize</span>()],
+                    <span class='ident'>Id</span>::<span class='ident'>T</span> <span class='op'>=&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>T</span>[<span class='ident'>rotation</span>.<span class='ident'>to_usize</span>()],
+                    <span class='ident'>Id</span>::<span class='ident'>L</span> <span class='op'>=&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>L</span>[<span class='ident'>rotation</span>.<span class='ident'>to_usize</span>()],
+                    <span class='ident'>Id</span>::<span class='ident'>J</span> <span class='op'>=&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>J</span>[<span class='ident'>rotation</span>.<span class='ident'>to_usize</span>()],
+                    <span class='ident'>Id</span>::<span class='ident'>S</span> <span class='op'>=&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>S</span>[<span class='ident'>rotation</span>.<span class='ident'>to_usize</span>()],
+                    <span class='ident'>Id</span>::<span class='ident'>Z</span> <span class='op'>=&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>Z</span>[<span class='ident'>rotation</span>.<span class='ident'>to_usize</span>()],
+                    <span class='ident'>Id</span>::<span class='ident'>O</span> <span class='op'>=&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>O</span>[<span class='ident'>rotation</span>.<span class='ident'>to_usize</span>()],
+                    _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Attempted to get data for Id: {:?}&quot;</span>, <span class='ident'>ty</span>)
                 }
             }
         }
@@ -288,19 +291,30 @@
 }
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>srs</span>::<span class='ident'>SRS</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>srs</span>;
-
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>arika</span>::<span class='ident'>Arika</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>arika</span>;
-
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>tengen</span>::<span class='ident'>Tengen</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>tengen</span>;
-
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>dtet</span>::<span class='ident'>DTET</span>;
+
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>srs</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>arika</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>tengen</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>dtet</span>;
 
-<span class='doccomment'>/// Factory function for returning appropriate rotation systems based on their</span>
-<span class='doccomment'>/// names</span>
+<span class='doccomment'>/// Factory function for constructing a rotation system from name.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// A rotation system is usually stored as a string and is much easier</span>
+<span class='doccomment'>/// to construct based on this thantheir direct `new` functions.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// # Names</span>
+<span class='doccomment'>///  - `srs`</span>
+<span class='doccomment'>///  - `dtet`</span>
+<span class='doccomment'>///  - `arika`</span>
+<span class='doccomment'>///  - `tengen`</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// # Panics</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// `new` will panic if the input string is not one of the strings present in</span>
+<span class='doccomment'>/// `Names`.</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>RotationSystem</span> {
     <span class='kw'>match</span> <span class='ident'>name</span> {
         <span class='string'>&quot;srs&quot;</span> <span class='op'>=&gt;</span> <span class='ident'>SRS</span>::<span class='ident'>new</span>(),
@@ -316,19 +330,19 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
     <span class='kw'>use</span> ::<span class='ident'>import</span>::<span class='op'>*</span>;
-    <span class='kw'>use</span> ::<span class='ident'>block</span>::<span class='ident'>Type</span>;
+    <span class='kw'>use</span> ::<span class='ident'>block</span>::<span class='ident'>Id</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_offset_to_first1</span>() {
         <span class='kw'>let</span> <span class='ident'>rs</span> <span class='op'>=</span> <span class='ident'>rotation_system</span>::<span class='ident'>SRS</span>::<span class='ident'>new</span>();
 
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='number'>1</span>, <span class='number'>0</span>), <span class='ident'>rs</span>.<span class='ident'>minp</span>(<span class='ident'>Type</span>::<span class='ident'>T</span>, <span class='ident'>Rotation</span>::<span class='ident'>R0</span>));
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='number'>1</span>, <span class='number'>0</span>), <span class='ident'>rs</span>.<span class='ident'>minp</span>(<span class='ident'>Type</span>::<span class='ident'>T</span>, <span class='ident'>Rotation</span>::<span class='ident'>R90</span>));
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='number'>0</span>, <span class='number'>1</span>), <span class='ident'>rs</span>.<span class='ident'>minp</span>(<span class='ident'>Type</span>::<span class='ident'>T</span>, <span class='ident'>Rotation</span>::<span class='ident'>R180</span>));
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='number'>1</span>, <span class='number'>0</span>), <span class='ident'>rs</span>.<span class='ident'>minp</span>(<span class='ident'>Type</span>::<span class='ident'>T</span>, <span class='ident'>Rotation</span>::<span class='ident'>R270</span>));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='number'>1</span>, <span class='number'>0</span>), <span class='ident'>rs</span>.<span class='ident'>minp</span>(<span class='ident'>Id</span>::<span class='ident'>T</span>, <span class='ident'>Rotation</span>::<span class='ident'>R0</span>));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='number'>1</span>, <span class='number'>0</span>), <span class='ident'>rs</span>.<span class='ident'>minp</span>(<span class='ident'>Id</span>::<span class='ident'>T</span>, <span class='ident'>Rotation</span>::<span class='ident'>R90</span>));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='number'>0</span>, <span class='number'>1</span>), <span class='ident'>rs</span>.<span class='ident'>minp</span>(<span class='ident'>Id</span>::<span class='ident'>T</span>, <span class='ident'>Rotation</span>::<span class='ident'>R180</span>));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='number'>1</span>, <span class='number'>0</span>), <span class='ident'>rs</span>.<span class='ident'>minp</span>(<span class='ident'>Id</span>::<span class='ident'>T</span>, <span class='ident'>Rotation</span>::<span class='ident'>R270</span>));
 
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='number'>2</span>, <span class='number'>0</span>), <span class='ident'>rs</span>.<span class='ident'>minp</span>(<span class='ident'>Type</span>::<span class='ident'>I</span>, <span class='ident'>Rotation</span>::<span class='ident'>R90</span>));
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='number'>0</span>, <span class='number'>0</span>), <span class='ident'>rs</span>.<span class='ident'>minp</span>(<span class='ident'>Type</span>::<span class='ident'>Z</span>, <span class='ident'>Rotation</span>::<span class='ident'>R0</span>));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='number'>2</span>, <span class='number'>0</span>), <span class='ident'>rs</span>.<span class='ident'>minp</span>(<span class='ident'>Id</span>::<span class='ident'>I</span>, <span class='ident'>Rotation</span>::<span class='ident'>R90</span>));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='number'>0</span>, <span class='number'>0</span>), <span class='ident'>rs</span>.<span class='ident'>minp</span>(<span class='ident'>Id</span>::<span class='ident'>Z</span>, <span class='ident'>Rotation</span>::<span class='ident'>R0</span>));
     }
 }
 </pre>

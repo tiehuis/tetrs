@@ -47,42 +47,42 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-537' class='srclink' href='../../src/tetrs/src/wallkick/mod.rs.html#1-56' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p>Implements a wallkick test</p>
+               </span><a id='src-537' class='srclink' href='../../src/tetrs/src/wallkick/mod.rs.html#1-88' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>A module for specifying wallkick tests.</p>
 
-<p>A wallkick test returns the number of rotation offsets that should be
-attempted on rotation failure.</p>
+<p>A wallkick test simply returns a number of rotational offsets that
+should be attempted on rotation failure.</p>
 
-<p>It should be implemented as an iterator (currently a &#39;static vector)
-which returns (i32, i32) tuples.</p>
+<p>User wallkicks can be implemented, and for the most part, only require
+the <code>Wallkick</code> trait to be implemented.</p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.DTET.html'
                                   title='tetrs::wallkick::DTET'>DTET</a></td>
                            <td class='docblock short'>
-                                <p>Wallkick</p>
+                                
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.Empty.html'
                                   title='tetrs::wallkick::Empty'>Empty</a></td>
                            <td class='docblock short'>
-                                <p>Wallkick</p>
+                                
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.SRS.html'
                                   title='tetrs::wallkick::SRS'>SRS</a></td>
                            <td class='docblock short'>
-                                <p>Wallkick</p>
+                                
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.Simple.html'
                                   title='tetrs::wallkick::Simple'>Simple</a></td>
                            <td class='docblock short'>
-                                <p>Wallkick</p>
+                                
                            </td>
                        </tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
 <table>
@@ -90,8 +90,7 @@ which returns (i32, i32) tuples.</p>
                            <td><a class='trait' href='trait.Wallkick.html'
                                   title='tetrs::wallkick::Wallkick'>Wallkick</a></td>
                            <td class='docblock short'>
-                                <p>Trait which specifies what wallkick tests must implement. Every wallkick
-test must implement an iterator with offsets of type (i32, i32).</p>
+                                <p>The <code>Wallkick</code> trait must be implemented by all wallkicks.</p>
                            </td>
                        </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
@@ -99,8 +98,7 @@ test must implement an iterator with offsets of type (i32, i32).</p>
                            <td><a class='fn' href='fn.new.html'
                                   title='tetrs::wallkick::new'>new</a></td>
                            <td class='docblock short'>
-                                <p>Factory function for returning appropriate rotation systems based on their
-names</p>
+                                <p>Factory function for constructing rotation systems from name.</p>
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>

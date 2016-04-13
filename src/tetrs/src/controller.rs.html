@@ -202,22 +202,6 @@
 <span id="158">158</span>
 <span id="159">159</span>
 <span id="160">160</span>
-<span id="161">161</span>
-<span id="162">162</span>
-<span id="163">163</span>
-<span id="164">164</span>
-<span id="165">165</span>
-<span id="166">166</span>
-<span id="167">167</span>
-<span id="168">168</span>
-<span id="169">169</span>
-<span id="170">170</span>
-<span id="171">171</span>
-<span id="172">172</span>
-<span id="173">173</span>
-<span id="174">174</span>
-<span id="175">175</span>
-<span id="176">176</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! An abstract controller for specifying actions.</span>
 <span class='doccomment'>//!</span>
@@ -231,10 +215,21 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 <span class='kw'>use</span> <span class='ident'>collections</span>::<span class='ident'>enum_set</span>::<span class='ident'>CLike</span>;
 
+<span class='doccomment'>/// &#39;Controller Time&#39; array.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// This is defined to enforce type restrictions on external users of these</span>
+<span class='doccomment'>/// arrays, e.g. `History`.</span>
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>CTarray</span> <span class='op'>=</span> [<span class='ident'>u64</span>; <span class='number'>8</span>];
+
+<span class='doccomment'>/// &#39;Controller Active&#39; array</span>
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>CAarray</span> <span class='op'>=</span> [<span class='ident'>bool</span>; <span class='number'>8</span>];
+
 <span class='doccomment'>/// Actions which are understood by the controller.</span>
 <span class='attribute'>#[<span class='ident'>repr</span>(<span class='ident'>usize</span>)]</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Copy</span>, <span class='ident'>Debug</span>, <span class='ident'>Hash</span>)]</span>
 <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>missing_docs</span>)]</span>
+<span class='comment'>// When adding a new Action you MUST also alter the `History` module to</span>
+<span class='comment'>// match the new array size!</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Action</span> {
     <span class='ident'>MoveLeft</span>, <span class='ident'>MoveRight</span>, <span class='ident'>MoveDown</span>, <span class='ident'>HardDrop</span>,
     <span class='ident'>RotateLeft</span>, <span class='ident'>RotateRight</span>, <span class='ident'>Hold</span>, <span class='ident'>Quit</span>
@@ -258,26 +253,19 @@
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Default</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Controller</span> {
     <span class='doccomment'>/// The length each action has occured for in ticks.</span>
-    <span class='kw'>pub</span> <span class='ident'>time</span>: [<span class='ident'>u64</span>; <span class='number'>8</span>],
+    <span class='kw'>pub</span> <span class='ident'>time</span>: <span class='ident'>CTarray</span>,
 
     <span class='doccomment'>/// Which actions are currently active.</span>
-    <span class='kw'>pub</span> <span class='ident'>active</span>: [<span class='ident'>bool</span>; <span class='number'>8</span>]
+    <span class='kw'>pub</span> <span class='ident'>active</span>: <span class='ident'>CAarray</span>
 }
 
 <span class='kw'>impl</span> <span class='ident'>Controller</span> {
     <span class='doccomment'>/// Return a new controller instance.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The controller specified will start with all actions in the inactive</span>
-    <span class='doccomment'>/// state.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ## Examples</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::controller;</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// let mut controller = controller::Controller::new();</span>
-    <span class='doccomment'>/// ```</span>
+    <span class='doccomment'>/// state, and time values zeroed.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>Controller</span> {
-        <span class='ident'>Controller</span> { <span class='ident'>time</span>: [<span class='number'>0</span>; <span class='number'>8</span>], <span class='ident'>active</span>: [<span class='boolval'>false</span>; <span class='number'>8</span>] }
+        <span class='ident'>Controller</span> { ..<span class='ident'>Default</span>::<span class='ident'>default</span>() }
     }
 
     <span class='doccomment'>/// Query if an action is currently active.</span>
@@ -292,18 +280,8 @@
 
     <span class='doccomment'>/// Activate the specified action.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// The action will be set to active and all subsequent updates will</span>
-    <span class='doccomment'>/// now trigger this actions timer.</span>
-    <span class='doccomment'>/// Reactivating an already active action has no effect and will not</span>
-    <span class='doccomment'>/// restart the timer.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ## Examples</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::controller;</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// let mut controller = controller::Controller::new();</span>
-    <span class='doccomment'>/// controller.activate(controller::Action::MoveLeft);</span>
-    <span class='doccomment'>/// ```</span>
+    <span class='doccomment'>/// The action will be set to active.</span>
+    <span class='doccomment'>/// Activating an already active timer has no effect.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>activate</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>action</span>: <span class='ident'>Action</span>) {
         <span class='self'>self</span>.<span class='ident'>active</span>[<span class='ident'>action</span>.<span class='ident'>to_usize</span>()] <span class='op'>=</span> <span class='boolval'>true</span>;
     }
@@ -312,14 +290,6 @@
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// The action will be set to inactive.</span>
     <span class='doccomment'>/// Deactivating an already inactive action has no effect.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ## Examples</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::controller;</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// let mut controller = controller::Controller::new();</span>
-    <span class='doccomment'>/// controller.deactivate(controller::Action::MoveLeft);</span>
-    <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>deactivate</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>action</span>: <span class='ident'>Action</span>) {
         <span class='self'>self</span>.<span class='ident'>active</span>[<span class='ident'>action</span>.<span class='ident'>to_usize</span>()] <span class='op'>=</span> <span class='boolval'>false</span>;
     }
@@ -330,14 +300,6 @@
     <span class='doccomment'>/// an object, rather than explicitly via events.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// This does not reset the internal time of each action to 0.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// ## Examples</span>
-    <span class='doccomment'>/// ```</span>
-    <span class='doccomment'>/// use tetrs::controller::{Controller, Action};</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// let mut controller = Controller::new();</span>
-    <span class='doccomment'>/// controller.deactivate_all();</span>
-    <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>deactivate_all</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='self'>self</span>.<span class='ident'>active</span>.<span class='ident'>len</span>() {
             <span class='self'>self</span>.<span class='ident'>active</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='boolval'>false</span>;
@@ -355,6 +317,12 @@
     <span class='doccomment'>/// // active[Action::MoveRight] == 0</span>
     <span class='doccomment'>/// controller.update();</span>
     <span class='doccomment'>/// // active[Action::MoveRight] == 1</span>
+    <span class='doccomment'>/// controller.update();</span>
+    <span class='doccomment'>/// controller.update();</span>
+    <span class='doccomment'>/// // active[Action::MoveRight] == 3</span>
+    <span class='doccomment'>/// controller.deactivate(Action::MoveRight);</span>
+    <span class='doccomment'>/// controller.update();</span>
+    <span class='doccomment'>/// // active[Action::MoveRight] == 0</span>
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>update</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='self'>self</span>.<span class='ident'>active</span>.<span class='ident'>len</span>() {

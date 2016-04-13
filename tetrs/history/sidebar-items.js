@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Event","An individual event in a history sequence."],["History","Manages the history state of a particular game."]]});

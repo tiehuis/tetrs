@@ -47,15 +47,12 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-808' class='srclink' href='../../src/tetrs/src/rotation_system/mod.rs.html#1-144' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-809' class='srclink' href='../../src/tetrs/src/rotation_system/mod.rs.html#1-151' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>This modules provides an interface for dealing with different block offsets.</p>
 
 <p>Offsets refer to particular rotation specifications. For example, the SRS
 and Akira style rotation systems which each contain different offset values
 which can both be used if they implement the <code>RotationSystem</code> trait.</p>
-
-<p>All <code>RotationsSystem</code>&#39;s currently use an empty struct which can be passed
-around. This allows generic usage of anything which impl&#39;s <code>RotationSystem</code>.</p>
 </div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
 <table><tr><td><code>pub use self::<a class='mod'
                                        href='./srs/index.html'>srs</a>::<a class='struct' href='../../tetrs/rotation_system/srs/struct.SRS.html' title='tetrs::rotation_system::srs::SRS'>SRS</a>;</code></td></tr><tr><td><code>pub use self::<a class='mod'
@@ -74,7 +71,7 @@ around. This allows generic usage of anything which impl&#39;s <code>RotationSys
                            <td><a class='mod' href='dtet/index.html'
                                   title='tetrs::rotation_system::dtet'>dtet</a></td>
                            <td class='docblock short'>
-                                <p>Rotation offsrts for the DTET rotation system.</p>
+                                <p>Rotation offsets for the DTET rotation system.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -104,8 +101,7 @@ around. This allows generic usage of anything which impl&#39;s <code>RotationSys
                            <td><a class='fn' href='fn.new.html'
                                   title='tetrs::rotation_system::new'>new</a></td>
                            <td class='docblock short'>
-                                <p>Factory function for returning appropriate rotation systems based on their
-names</p>
+                                <p>Factory function for constructing a rotation system from name.</p>
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>

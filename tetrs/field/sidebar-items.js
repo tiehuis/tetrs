@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Field","A `Field` is simply a 2-D `Vec` with some corresponding options."],["FieldOptions","Options for use when constructing a field."]]});
+initSidebarItems({"struct":[["Field","A `Field` is simply a 2-D `Vec` with some corresponding options."],["FieldOptions","Optional values which can be set when initializing a `Field`."]]});

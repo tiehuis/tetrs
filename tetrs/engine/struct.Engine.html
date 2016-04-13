@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1519' class='srclink' href='../../src/tetrs/src/engine.rs.html#152-199' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-1461' class='srclink' href='../../src/tetrs/src/engine.rs.html#152-202' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Engine {
     pub controller: <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a>,
     pub randomizer: <a class='struct' href='../../tetrs/randomizer/struct.BagRandomizer.html' title='tetrs::randomizer::BagRandomizer'>BagRandomizer</a>,
@@ -55,9 +55,10 @@
     pub rotation_system: &amp;'static <a class='trait' href='../../tetrs/rotation_system/trait.RotationSystem.html' title='tetrs::rotation_system::RotationSystem'>RotationSystem</a>,
     pub field: <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a>,
     pub block: <a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a>,
-    pub hold: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='enum' href='../../tetrs/block/enum.Type.html' title='tetrs::block::Type'>Type</a>&gt;,
+    pub hold: <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='enum' href='../../tetrs/block/enum.Id.html' title='tetrs::block::Id'>Id</a>&gt;,
     pub options: <a class='struct' href='../../tetrs/engine/struct.EngineSettings.html' title='tetrs::engine::EngineSettings'>EngineSettings</a>,
     pub statistics: <a class='struct' href='../../tetrs/statistics/struct.Statistics.html' title='tetrs::statistics::Statistics'>Statistics</a>,
+    pub history: <a class='struct' href='../../tetrs/history/struct.History.html' title='tetrs::history::History'>History</a>,
     pub running: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
     pub mspt: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
     pub tick_count: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
@@ -84,6 +85,8 @@ managed on a per-tick basis (have no concept of state over time).</p>
                              <td id='structfield.options'><code>options</code></td><td><div class='docblock'><p>Settings used internally by the engine</p>
 </div></td></tr><tr class='stab '>
                              <td id='structfield.statistics'><code>statistics</code></td><td><div class='docblock'><p>Statistics of the current game</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.history'><code>history</code></td><td><div class='docblock'><p>The input history of the game</p>
 </div></td></tr><tr class='stab '>
                              <td id='structfield.running'><code>running</code></td><td><div class='docblock'><p>Is the game running</p>
 </div></td></tr><tr class='stab '>
