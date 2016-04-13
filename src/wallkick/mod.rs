@@ -7,6 +7,7 @@
 //! the `Wallkick` trait to be implemented.
 
 use block::{Block, Rotation};
+use field::Field;
 
 /// The `Wallkick` trait must be implemented by all wallkicks.
 ///
@@ -27,13 +28,13 @@ pub trait Wallkick {
     /// let wallkick = wallkick::new("srs");
     ///
     /// // Perform an SRS wallkick on rotation failure
-    /// for &(tx, ty) in wallkick.test(&block, Rotation::R90) {
+    /// for &(tx, ty) in wallkick.test(&block, &field, Rotation::R90) {
     ///     if block.rotate_at_offset(&field, Rotation::R90, (tx, ty)) {
     ///         break;
     ///     }
     /// }
     /// ```
-    fn test(&self, block: &Block, r: Rotation) -> &'static [(i32, i32)];
+    fn test(&self, block: &Block, field: &Field, r: Rotation) -> &'static [(i32, i32)];
 }
 
 macro_rules! gen_wallkick {

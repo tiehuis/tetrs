@@ -5,13 +5,15 @@
 //! different rules depending on the block type.
 
 use block::{self, Rotation, Block};
+use field::Field;
 use wallkick::Wallkick;
 use collections::enum_set::CLike;
 
 gen_wallkick!(SRS);
 
 impl Wallkick for SRS {
-    fn test(&self, block: &Block, r: Rotation) -> &'static [(i32, i32)] {
+    #[allow(unused_variables)]
+    fn test(&self, block: &Block, field: &Field, r: Rotation) -> &'static [(i32, i32)] {
         // O block does not have any special wallkick data.
         if block.id == block::Id::O {
             return &RIGHT_JLSTZ[0][..1]

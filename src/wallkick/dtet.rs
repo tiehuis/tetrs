@@ -4,6 +4,7 @@
 //! in the DTET tetris game.
 
 use block::{Rotation, Block};
+use field::Field;
 use wallkick::Wallkick;
 
 gen_wallkick!(DTET);
@@ -22,7 +23,7 @@ gen_wallkick!(DTET);
 
 impl Wallkick for DTET {
     #[allow(unused_variables)]
-    fn test(&self, block: &Block, r: Rotation) -> &'static [(i32, i32)] {
+    fn test(&self, block: &Block, field: &Field, r: Rotation) -> &'static [(i32, i32)] {
         match r {
             Rotation::R90  => &RIGHT_ROTATION,
             Rotation::R270 => &LEFT_ROTATION,

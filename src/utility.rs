@@ -16,7 +16,7 @@ pub trait BlockHelper {
 
 impl BlockHelper for Block {
     fn rotate_with_wallkick(&mut self, field: &Field, wallkick: &Wallkick, rotation: Rotation) -> bool {
-        for &(x, y) in wallkick.test(&self, rotation) {
+        for &(x, y) in wallkick.test(&self, &field, rotation) {
             if self.rotate_at_offset(&field, rotation, (x, y)) {
                 return true;
             }
