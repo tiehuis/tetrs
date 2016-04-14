@@ -117,6 +117,8 @@
 <span id="73">73</span>
 <span id="74">74</span>
 <span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
 </pre><pre class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>collections</span>, <span class='ident'>enumset</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>custom_derive</span>, <span class='ident'>plugin</span>)]</span>
@@ -181,6 +183,9 @@
     }
 }
 
+<span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>schema</span>;
+
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>field</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>block</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>controller</span>;
@@ -190,7 +195,6 @@
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>engine</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>utility</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>statistics</span>;
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>schema</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>import</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>history</span>;
 </pre>

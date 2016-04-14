@@ -441,6 +441,56 @@
 <span id="397">397</span>
 <span id="398">398</span>
 <span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Methods for converting to and from a textual field representation.</span>
 <span class='doccomment'>//!</span>
@@ -471,13 +521,12 @@
 <span class='doccomment'>//! &quot;));</span>
 <span class='doccomment'>//! ```</span>
 
-<span class='kw'>use</span> <span class='ident'>rotation_system</span>::{<span class='self'>self</span>, <span class='ident'>RotationSystem</span>};
-<span class='kw'>use</span> <span class='ident'>field</span>::<span class='ident'>Field</span>;
+<span class='kw'>use</span> <span class='ident'>rotation_system</span>::<span class='ident'>RotationSystem</span>;
+<span class='kw'>use</span> <span class='ident'>field</span>::{<span class='ident'>Field</span>, <span class='ident'>FieldOptions</span>};
 <span class='kw'>use</span> <span class='ident'>block</span>::{<span class='self'>self</span>, <span class='ident'>Rotation</span>, <span class='ident'>Block</span>, <span class='ident'>BlockOptions</span>};
 
 <span class='kw'>use</span> <span class='ident'>std</span>::{<span class='ident'>fmt</span>, <span class='ident'>iter</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>::<span class='ident'>PartialEq</span>;
-<span class='kw'>use</span> <span class='ident'>collections</span>::<span class='ident'>enum_set</span>::<span class='ident'>CLike</span>;
 <span class='kw'>use</span> <span class='ident'>itertools</span>::<span class='ident'>Itertools</span>;
 
 <span class='doccomment'>/// A schema is a simple 2d textual representation of a field and a block.</span>
@@ -495,10 +544,64 @@
     <span class='ident'>data</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>char</span><span class='op'>&gt;&gt;</span>,
 
     <span class='doccomment'>/// The current width of the schema</span>
-    <span class='ident'>width</span>: <span class='ident'>usize</span>,
+    <span class='kw'>pub</span> <span class='ident'>width</span>: <span class='ident'>usize</span>,
 
     <span class='doccomment'>/// The current height of the schema</span>
-    <span class='ident'>height</span>: <span class='ident'>usize</span>,
+    <span class='kw'>pub</span> <span class='ident'>height</span>: <span class='ident'>usize</span>,
+}
+
+<span class='doccomment'>/// Tests if two schema are equal.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// This provides a much easier to parse error message than `assert_eq`</span>
+<span class='doccomment'>/// provides.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// ## Panics</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// Panics if the two schema are not equal.</span>
+<span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>schema_assert_eq</span> {
+    <span class='comment'>// Needs a cleanup</span>
+    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span>:<span class='ident'>expr</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>y</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> {
+        {
+            <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>;
+            <span class='kw'>use</span> <span class='ident'>collections</span>::<span class='ident'>fmt</span>::<span class='ident'>Write</span>;
+
+            <span class='kw'>if</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span> <span class='op'>!=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>y</span> {
+                <span class='kw'>let</span> <span class='ident'>fnd</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span>.<span class='ident'>to_string</span>();
+                <span class='kw'>let</span> <span class='ident'>exp</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>y</span>.<span class='ident'>to_string</span>();
+                <span class='kw'>let</span> <span class='ident'>empty1</span>: <span class='ident'>String</span> <span class='op'>=</span> <span class='ident'>iter</span>::<span class='ident'>repeat</span>(<span class='string'>&#39;|&#39;</span>).<span class='ident'>take</span>(<span class='number'>1</span>)
+                                        .<span class='ident'>chain</span>(<span class='ident'>iter</span>::<span class='ident'>repeat</span>(<span class='string'>&#39; &#39;</span>).<span class='ident'>take</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span>.<span class='ident'>width</span>))
+                                        .<span class='ident'>chain</span>(<span class='ident'>iter</span>::<span class='ident'>repeat</span>(<span class='string'>&#39;|&#39;</span>).<span class='ident'>take</span>(<span class='number'>1</span>)).<span class='ident'>collect</span>();
+
+                <span class='kw'>let</span> <span class='ident'>empty2</span>: <span class='ident'>String</span> <span class='op'>=</span> <span class='ident'>iter</span>::<span class='ident'>repeat</span>(<span class='string'>&#39;|&#39;</span>).<span class='ident'>take</span>(<span class='number'>1</span>)
+                                        .<span class='ident'>chain</span>(<span class='ident'>iter</span>::<span class='ident'>repeat</span>(<span class='string'>&#39; &#39;</span>).<span class='ident'>take</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>y</span>.<span class='ident'>width</span>))
+                                        .<span class='ident'>chain</span>(<span class='ident'>iter</span>::<span class='ident'>repeat</span>(<span class='string'>&#39;|&#39;</span>).<span class='ident'>take</span>(<span class='number'>1</span>)).<span class='ident'>collect</span>();
+
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fndr</span> <span class='op'>=</span> <span class='ident'>fnd</span>.<span class='ident'>split</span>(<span class='string'>&#39;\n&#39;</span>).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>();
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>expr</span> <span class='op'>=</span> <span class='ident'>exp</span>.<span class='ident'>split</span>(<span class='string'>&#39;\n&#39;</span>).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>();
+
+                <span class='kw'>if</span> <span class='ident'>fndr</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='ident'>expr</span>.<span class='ident'>len</span>() {
+                    <span class='kw'>while</span> <span class='ident'>fndr</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='ident'>expr</span>.<span class='ident'>len</span>() {
+                        <span class='ident'>fndr</span>.<span class='ident'>insert</span>(<span class='number'>0</span>, <span class='kw-2'>&amp;</span><span class='ident'>empty1</span>);
+                    }
+                }
+                <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>expr</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='ident'>fndr</span>.<span class='ident'>len</span>() {
+                    <span class='kw'>while</span> <span class='ident'>expr</span>.<span class='ident'>len</span>() <span class='op'>&lt;</span> <span class='ident'>fndr</span>.<span class='ident'>len</span>() {
+                        <span class='ident'>expr</span>.<span class='ident'>insert</span>(<span class='number'>0</span>, <span class='kw-2'>&amp;</span><span class='ident'>empty2</span>);
+                    }
+                }
+
+                <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>expr</span>.<span class='ident'>len</span>(), <span class='ident'>fndr</span>.<span class='ident'>len</span>());
+
+                <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>w</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
+                <span class='kw'>for</span> (<span class='ident'>x</span>, <span class='ident'>y</span>) <span class='kw'>in</span> <span class='ident'>fndr</span>.<span class='ident'>iter</span>().<span class='ident'>zip</span>(<span class='ident'>expr</span>.<span class='ident'>iter</span>()) {
+                    <span class='kw'>let</span> _ <span class='op'>=</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>w</span>, <span class='string'>&quot;{}    {}\n&quot;</span>, <span class='ident'>x</span>, <span class='ident'>y</span>);
+                }
+
+                <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;assertion failed: schema not equal: \n{}&quot;</span>, <span class='ident'>w</span>);
+            }
+        }
+    }
 }
 
 <span class='kw'>impl</span> <span class='ident'>Schema</span> {
@@ -534,7 +637,7 @@
         };
 
         <span class='kw'>if</span> <span class='ident'>failure</span> {
-            <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Collision in field and block: {}&quot;</span>, <span class='ident'>schema</span>);
+            <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Collision in field and block: \n{}\n&quot;</span>, <span class='ident'>schema</span>);
         } <span class='kw'>else</span> {
             <span class='ident'>schema</span>
         }
@@ -554,7 +657,7 @@
     <span class='doccomment'>///     |         |</span>
     <span class='doccomment'>///     |    #    |</span>
     <span class='doccomment'>///     -----------</span>
-    <span class='doccomment'>/// &quot;);</span>
+    <span class='doccomment'>/// &quot;, rotation_system::new(&quot;dtet&quot;));</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let schema2 = Schema::from_string(&quot;|          |</span>
     <span class='doccomment'>///    |    #     |</span>
@@ -600,6 +703,9 @@
     <span class='doccomment'>/// ## Examples</span>
     <span class='doccomment'>/// ```text</span>
     <span class='doccomment'>/// use tetrs::schema::Schema;</span>
+    <span class='doccomment'>/// use tetrs::rotation_system;</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// let rs = rotation_system::new(&quot;srs&quot;);</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let schema1 = Schema::from_string(&quot;</span>
     <span class='doccomment'>///     |         |</span>
@@ -607,7 +713,7 @@
     <span class='doccomment'>///     -----------</span>
     <span class='doccomment'>/// &quot;);</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// // let (field, block) = schema1.to_state(); // Panic!</span>
+    <span class='doccomment'>/// // let (field, block) = schema1.to_state(rs); // Panic!</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let schema2 = Schema::from_string(&quot;</span>
     <span class='doccomment'>///     |    @    |</span>
@@ -616,27 +722,26 @@
     <span class='doccomment'>/// &quot;);</span>
     <span class='doccomment'>/// let (field, block) = schema2.to_state(); // Okay</span>
     <span class='doccomment'>/// ```</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>to_state</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> (<span class='ident'>Field</span>, <span class='ident'>Block</span>) {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>to_state</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>rotation_system</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>RotationSystem</span>) <span class='op'>-&gt;</span> (<span class='ident'>Field</span>, <span class='ident'>Block</span>) {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>schema</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>clone</span>();
 
-        <span class='comment'>// Currently cannot return a tuple-structure due to invalid lifetime</span>
-        <span class='comment'>// even though the lifetime theoretically has same scope.</span>
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>field</span> <span class='op'>=</span> <span class='ident'>Field</span>::<span class='ident'>new</span>();
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>field</span> <span class='op'>=</span> <span class='ident'>Field</span>::<span class='ident'>with_options</span>(<span class='ident'>FieldOptions</span> {
+                            <span class='ident'>height</span>: <span class='ident'>schema</span>.<span class='ident'>height</span>,
+                            <span class='ident'>width</span>: <span class='ident'>schema</span>.<span class='ident'>width</span>,
+                            ..<span class='ident'>Default</span>::<span class='ident'>default</span>()
+                        });
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='prelude-val'>None</span>;
-
-        <span class='comment'>// A schema may have a different height to the field</span>
-        <span class='kw'>let</span> <span class='ident'>ydiff</span> <span class='op'>=</span> <span class='ident'>field</span>.<span class='ident'>height</span> <span class='op'>-</span> <span class='ident'>schema</span>.<span class='ident'>height</span>;
 
         <span class='kw'>for</span> (<span class='ident'>y</span>, <span class='ident'>x</span>) <span class='kw'>in</span> <span class='macro'>iproduct</span><span class='macro'>!</span>(<span class='number'>0</span>..<span class='ident'>schema</span>.<span class='ident'>height</span>, <span class='number'>0</span>..<span class='ident'>schema</span>.<span class='ident'>width</span>) {
             <span class='kw'>match</span> <span class='ident'>schema</span>.<span class='ident'>data</span>[<span class='ident'>y</span>][<span class='ident'>x</span>] {
                 <span class='string'>&#39;@&#39;</span> <span class='op'>=&gt;</span> {
-                    <span class='ident'>block</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>schema</span>.<span class='ident'>match_block</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>, (<span class='ident'>x</span>, <span class='ident'>y</span>)));
+                    <span class='ident'>block</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>schema</span>.<span class='ident'>match_block</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>, <span class='ident'>rotation_system</span>, (<span class='ident'>x</span>, <span class='ident'>y</span>)));
                 },
                 <span class='string'>&#39;#&#39;</span> <span class='op'>=&gt;</span> {
-                    <span class='ident'>field</span>.<span class='ident'>data</span>[<span class='ident'>x</span>][<span class='ident'>y</span> <span class='op'>+</span> <span class='ident'>ydiff</span>] <span class='op'>=</span> <span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>I</span>.<span class='ident'>to_usize</span>();
+                    <span class='ident'>field</span>.<span class='ident'>data</span>[<span class='ident'>y</span>][<span class='ident'>x</span>] <span class='op'>=</span> <span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>I</span>;
                 },
                 <span class='string'>&#39; &#39;</span> <span class='op'>=&gt;</span> {
-                    ()
+                    ();
                 },
                 _ <span class='op'>=&gt;</span> {
                     <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Encountered unknown character: \n{}&quot;</span>, <span class='self'>self</span>);
@@ -677,17 +782,12 @@
     <span class='comment'>// If it is required for exact rotations, then we could add support for</span>
     <span class='comment'>// rotation specification in the input string, but this adds complexity</span>
     <span class='comment'>// and more rules which are not needed currently.</span>
-    <span class='kw'>fn</span> <span class='ident'>match_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>field</span>: <span class='kw-2'>&amp;</span><span class='ident'>Field</span>, (<span class='ident'>x</span>, <span class='ident'>y</span>): (<span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='ident'>Block</span> {
-        <span class='comment'>// For the moment, always assume SRS rotation. We require an option to</span>
-        <span class='comment'>// specify which `RotationSystem` to use with the input schema.</span>
-        <span class='comment'>//</span>
-        <span class='comment'>// We also require setting the correct to state, which should also require</span>
-        <span class='comment'>// a `RotationSystem` argument.</span>
-        <span class='kw'>let</span> <span class='ident'>rs</span> <span class='op'>=</span> <span class='ident'>rotation_system</span>::<span class='ident'>SRS</span>{};
+    <span class='kw'>fn</span> <span class='ident'>match_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>field</span>: <span class='kw-2'>&amp;</span><span class='ident'>Field</span>, <span class='ident'>rotation_system</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>RotationSystem</span>,
+                   (<span class='ident'>x</span>, <span class='ident'>y</span>): (<span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='ident'>Block</span> {
 
         <span class='kw'>for</span> (<span class='kw-2'>&amp;</span><span class='ident'>ty</span>, <span class='kw-2'>&amp;</span><span class='ident'>ro</span>) <span class='kw'>in</span> <span class='macro'>iproduct</span><span class='macro'>!</span>(<span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>variants</span>().<span class='ident'>iter</span>(), <span class='ident'>Rotation</span>::<span class='ident'>variants</span>().<span class='ident'>iter</span>()) {
-            <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>rs</span>.<span class='ident'>data</span>(<span class='ident'>ty</span>, <span class='ident'>ro</span>);
-            <span class='kw'>let</span> (<span class='ident'>xo</span>, <span class='ident'>yo</span>) <span class='op'>=</span> <span class='ident'>rs</span>.<span class='ident'>minp</span>(<span class='ident'>ty</span>, <span class='ident'>ro</span>);
+            <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>rotation_system</span>.<span class='ident'>data</span>(<span class='ident'>ty</span>, <span class='ident'>ro</span>);
+            <span class='kw'>let</span> (<span class='ident'>xo</span>, <span class='ident'>yo</span>) <span class='op'>=</span> <span class='ident'>rotation_system</span>.<span class='ident'>minp</span>(<span class='ident'>ty</span>, <span class='ident'>ro</span>);
 
             <span class='kw'>if</span> <span class='ident'>x</span> <span class='op'>&lt;</span> <span class='ident'>xo</span> <span class='op'>||</span> <span class='ident'>y</span> <span class='op'>&lt;</span> <span class='ident'>yo</span> {
                 <span class='kw'>continue</span>;
@@ -766,7 +866,7 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
     <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
-    <span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Direction</span>;
+    <span class='kw'>use</span> <span class='ident'>import</span>::<span class='op'>*</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_from_string1</span>() {
@@ -808,7 +908,7 @@
                 ------------
             &quot;</span>);
 
-        <span class='kw'>let</span> (<span class='ident'>field</span>, <span class='kw-2'>mut</span> <span class='ident'>block</span>) <span class='op'>=</span> <span class='ident'>schema</span>.<span class='ident'>to_state</span>();
+        <span class='kw'>let</span> (<span class='ident'>field</span>, <span class='kw-2'>mut</span> <span class='ident'>block</span>) <span class='op'>=</span> <span class='ident'>schema</span>.<span class='ident'>to_state</span>(<span class='ident'>rotation_system</span>::<span class='ident'>new</span>(<span class='string'>&quot;srs&quot;</span>));
         <span class='ident'>block</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>, <span class='ident'>Direction</span>::<span class='ident'>Left</span>);
 
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>Schema</span>::<span class='ident'>from_state</span>(<span class='kw-2'>&amp;</span><span class='ident'>field</span>, <span class='kw-2'>&amp;</span><span class='ident'>block</span>),
@@ -820,26 +920,26 @@
                    &quot;</span>));
     }
 
-    <span class='comment'>/* Currently disabled due to field/block changes
-    #[test]
-    fn test_from_string_to_state() {
-        let schema = Schema::from_string(&quot;
+    <span class='attribute'>#[<span class='ident'>test</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>test_from_string_to_state</span>() {
+        <span class='kw'>let</span> <span class='ident'>schema</span> <span class='op'>=</span> <span class='ident'>Schema</span>::<span class='ident'>from_string</span>(<span class='string'>&quot;
                 |          |
                 | # @      |
                 |##@@@     |
                 ------------
-            &quot;);
+            &quot;</span>);
 
-        let (field, block) = schema.to_state();
+        <span class='kw'>let</span> (<span class='ident'>field</span>, <span class='ident'>block</span>) <span class='op'>=</span> <span class='ident'>schema</span>.<span class='ident'>to_state</span>(<span class='ident'>rotation_system</span>::<span class='ident'>new</span>(<span class='string'>&quot;srs&quot;</span>));
 
-        assert_eq!(block.id, Id::T);
-        assert_eq!(block.r, Rotation::R0);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>block</span>.<span class='ident'>id</span>, <span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>T</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>block</span>.<span class='ident'>r</span>, <span class='ident'>Rotation</span>::<span class='ident'>R0</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>block</span>.<span class='ident'>x</span>, <span class='number'>2</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>block</span>.<span class='ident'>y</span>, <span class='macro'>i32</span><span class='macro'>!</span>(<span class='ident'>field</span>.<span class='ident'>height</span> <span class='op'>-</span> <span class='number'>2</span>));
 
-        assert!(field.data[0][field.height-1] != Id::None.to_usize());
-        assert!(field.data[1][field.height-1] != Id::None.to_usize());
-        assert!(field.data[1][field.height-2] != Id::None.to_usize());
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>field</span>.<span class='ident'>data</span>[<span class='ident'>field</span>.<span class='ident'>height</span><span class='op'>-</span><span class='number'>1</span>][<span class='number'>0</span>], <span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>I</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>field</span>.<span class='ident'>data</span>[<span class='ident'>field</span>.<span class='ident'>height</span><span class='op'>-</span><span class='number'>1</span>][<span class='number'>1</span>], <span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>I</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>field</span>.<span class='ident'>data</span>[<span class='ident'>field</span>.<span class='ident'>height</span><span class='op'>-</span><span class='number'>2</span>][<span class='number'>1</span>], <span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>I</span>);
     }
-    */</span>
 }
 </pre>
 </section>

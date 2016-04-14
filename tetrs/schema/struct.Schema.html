@@ -47,8 +47,10 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1574' class='srclink' href='../../src/tetrs/src/schema.rs.html#47-58' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-19' class='srclink' href='../../src/tetrs/src/schema.rs.html#46-57' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Schema {
+    pub width: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>,
+    pub height: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>,
     // some fields omitted
 }</pre><div class='docblock'><p>A schema is a simple 2d textual representation of a field and a block.
 It allows conversion from a string, and also from a <code>(&amp;Field, &amp;Block)</code> and
@@ -57,7 +59,12 @@ bridges the gap between these two components.</p>
 <p>This is stored in <code>(y, x)</code> index order to make some operations easier. This
 is only an internal detail, but care needs to be taken when interfacing
 with any other components (which are mostly <code>(x, y)</code> indexed).</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../tetrs/schema/struct.Schema.html' title='tetrs::schema::Schema'>Schema</a></code></h3><div class='impl-items'><h4 id='method.from_state' class='method'><code>fn <a href='#method.from_state' class='fnname'>from_state</a>(field: &amp;<a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a>, block: &amp;<a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a>) -&gt; <a class='struct' href='../../tetrs/schema/struct.Schema.html' title='tetrs::schema::Schema'>Schema</a></code></h4>
+</div><h2 class='fields'>Fields</h2>
+<table><tr class='stab '>
+                             <td id='structfield.width'><code>width</code></td><td><div class='docblock'><p>The current width of the schema</p>
+</div></td></tr><tr class='stab '>
+                             <td id='structfield.height'><code>height</code></td><td><div class='docblock'><p>The current height of the schema</p>
+</div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../tetrs/schema/struct.Schema.html' title='tetrs::schema::Schema'>Schema</a></code></h3><div class='impl-items'><h4 id='method.from_state' class='method'><code>fn <a href='#method.from_state' class='fnname'>from_state</a>(field: &amp;<a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a>, block: &amp;<a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a>) -&gt; <a class='struct' href='../../tetrs/schema/struct.Schema.html' title='tetrs::schema::Schema'>Schema</a></code></h4>
 <div class='docblock'><p>Construct a schema representation from an game primitives.</p>
 </div><h4 id='method.from_string' class='method'><code>fn <a href='#method.from_string' class='fnname'>from_string</a>(field: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a class='struct' href='../../tetrs/schema/struct.Schema.html' title='tetrs::schema::Schema'>Schema</a></code></h4>
 <div class='docblock'><p>Construct a schema representation from an input string.</p>
@@ -73,7 +80,7 @@ let schema1 = Schema::from_string(&quot;
     |         |
     |    #    |
     -----------
-&quot;);
+&quot;, rotation_system::new(&quot;dtet&quot;));
 
 let schema2 = Schema::from_string(&quot;|          |
    |    #     |
@@ -81,7 +88,7 @@ let schema2 = Schema::from_string(&quot;|          |
 
  assert_eq!(schema1, schema2); // True
 </code></pre>
-</div><h4 id='method.to_state' class='method'><code>fn <a href='#method.to_state' class='fnname'>to_state</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a>, <a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a></code></h4>
+</div><h4 id='method.to_state' class='method'><code>fn <a href='#method.to_state' class='fnname'>to_state</a>(&amp;self, rotation_system: &amp;'static <a class='trait' href='../../tetrs/rotation_system/trait.RotationSystem.html' title='tetrs::rotation_system::RotationSystem'>RotationSystem</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a>, <a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a></code></h4>
 <div class='docblock'><p>Constuct state objects from a given schema. This is slightly finicky
 and there are a few cases to consider.</p>
 
@@ -94,6 +101,9 @@ in most cases.</p>
 
 <h2 id='examples-1' class='section-header'><a href='#examples-1'>Examples</a></h2>
 <pre><code class="language-text">use tetrs::schema::Schema;
+use tetrs::rotation_system;
+
+let rs = rotation_system::new(&quot;srs&quot;);
 
 let schema1 = Schema::from_string(&quot;
     |         |
@@ -101,7 +111,7 @@ let schema1 = Schema::from_string(&quot;
     -----------
 &quot;);
 
-// let (field, block) = schema1.to_state(); // Panic!
+// let (field, block) = schema1.to_state(rs); // Panic!
 
 let schema2 = Schema::from_string(&quot;
     |    @    |

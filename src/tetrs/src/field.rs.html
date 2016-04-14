@@ -234,18 +234,14 @@
 <span id="190">190</span>
 <span id="191">191</span>
 <span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! A tetris playfield.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! A `Field` manages the state of previously placed blocks. A `Field` is not</span>
 <span class='doccomment'>//! aware of blocks themselves for the most part, besides the `freeze` function.</span>
 
-<span class='kw'>use</span> <span class='ident'>block</span>::{<span class='self'>self</span>, <span class='ident'>Block</span>};
+<span class='kw'>use</span> <span class='ident'>block</span>::{<span class='ident'>Block</span>, <span class='ident'>Id</span>};
 <span class='kw'>use</span> <span class='ident'>rotation_system</span>::<span class='ident'>RotationSystem</span>;
-
-<span class='kw'>use</span> <span class='ident'>collections</span>::<span class='ident'>enum_set</span>::<span class='ident'>CLike</span>;
 
 <span class='doccomment'>/// A `Field` is simply a 2-D `Vec` with some corresponding options.</span>
 <span class='doccomment'>///</span>
@@ -290,7 +286,7 @@
     <span class='kw'>pub</span> <span class='ident'>spawn</span>: (<span class='ident'>i32</span>, <span class='ident'>i32</span>),
 
     <span class='doccomment'>/// The current field state.</span>
-    <span class='kw'>pub</span> <span class='ident'>data</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>data</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Id</span><span class='op'>&gt;&gt;</span>,
 }
 
 <span class='doccomment'>/// Optional values which can be set when initializing a `Field`.</span>
@@ -364,14 +360,14 @@
             <span class='ident'>height</span>: <span class='ident'>options</span>.<span class='ident'>height</span>,
             <span class='ident'>hidden</span>: <span class='ident'>options</span>.<span class='ident'>hidden</span>,
             <span class='ident'>spawn</span>: <span class='ident'>options</span>.<span class='ident'>spawn</span>,
-            <span class='ident'>data</span>: <span class='macro'>vec</span><span class='macro'>!</span>[<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='prelude-val'>None</span>.<span class='ident'>to_usize</span>(); <span class='ident'>options</span>.<span class='ident'>width</span>]; <span class='ident'>options</span>.<span class='ident'>height</span>]
+            <span class='ident'>data</span>: <span class='macro'>vec</span><span class='macro'>!</span>[<span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>Id</span>::<span class='prelude-val'>None</span>; <span class='ident'>options</span>.<span class='ident'>width</span>]; <span class='ident'>options</span>.<span class='ident'>height</span>]
         }
     }
 
     <span class='doccomment'>/// Clear lines from the field and return the number cleared.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>clear_lines</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
         <span class='comment'>// Keep only lines with an empty cell (non-filled)</span>
-        <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>retain</span>(<span class='op'>|</span><span class='kw-2'>ref</span> <span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>iter</span>().<span class='ident'>any</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span> <span class='op'>==</span> <span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='prelude-val'>None</span>.<span class='ident'>to_usize</span>()));
+        <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>retain</span>(<span class='op'>|</span><span class='kw-2'>ref</span> <span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>iter</span>().<span class='ident'>any</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span> <span class='op'>==</span> <span class='ident'>Id</span>::<span class='prelude-val'>None</span>));
 
         <span class='comment'>// Calculate how many lines were cleared</span>
         <span class='kw'>let</span> <span class='ident'>lines</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>height</span> <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>len</span>();
@@ -379,7 +375,7 @@
         <span class='comment'>// Sure this isn&#39;t optimal, but for a small array and with only 4</span>
         <span class='comment'>// pushses max (unless cascading) who would notice?</span>
         <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>lines</span> {
-            <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>insert</span>(<span class='number'>0</span>, <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='prelude-val'>None</span>.<span class='ident'>to_usize</span>(); <span class='self'>self</span>.<span class='ident'>width</span>]);
+            <span class='self'>self</span>.<span class='ident'>data</span>.<span class='ident'>insert</span>(<span class='number'>0</span>, <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>Id</span>::<span class='prelude-val'>None</span>; <span class='self'>self</span>.<span class='ident'>width</span>]);
         }
 
         <span class='ident'>lines</span>
@@ -401,7 +397,7 @@
     <span class='doccomment'>/// ```</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>freeze</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>block</span>: <span class='ident'>Block</span>) {
         <span class='kw'>for</span> <span class='kw-2'>&amp;</span>(<span class='ident'>x</span>, <span class='ident'>y</span>) <span class='kw'>in</span> <span class='ident'>block</span>.<span class='ident'>rs</span>.<span class='ident'>data</span>(<span class='ident'>block</span>.<span class='ident'>id</span>, <span class='ident'>block</span>.<span class='ident'>r</span>) {
-            <span class='self'>self</span>.<span class='ident'>data</span>[<span class='macro'>usize</span><span class='macro'>!</span>(<span class='ident'>block</span>.<span class='ident'>y</span> <span class='op'>+</span> <span class='macro'>i32</span><span class='macro'>!</span>(<span class='ident'>y</span>))][<span class='macro'>usize</span><span class='macro'>!</span>(<span class='ident'>block</span>.<span class='ident'>x</span> <span class='op'>+</span> <span class='macro'>i32</span><span class='macro'>!</span>(<span class='ident'>x</span>))] <span class='op'>=</span> <span class='ident'>block</span>.<span class='ident'>id</span>.<span class='ident'>to_usize</span>();
+            <span class='self'>self</span>.<span class='ident'>data</span>[<span class='macro'>usize</span><span class='macro'>!</span>(<span class='ident'>block</span>.<span class='ident'>y</span> <span class='op'>+</span> <span class='macro'>i32</span><span class='macro'>!</span>(<span class='ident'>y</span>))][<span class='macro'>usize</span><span class='macro'>!</span>(<span class='ident'>block</span>.<span class='ident'>x</span> <span class='op'>+</span> <span class='macro'>i32</span><span class='macro'>!</span>(<span class='ident'>x</span>))] <span class='op'>=</span> <span class='ident'>block</span>.<span class='ident'>id</span>;
         }
     }
 
@@ -417,7 +413,7 @@
     <span class='doccomment'>/// let field = Field::new();</span>
     <span class='doccomment'>/// let value = field.get((5, 10));</span>
     <span class='doccomment'>/// ```</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, (<span class='ident'>x</span>, <span class='ident'>y</span>): (<span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, (<span class='ident'>x</span>, <span class='ident'>y</span>): (<span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='ident'>Id</span> {
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>x</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>width</span> <span class='op'>&amp;&amp;</span> <span class='ident'>y</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>height</span>);
         <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>y</span>][<span class='ident'>x</span>]
     }
@@ -428,7 +424,7 @@
     <span class='doccomment'>/// result is of empty `Id`.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>occupies</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, (<span class='ident'>x</span>, <span class='ident'>y</span>): (<span class='ident'>usize</span>, <span class='ident'>usize</span>)) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>x</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>width</span> <span class='op'>&amp;&amp;</span> <span class='ident'>y</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>height</span>);
-        <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>y</span>][<span class='ident'>x</span>] <span class='op'>!=</span> <span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='prelude-val'>None</span>.<span class='ident'>to_usize</span>()
+        <span class='self'>self</span>.<span class='ident'>data</span>[<span class='ident'>y</span>][<span class='ident'>x</span>] <span class='op'>!=</span> <span class='ident'>Id</span>::<span class='prelude-val'>None</span>
     }
 }
 </pre>

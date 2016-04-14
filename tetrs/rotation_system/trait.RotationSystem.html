@@ -47,11 +47,13 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-822' class='srclink' href='../../src/tetrs/src/rotation_system/mod.rs.html#16-55' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-979' class='srclink' href='../../src/tetrs/src/rotation_system/mod.rs.html#17-123' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait RotationSystem {
     fn <a href='#tymethod.data' class='fnname'>data</a>(&amp;self, ty: <a class='enum' href='../../tetrs/block/enum.Id.html' title='tetrs::block::Id'>Id</a>, rotation: <a class='enum' href='../../tetrs/block/enum.Rotation.html' title='tetrs::block::Rotation'>Rotation</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'static [</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>;
 
-    fn <a href='#method.minp' class='fnname'>minp</a>(&amp;self, id: <a class='enum' href='../../tetrs/block/enum.Id.html' title='tetrs::block::Id'>Id</a>, r: <a class='enum' href='../../tetrs/block/enum.Rotation.html' title='tetrs::block::Rotation'>Rotation</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a> { ... }
+    fn <a href='#method.minp' class='fnname'>minp</a>(&amp;self, id: <a class='enum' href='../../tetrs/block/enum.Id.html' title='tetrs::block::Id'>Id</a>, rotation: <a class='enum' href='../../tetrs/block/enum.Rotation.html' title='tetrs::block::Rotation'>Rotation</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a> { ... }
+    fn <a href='#method.min' class='fnname'>min</a>(&amp;self, id: <a class='enum' href='../../tetrs/block/enum.Id.html' title='tetrs::block::Id'>Id</a>, rotation: <a class='enum' href='../../tetrs/block/enum.Rotation.html' title='tetrs::block::Rotation'>Rotation</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a> { ... }
+    fn <a href='#method.max' class='fnname'>max</a>(&amp;self, id: <a class='enum' href='../../tetrs/block/enum.Id.html' title='tetrs::block::Id'>Id</a>, rotation: <a class='enum' href='../../tetrs/block/enum.Rotation.html' title='tetrs::block::Rotation'>Rotation</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a> { ... }
 }</pre><div class='docblock'><p>The <code>RotationSystem</code> trait is implmented by all rotation systems.</p>
 
 <p>When implementing <code>RotationSystem</code>, the only thing that is required to
@@ -67,7 +69,7 @@ and <code>Rotation</code>.</p>
 </div></div>
             <h2 id='provided-methods'>Provided Methods</h2>
             <div class='methods'>
-        <h3 id='method.minp' class='method stab '><code>fn <a href='#method.minp' class='fnname'>minp</a>(&amp;self, id: <a class='enum' href='../../tetrs/block/enum.Id.html' title='tetrs::block::Id'>Id</a>, r: <a class='enum' href='../../tetrs/block/enum.Rotation.html' title='tetrs::block::Rotation'>Rotation</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a></code></h3><div class='docblock'><p>Returns the minimum offset of the first piece in a block.</p>
+        <h3 id='method.minp' class='method stab '><code>fn <a href='#method.minp' class='fnname'>minp</a>(&amp;self, id: <a class='enum' href='../../tetrs/block/enum.Id.html' title='tetrs::block::Id'>Id</a>, rotation: <a class='enum' href='../../tetrs/block/enum.Rotation.html' title='tetrs::block::Rotation'>Rotation</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a></code></h3><div class='docblock'><p>Returns the minimum offset of the first piece in a block.</p>
 
 <p>Return the offset from the <code>(x, y)</code> bounding coordinate to the first
 non-empty piece in a block. This row by row from <code>y = 0</code> onwards.</p>
@@ -85,11 +87,62 @@ non-empty piece in a block. This row by row from <code>y = 0</code> onwards.</p>
 <span class='kw'>let</span> (<span class='ident'>x1</span>, <span class='ident'>y1</span>) <span class='op'>=</span> <span class='ident'>rs</span>.<span class='ident'>minp</span>(<span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>T</span>, <span class='ident'>Rotation</span>::<span class='ident'>R180</span>);
 <span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='ident'>x1</span>, <span class='ident'>y1</span>), (<span class='number'>0</span>, <span class='number'>1</span>));
 </pre>
+</div><h3 id='method.min' class='method stab '><code>fn <a href='#method.min' class='fnname'>min</a>(&amp;self, id: <a class='enum' href='../../tetrs/block/enum.Id.html' title='tetrs::block::Id'>Id</a>, rotation: <a class='enum' href='../../tetrs/block/enum.Rotation.html' title='tetrs::block::Rotation'>Rotation</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a></code></h3><div class='docblock'><p>Returns a tuple containing the leading empty <code>(x, y)</code> columns.</p>
+
+<h2 id='examples' class='section-header'><a href='#examples'>Examples</a></h2>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>import</span>::<span class='op'>*</span>;
+
+<span class='kw'>let</span> <span class='ident'>rs</span> <span class='op'>=</span> <span class='ident'>rotation_system</span>::<span class='ident'>new</span>(<span class='string'>&quot;srs&quot;</span>);
+
+<span class='comment'>// An L-block can have the following representation</span>
+<span class='comment'>// .#.</span>
+<span class='comment'>// .#.</span>
+<span class='comment'>// .##</span>
+
+<span class='kw'>let</span> (<span class='ident'>x1</span>, <span class='ident'>y1</span>) <span class='op'>=</span> <span class='ident'>rs</span>.<span class='ident'>min</span>(<span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>L</span>, <span class='ident'>Rotation</span>::<span class='ident'>R90</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='ident'>x1</span>, <span class='ident'>y1</span>), (<span class='number'>1</span>, <span class='number'>0</span>));
+
+<span class='comment'>// An I-block can have the following representation</span>
+<span class='comment'>// ....</span>
+<span class='comment'>// ....</span>
+<span class='comment'>// ####</span>
+<span class='comment'>// ....</span>
+
+<span class='kw'>let</span> (<span class='ident'>x2</span>, <span class='ident'>y2</span>) <span class='op'>=</span> <span class='ident'>rs</span>.<span class='ident'>min</span>(<span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>I</span>, <span class='ident'>Rotation</span>::<span class='ident'>R180</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='ident'>x2</span>, <span class='ident'>y2</span>), (<span class='number'>0</span>, <span class='number'>2</span>));
+</pre>
+</div><h3 id='method.max' class='method stab '><code>fn <a href='#method.max' class='fnname'>max</a>(&amp;self, id: <a class='enum' href='../../tetrs/block/enum.Id.html' title='tetrs::block::Id'>Id</a>, rotation: <a class='enum' href='../../tetrs/block/enum.Rotation.html' title='tetrs::block::Rotation'>Rotation</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a></code></h3><div class='docblock'><p>Returns an <code>(x, y)</code> tuple containing the maximum offsets for the
+specified block.</p>
+
+<h2 id='examples-1' class='section-header'><a href='#examples-1'>Examples</a></h2>
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>tetrs</span>::<span class='ident'>import</span>::<span class='op'>*</span>;
+
+<span class='kw'>let</span> <span class='ident'>rs</span> <span class='op'>=</span> <span class='ident'>rotation_system</span>::<span class='ident'>new</span>(<span class='string'>&quot;srs&quot;</span>);
+
+<span class='comment'>// An L-block can have the following representation</span>
+<span class='comment'>// .#.</span>
+<span class='comment'>// .#.</span>
+<span class='comment'>// .##</span>
+
+<span class='kw'>let</span> (<span class='ident'>x1</span>, <span class='ident'>y1</span>) <span class='op'>=</span> <span class='ident'>rs</span>.<span class='ident'>max</span>(<span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>L</span>, <span class='ident'>Rotation</span>::<span class='ident'>R90</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='ident'>x1</span>, <span class='ident'>y1</span>), (<span class='number'>2</span>, <span class='number'>2</span>));
+
+<span class='comment'>// An I-block can have the following representation</span>
+<span class='comment'>// ....</span>
+<span class='comment'>// ....</span>
+<span class='comment'>// ####</span>
+<span class='comment'>// ....</span>
+
+<span class='kw'>let</span> (<span class='ident'>x2</span>, <span class='ident'>y2</span>) <span class='op'>=</span> <span class='ident'>rs</span>.<span class='ident'>max</span>(<span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='ident'>I</span>, <span class='ident'>Rotation</span>::<span class='ident'>R180</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>((<span class='ident'>x2</span>, <span class='ident'>y2</span>), (<span class='number'>3</span>, <span class='number'>2</span>));
+</pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
     <li><code>impl <a class='trait' href='../../tetrs/rotation_system/trait.RotationSystem.html' title='tetrs::rotation_system::RotationSystem'>RotationSystem</a> for <a class='struct' href='../../tetrs/rotation_system/srs/struct.SRS.html' title='tetrs::rotation_system::srs::SRS'>SRS</a></code></li>
-<li><code>impl <a class='trait' href='../../tetrs/rotation_system/trait.RotationSystem.html' title='tetrs::rotation_system::RotationSystem'>RotationSystem</a> for <a class='struct' href='../../tetrs/rotation_system/arika/struct.Arika.html' title='tetrs::rotation_system::arika::Arika'>Arika</a></code></li>
+<li><code>impl <a class='trait' href='../../tetrs/rotation_system/trait.RotationSystem.html' title='tetrs::rotation_system::RotationSystem'>RotationSystem</a> for <a class='struct' href='../../tetrs/rotation_system/ars/struct.ARS.html' title='tetrs::rotation_system::ars::ARS'>ARS</a></code></li>
 <li><code>impl <a class='trait' href='../../tetrs/rotation_system/trait.RotationSystem.html' title='tetrs::rotation_system::RotationSystem'>RotationSystem</a> for <a class='struct' href='../../tetrs/rotation_system/tengen/struct.Tengen.html' title='tetrs::rotation_system::tengen::Tengen'>Tengen</a></code></li>
 <li><code>impl <a class='trait' href='../../tetrs/rotation_system/trait.RotationSystem.html' title='tetrs::rotation_system::RotationSystem'>RotationSystem</a> for <a class='struct' href='../../tetrs/rotation_system/dtet/struct.DTET.html' title='tetrs::rotation_system::dtet::DTET'>DTET</a></code></li>
 </ul><script type="text/javascript" async

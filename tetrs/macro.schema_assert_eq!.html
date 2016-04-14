@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `history` mod in crate `tetrs`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, history">
+    <meta name="description" content="API documentation for the Rust `schema_assert_eq!` macro in crate `tetrs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, schema_assert_eq!">
 
-    <title>tetrs::history - Rust</title>
+    <title>tetrs::schema_assert_eq! - Rust</title>
 
-    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../main.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
     
 
     
@@ -28,7 +28,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>tetrs</a></p><script>window.sidebarCurrent = {name: 'history', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+        <p class='location'><a href='index.html'>tetrs</a></p><script>window.sidebarCurrent = {name: 'schema_assert_eq!', ty: 'macro', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -42,29 +42,24 @@
         </form>
     </nav>
 
-    <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>tetrs</a>::<wbr><a class='mod' href=''>history</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content macro">
+<h1 class='fqn'><span class='in-band'><a href='index.html'>tetrs</a>::<wbr><a class='macro' href=''>schema_assert_eq!</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1749' class='srclink' href='../../src/tetrs/src/history.rs.html#1-78' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p>Module which provides history management tools.</p>
-</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.Event.html'
-                                  title='tetrs::history::Event'>Event</a></td>
-                           <td class='docblock short'>
-                                <p>An individual event in a history sequence.</p>
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.History.html'
-                                  title='tetrs::history::History'>History</a></td>
-                           <td class='docblock short'>
-                                <p>Manages the history state of a particular game.</p>
-                           </td>
-                       </tr></table></section>
+               </span><a id='src-1783' class='srclink' href='../src/tetrs/src/schema.rs.html#68-111' title='goto source code'>[src]</a></span></h1>
+<pre class='rust macro'>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>schema_assert_eq</span> {
+    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>x</span>:<span class='ident'>expr</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>y</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> { ... };
+}</pre>
+<div class='docblock'><p>Tests if two schema are equal.</p>
+
+<p>This provides a much easier to parse error message than <code>assert_eq</code>
+provides.</p>
+
+<h2 id='panics' class='section-header'><a href='#panics'>Panics</a></h2>
+<p>Panics if the two schema are not equal.</p>
+</div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -116,13 +111,13 @@
     
 
     <script>
-        window.rootPath = "../../";
+        window.rootPath = "../";
         window.currentCrate = "tetrs";
         window.playgroundUrl = "";
     </script>
-    <script src="../../jquery.js"></script>
-    <script src="../../main.js"></script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
     
-    <script defer src="../../search-index.js"></script>
+    <script defer src="../search-index.js"></script>
 </body>
 </html>

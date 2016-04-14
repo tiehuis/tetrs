@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `history` mod in crate `tetrs`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, history">
+    <meta name="description" content="API documentation for the Rust `TGM` struct in crate `tetrs`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, TGM">
 
-    <title>tetrs::history - Rust</title>
+    <title>tetrs::wallkick::TGM - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
@@ -28,7 +28,7 @@
 
     <nav class="sidebar">
         
-        <p class='location'><a href='../index.html'>tetrs</a></p><script>window.sidebarCurrent = {name: 'history', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+        <p class='location'><a href='../index.html'>tetrs</a>::<wbr><a href='index.html'>wallkick</a></p><script>window.sidebarCurrent = {name: 'TGM', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -42,29 +42,16 @@
         </form>
     </nav>
 
-    <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>tetrs</a>::<wbr><a class='mod' href=''>history</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>tetrs</a>::<wbr><a href='index.html'>wallkick</a>::<wbr><a class='struct' href=''>TGM</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1749' class='srclink' href='../../src/tetrs/src/history.rs.html#1-78' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p>Module which provides history management tools.</p>
-</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.Event.html'
-                                  title='tetrs::history::Event'>Event</a></td>
-                           <td class='docblock short'>
-                                <p>An individual event in a history sequence.</p>
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.History.html'
-                                  title='tetrs::history::History'>History</a></td>
-                           <td class='docblock short'>
-                                <p>Manages the history state of a particular game.</p>
-                           </td>
-                       </tr></table></section>
+               </span><a id='src-753' class='srclink' href='../../src/tetrs/src/wallkick/mod.rs.html#43' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct TGM;</pre><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../tetrs/wallkick/struct.TGM.html' title='tetrs::wallkick::TGM'>TGM</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; &amp;'static <a class='struct' href='../../tetrs/wallkick/struct.TGM.html' title='tetrs::wallkick::TGM'>TGM</a></code></h4>
+<div class='docblock'><p>Returns a static instance to this wallkick.</p>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='../../tetrs/wallkick/trait.Wallkick.html' title='tetrs::wallkick::Wallkick'>Wallkick</a> for <a class='struct' href='../../tetrs/wallkick/struct.TGM.html' title='tetrs::wallkick::TGM'>TGM</a></code></h3><div class='impl-items'><h4 id='method.test' class='method'><code>fn <a href='../../tetrs/wallkick/trait.Wallkick.html#tymethod.test' class='fnname'>test</a>(&amp;self, block: &amp;<a class='struct' href='../../tetrs/block/struct.Block.html' title='tetrs::block::Block'>Block</a>, field: &amp;<a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a>, r: <a class='enum' href='../../tetrs/block/enum.Rotation.html' title='tetrs::block::Rotation'>Rotation</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'static [</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a>, <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.i32.html'>i32</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a></code></h4>
+</div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
