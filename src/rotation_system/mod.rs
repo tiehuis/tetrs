@@ -5,6 +5,7 @@
 //! which can both be used if they implement the `RotationSystem` trait.
 
 use block::{Id, Rotation};
+use std::cmp;
 
 /// The `RotationSystem` trait is implmented by all rotation systems.
 ///
@@ -38,8 +39,8 @@ pub trait RotationSystem {
     /// assert_eq!((x1, y1), (0, 1));
     ///
     /// ```
-    fn minp(&self, id: Id, r: Rotation) -> (usize, usize) {
-        self.data(id, r).iter()
+    fn minp(&self, id: Id, rotation: Rotation) -> (usize, usize) {
+        self.data(id, rotation).iter()
             .fold((!0, !0), |(a, b), &(x, y)| {
                 // We want the least-(x, y) such that y is minimized.
                 // This is subtly different from offset which allows the
@@ -50,6 +51,73 @@ pub trait RotationSystem {
                 else {
                     (a, b)
                 }
+            })
+    }
+
+    /// Returns a tuple containing the leading empty `(x, y)` columns.
+    ///
+    /// ## Examples
+    /// ```
+    /// use tetrs::import::*;
+    ///
+    /// let rs = rotation_system::new("srs");
+    ///
+    /// // An L-block can have the following representation
+    /// // .#.
+    /// // .#.
+    /// // .##
+    ///
+    /// let (x1, y1) = rs.min(block::Id::L, Rotation::R90);
+    /// assert_eq!((x1, y1), (1, 0));
+    ///
+    /// // An I-block can have the following representation
+    /// // ....
+    /// // ....
+    /// // ####
+    /// // ....
+    ///
+    /// let (x2, y2) = rs.min(block::Id::I, Rotation::R180);
+    /// assert_eq!((x2, y2), (0, 2));
+    ///
+    /// ```
+    fn min(&self, id: Id, rotation: Rotation) -> (usize, usize) {
+        self.data(id, rotation).iter()
+            .fold((!0, !0), |(a, b), &(x, y)| {
+                (cmp::min(a, x), cmp::min(b, y))
+            })
+    }
+
+    /// Returns an `(x, y)` tuple containing the maximum offsets for the
+    /// specified block.
+    ///
+    /// ## Examples
+    /// ```
+    /// use tetrs::import::*;
+    ///
+    /// let rs = rotation_system::new("srs");
+    ///
+    /// // An L-block can have the following representation
+    /// // .#.
+    /// // .#.
+    /// // .##
+    ///
+    /// let (x1, y1) = rs.max(block::Id::L, Rotation::R90);
+    /// assert_eq!((x1, y1), (2, 2));
+    ///
+    /// // An I-block can have the following representation
+    /// // ....
+    /// // ....
+    /// // ####
+    /// // ....
+    ///
+    /// let (x2, y2) = rs.max(block::Id::I, Rotation::R180);
+    /// assert_eq!((x2, y2), (3, 2));
+    ///
+    /// ```
+    fn max(&self, id: Id, rotation: Rotation) -> (usize, usize) {
+        self.data(id, rotation).iter()
+            .fold((0, 0), |(a, b), &(x, y)| {
+                (cmp::max(a, x), cmp::max(b, y))
             })
     }
 }
@@ -95,12 +163,12 @@ macro_rules! rs_gen {
 }
 
 pub use self::srs::SRS;
-pub use self::arika::Arika;
+pub use self::ars::ARS;
 pub use self::tengen::Tengen;
 pub use self::dtet::DTET;
 
 pub mod srs;
-pub mod arika;
+pub mod ars;
 pub mod tengen;
 pub mod dtet;
 
@@ -123,7 +191,7 @@ pub fn new(name: &str) -> &'static RotationSystem {
     match name {
         "srs" => SRS::new(),
         "dtet" => DTET::new(),
-        "arika" => Arika::new(),
+        "ars" => ARS::new(),
         "tengen" => Tengen::new(),
         _ => panic!("unknown rotation system: {}", name)
     }

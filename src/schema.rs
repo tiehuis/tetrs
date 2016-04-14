@@ -50,10 +50,64 @@ pub struct Schema {
     data: Vec<Vec<char>>,
 
     /// The current width of the schema
-    width: usize,
+    pub width: usize,
 
     /// The current height of the schema
-    height: usize,
+    pub height: usize,
+}
+
+/// Tests if two schema are equal.
+///
+/// This provides a much easier to parse error message than `assert_eq`
+/// provides.
+///
+/// ## Panics
+///
+/// Panics if the two schema are not equal.
+#[macro_export]
+macro_rules! schema_assert_eq {
+    // Needs a cleanup
+    ($x:expr, $y:expr) => {
+        {
+            use std::iter;
+            use collections::fmt::Write;
+
+            if $x != $y {
+                let fnd = $x.to_string();
+                let exp = $y.to_string();
+                let empty1: String = iter::repeat('|').take(1)
+                                        .chain(iter::repeat(' ').take($x.width))
+                                        .chain(iter::repeat('|').take(1)).collect();
+
+                let empty2: String = iter::repeat('|').take(1)
+                                        .chain(iter::repeat(' ').take($y.width))
+                                        .chain(iter::repeat('|').take(1)).collect();
+
+                let mut fndr = fnd.split('\n').collect::<Vec<_>>();
+                let mut expr = exp.split('\n').collect::<Vec<_>>();
+
+                if fndr.len() < expr.len() {
+                    while fndr.len() < expr.len() {
+                        fndr.insert(0, &empty1);
+                    }
+                }
+                else if expr.len() < fndr.len() {
+                    while expr.len() < fndr.len() {
+                        expr.insert(0, &empty2);
+                    }
+                }
+
+                assert_eq!(expr.len(), fndr.len());
+
+                let mut w = String::new();
+                for (x, y) in fndr.iter().zip(expr.iter()) {
+                    let _ = write!(&mut w, "{}    {}\n", x, y);
+                }
+
+                panic!("assertion failed: schema not equal: \n{}", w);
+            }
+        }
+    }
 }
 
 impl Schema {
@@ -89,7 +143,7 @@ impl Schema {
         };
 
         if failure {
-            panic!("Collision in field and block: {}", schema);
+            panic!("Collision in field and block: \n{}\n", schema);
         } else {
             schema
         }
@@ -236,11 +290,6 @@ impl Schema {
     // and more rules which are not needed currently.
     fn match_block(&mut self, field: &Field, rotation_system: &'static RotationSystem,
                    (x, y): (usize, usize)) -> Block {
-        // For the moment, always assume SRS rotation. We require an option to
-        // specify which `RotationSystem` to use with the input schema.
-        //
-        // We also require setting the correct to state, which should also require
-        // a `RotationSystem` argument.
 
         for (&ty, &ro) in iproduct!(block::Id::variants().iter(), Rotation::variants().iter()) {
             let data = rotation_system.data(ty, ro);

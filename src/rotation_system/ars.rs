@@ -1,6 +1,6 @@
 //! Specifies the block values for the Arika rotation system.
 
-rs_gen!(Arika);
+rs_gen!(ARS);
 
 static I: [[(usize, usize); 4]; 4] = [
     [(0, 1), (1, 1), (2, 1), (3, 1)],

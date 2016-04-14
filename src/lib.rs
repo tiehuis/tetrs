@@ -61,6 +61,9 @@ macro_rules! i32 {
     }
 }
 
+#[macro_use]
+pub mod schema;
+
 pub mod field;
 pub mod block;
 pub mod controller;
@@ -70,6 +73,5 @@ pub mod rotation_system;
 pub mod engine;
 pub mod utility;
 pub mod statistics;
-pub mod schema;
 pub mod import;
 pub mod history;
