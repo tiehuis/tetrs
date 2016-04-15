@@ -6,7 +6,7 @@
 use field::{Field, FieldOptions};
 use controller::{Action, Controller};
 use block::{self, Rotation, Direction, Block, BlockOptions};
-use randomizer::{self, Randomizer, BagRandomizer};
+use randomizer::{self, Randomizer};
 use rotation_system::{self, RotationSystem};
 use wallkick::{self, Wallkick};
 use utility::BlockHelper;
@@ -154,7 +154,7 @@ pub struct Engine {
     pub controller: Controller,
 
     /// The randomizer being used.
-    pub randomizer: BagRandomizer,
+    pub randomizer: Box<Randomizer>,
 
     /// The wallkick object being used.
     pub wallkick: &'static Wallkick,

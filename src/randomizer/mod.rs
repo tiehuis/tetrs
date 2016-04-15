@@ -80,9 +80,13 @@ mod tgm2;
 ///
 /// `new` will panic if the input string is not one of the strings present in
 /// `Names`.
-pub fn new(name: &str, lookahead: usize) -> BagRandomizer {
+pub fn new(name: &str, lookahead: usize) -> Box<Randomizer> {
     match name {
-        "bag" => BagRandomizer::new(lookahead),
+        "bag" => Box::new(BagRandomizer::new(lookahead)),
+        "memoryless" => Box::new(MemorylessRandomizer::new(lookahead)),
+        "gameboy" => Box::new(GameboyRandomizer::new(lookahead)),
+        "tgm1" => Box::new(TGM1Randomizer::new(lookahead)),
+        "tgm2" => Box::new(TGM2Randomizer::new(lookahead)),
         _ => panic!("unknown randomizer name")
     }
 }
