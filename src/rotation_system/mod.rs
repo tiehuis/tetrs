@@ -33,7 +33,7 @@ pub trait RotationSystem {
     /// // @##
     /// // .#.
     ///
-    /// let rs = rotation_system::new("srs");
+    /// let rs = rotation_system::new("srs").unwrap();
     ///
     /// let (x1, y1) = rs.minp(block::Id::T, Rotation::R180);
     /// assert_eq!((x1, y1), (0, 1));
@@ -60,7 +60,7 @@ pub trait RotationSystem {
     /// ```
     /// use tetrs::import::*;
     ///
-    /// let rs = rotation_system::new("srs");
+    /// let rs = rotation_system::new("srs").unwrap();
     ///
     /// // An L-block can have the following representation
     /// // .#.
@@ -94,7 +94,7 @@ pub trait RotationSystem {
     /// ```
     /// use tetrs::import::*;
     ///
-    /// let rs = rotation_system::new("srs");
+    /// let rs = rotation_system::new("srs").unwrap();
     ///
     /// // An L-block can have the following representation
     /// // .#.
@@ -182,18 +182,13 @@ pub mod dtet;
 ///  - `dtet`
 ///  - `arika`
 ///  - `tengen`
-///
-/// # Panics
-///
-/// `new` will panic if the input string is not one of the strings present in
-/// `Names`.
-pub fn new(name: &str) -> &'static RotationSystem {
+pub fn new(name: &str) -> Result<&'static RotationSystem, String> {
     match name {
-        "srs" => SRS::new(),
-        "dtet" => DTET::new(),
-        "ars" => ARS::new(),
-        "tengen" => Tengen::new(),
-        _ => panic!("unknown rotation system: {}", name)
+        "srs" => Ok(SRS::new()),
+        "dtet" => Ok(DTET::new()),
+        "ars" => Ok(ARS::new()),
+        "tengen" => Ok(Tengen::new()),
+        _ => Err(format!("unknown rotation system: {}", name))
     }
 }
 

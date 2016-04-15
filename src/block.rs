@@ -206,7 +206,7 @@ pub struct Block {
 ///
 /// // Has x: None, y: None, rotation: Rotation::R0, rotation_system: "dtet"
 /// let options = BlockOptions {
-///     rotation_system: rotation_system::new("dtet"),
+///     rotation_system: rotation_system::new("dtet").unwrap(),
 ///     ..Default::default()
 /// };
 /// ```
@@ -227,7 +227,7 @@ impl Default for BlockOptions {
             x: None,
             y: None,
             rotation: Rotation::R0,
-            rotation_system: rotation_system::new("srs")
+            rotation_system: rotation_system::new("srs").unwrap()
         }
     }
 }

@@ -414,7 +414,7 @@ mod tests {
                 ------------
             ");
 
-        let (field, mut block) = schema.to_state(rotation_system::new("srs"));
+        let (field, mut block) = schema.to_state(rotation_system::new("srs").unwrap());
         block.shift(&field, Direction::Left);
 
         assert_eq!(Schema::from_state(&field, &block),
@@ -435,7 +435,7 @@ mod tests {
                 ------------
             ");
 
-        let (field, block) = schema.to_state(rotation_system::new("srs"));
+        let (field, block) = schema.to_state(rotation_system::new("srs").unwrap());
 
         assert_eq!(block.id, block::Id::T);
         assert_eq!(block.r, Rotation::R0);

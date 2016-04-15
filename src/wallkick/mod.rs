@@ -25,7 +25,7 @@ pub trait Wallkick {
     ///
     /// let field = Field::new();
     /// let mut block = Block::new(block::Id::Z, &field);
-    /// let wallkick = wallkick::new("srs");
+    /// let wallkick = wallkick::new("srs").unwrap();
     ///
     /// // Perform an SRS wallkick on rotation failure
     /// for &(tx, ty) in wallkick.test(&block, &field, Rotation::R90) {
@@ -79,19 +79,14 @@ mod tgm3;
 ///  - `dtet`
 ///  - `tgm`
 ///  - `tgm3`
-///
-/// # Panics
-///
-/// `new` will panic if the input string is not one of the strings present in
-/// `Names`.
-pub fn new(name: &str) -> &'static Wallkick {
+pub fn new(name: &str) -> Result<&'static Wallkick, String> {
     match name {
-        "srs" => SRS::new(),
-        "empty" => Empty::new(),
-        "simple" => Simple::new(),
-        "dtet" => DTET::new(),
-        "tgm" => TGM::new(),
-        "tgm3" => TGM3::new(),
-        _ => panic!("unknown wallkick")
+        "srs" => Ok(SRS::new()),
+        "empty" => Ok(Empty::new()),
+        "simple" => Ok(Simple::new()),
+        "dtet" => Ok(DTET::new()),
+        "tgm" => Ok(TGM::new()),
+        "tgm3" => Ok(TGM3::new()),
+        _ => Err(format!("unknown wallkick: {}", name))
     }
 }

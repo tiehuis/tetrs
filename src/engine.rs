@@ -214,11 +214,11 @@ impl Engine {
     pub fn new(options: EngineOptions) -> Engine {
         let mut engine = Engine {
             field: Field::with_options(options.field_options),
-            randomizer: randomizer::new(&options.randomizer_name, options.randomizer_lookahead),
+            randomizer: randomizer::new(&options.randomizer_name, options.randomizer_lookahead).unwrap(),
             controller: Controller::new(),
-            rotation_system: rotation_system::new(&options.rotation_system_name),
-            wallkick: wallkick::new(&options.wallkick_name),
-            block: Block { id: block::Id::None, x: 0, y: 0, r: Rotation::R0, rs: rotation_system::new("srs") },
+            rotation_system: rotation_system::new(&options.rotation_system_name).unwrap(),
+            wallkick: wallkick::new(&options.wallkick_name).unwrap(),
+            block: Block { id: block::Id::None, x: 0, y: 0, r: Rotation::R0, rs: rotation_system::new("srs").unwrap() },
             hold: None,
             tick_count: 0,
             mspt: options.mspt,

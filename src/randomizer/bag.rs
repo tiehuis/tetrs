@@ -16,7 +16,7 @@ gen_rand!(BagRandomizer);
 /// use tetrs::import::*;
 ///
 /// // Generate a BagRandomizer using the factory function
-/// let mut bag = randomizer::new("bag", 15);
+/// let mut bag = randomizer::new("bag", 15).unwrap();
 ///
 /// // Generate a BagRandomizer directly
 /// let bag2 = randomizer::BagRandomizer::new(15);
