@@ -23,33 +23,35 @@ impl Wallkick for TGM {
 
         // Check 3-wide block orientations and do not kick. Rotations may
         // differ slightly so we test the orientations in a generic way.
-        // (i.e. don't assume rotation 1 and 3 are 3-wide!)
-        //
-        // Due to differing rotations, we cannot perform simple calculations
-        // assuming a bounding box. In some cases, we are effectively scanning
-        // for a particular block configuration.
+        // (i.e. don't assume rotation 1 and 3 are 3-wide!, also, don't assume
+        // that they exist at x offset 0).
         if block.id == Id::L || block.id == Id::J || block.id == Id::T {
-            // Calculate the width of the piece
-            let (txo, tyo) = block.rs.max(block.id, block.r);
+            // Stores the maximum x offset of the block
+            let (txo, _) = block.rs.max(block.id, block.r);
+
+            // Stores the least offsets of the block
             let (lxo, lyo) = block.rs.min(block.id, block.r);
+
+            // Stores the offset to the first block piece; (y, x) ordered.
             let (pxo, pyo) = block.rs.minp(block.id, block.r);
+
+            // The absolute position of the blocks first piece; (y, x) ordered.
             let (apxo, apyo) = (usize!(block.x + i32!(pxo)), usize!(block.y + i32!(pyo)));
+
+            // Block piece data
             let od = block.rs.data(block.id, block.r);
 
-            // Block is 3-wide
-            if txo - lxo == 3 {
-                // Determine where the middle column lies and check the
-                // required location for each rotation.
-
+            // Block must be 3-wide else ignore. We are dealing with offsets, so
+            // we have to adjust by 1. (i.e) (0, 0) -> (0, 2) is height 3 (inclusive).
+            if txo - lxo == 2 {
+                // Middle column x position
                 let mxo = lxo + 1;
 
-                // Only need to check one square above center column
                 if block.id == Id::T {
                     if field.occupies((mxo, lyo - 1)) {
                         return &NONE_ROTATION;
                     }
                 }
-                // We need to determine the specific rotation
                 else if block.id == Id::L {
                     // Non-flatside orientation
                     if od.contains(&(pxo + 1, pyo)) {
@@ -88,11 +90,14 @@ impl Wallkick for TGM {
             }
         }
 
-        // Every other field state wallkicks are allowed
-
         match r {
+            Rotation::R0 => &NONE_ROTATION,
             Rotation::R90 | Rotation::R270 => &ROTATION,
-            _ => &NONE_ROTATION
+
+            // If 180-degree spins are enabled, perform the standard wallkick
+            // with no intermediate results. The special cases are still
+            // filtered. This may be revised at some stage.
+            Rotation::R180 => &ROTATION
         }
     }
 }

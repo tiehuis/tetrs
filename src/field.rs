@@ -185,8 +185,16 @@ impl Field {
     ///
     /// This is a convenience function which queries `at` and checks if the
     /// result is of empty `Id`.
+    ///
+    /// If the input values are outside the range of the field then true is
+    /// returned. Explicit bounds checking is left up the user.
     pub fn occupies(&self, (x, y): (usize, usize)) -> bool {
-        assert!(x < self.width && y < self.height);
-        self.data[y][x] != Id::None
+        if x >= self.width || y >= self.height {
+            false
+        }
+        else {
+            self.data[y][x] != Id::None
+        }
+        //assert!(x < self.width && y < self.height);
     }
 }

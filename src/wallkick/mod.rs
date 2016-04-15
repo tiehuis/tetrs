@@ -58,12 +58,14 @@ pub use self::empty::Empty;
 pub use self::simple::Simple;
 pub use self::dtet::DTET;
 pub use self::tgm::TGM;
+pub use self::tgm3::TGM3;
 
 mod srs;
 mod empty;
 mod simple;
 mod dtet;
 mod tgm;
+mod tgm3;
 
 /// Factory function for constructing rotation systems from name.
 ///
@@ -75,6 +77,8 @@ mod tgm;
 ///  - `empty`
 ///  - `simple`
 ///  - `dtet`
+///  - `tgm`
+///  - `tgm3`
 ///
 /// # Panics
 ///
@@ -87,6 +91,7 @@ pub fn new(name: &str) -> &'static Wallkick {
         "simple" => Simple::new(),
         "dtet" => DTET::new(),
         "tgm" => TGM::new(),
+        "tgm3" => TGM3::new(),
         _ => panic!("unknown wallkick")
     }
 }

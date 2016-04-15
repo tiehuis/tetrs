@@ -5,7 +5,7 @@
 
 use field::{Field, FieldOptions};
 use controller::{Action, Controller};
-use block::{self, Rotation, Direction, Block};
+use block::{self, Rotation, Direction, Block, BlockOptions};
 use randomizer::{self, Randomizer, BagRandomizer};
 use rotation_system::{self, RotationSystem};
 use wallkick::{self, Wallkick};
@@ -231,7 +231,9 @@ impl Engine {
         };
 
         // Can we utilize internal data when constructing the block?
-        engine.block = Block::new(engine.randomizer.next(), &engine.field);
+        engine.block = Block::with_options(engine.randomizer.next(), &engine.field,
+            BlockOptions { rotation_system: engine.rotation_system, ..Default::default() }
+        );
         engine
     }
 
@@ -343,11 +345,15 @@ impl Engine {
             self.internal.hold_count += 1;
             if self.hold.is_none() {
                 self.hold = Some(self.block.id);
-                self.block = Block::new(self.randomizer.next(), &self.field);
+                self.block = Block::with_options(self.randomizer.next(), &self.field,
+                    BlockOptions { rotation_system: self.rotation_system, ..Default::default() }
+                );
             }
             else {
                 let tmp = self.block.id;
-                self.block = Block::new(self.hold.unwrap(), &self.field);
+                self.block = Block::with_options(self.hold.unwrap(), &self.field,
+                    BlockOptions { rotation_system: self.rotation_system, ..Default::default() }
+                );
                 self.hold = Some(tmp);
             }
         }
@@ -356,7 +362,9 @@ impl Engine {
         if self.controller.time(Action::HardDrop) == 1 {
             self.block.shift_extend(&self.field, Direction::Down);
             self.field.freeze(self.block.clone());
-            self.block = Block::new(self.randomizer.next(), &self.field);
+            self.block = Block::with_options(self.randomizer.next(), &self.field,
+                BlockOptions { rotation_system: self.rotation_system, ..Default::default() }
+            );
 
             self.internal.hold_count = 0;
             self.statistics.pieces += 1;

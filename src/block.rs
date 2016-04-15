@@ -192,7 +192,7 @@ pub struct Block {
 ///     x: None,
 ///     y: None,
 ///     rotation: Rotation::R0,
-///     rotation_system: "srs"
+///     rotation_system: rotation_system::SRS
 /// }
 /// ```
 ///
@@ -206,7 +206,7 @@ pub struct Block {
 ///
 /// // Has x: None, y: None, rotation: Rotation::R0, rotation_system: "dtet"
 /// let options = BlockOptions {
-///     rotation_system: "dtet",
+///     rotation_system: rotation_system::new("dtet"),
 ///     ..Default::default()
 /// };
 /// ```
@@ -218,7 +218,7 @@ pub struct BlockOptions {
 
     pub rotation: Rotation,
 
-    pub rotation_system: &'static str
+    pub rotation_system: &'static RotationSystem
 }
 
 impl Default for BlockOptions {
@@ -227,7 +227,7 @@ impl Default for BlockOptions {
             x: None,
             y: None,
             rotation: Rotation::R0,
-            rotation_system: "srs"
+            rotation_system: rotation_system::new("srs")
         }
     }
 }
@@ -256,7 +256,7 @@ impl Block {
             x: if options.x.is_none() { field.spawn.0 } else { options.x.unwrap() },
             y: if options.y.is_none() { field.spawn.1 } else { options.y.unwrap() },
             r: options.rotation,
-            rs: rotation_system::new(options.rotation_system)
+            rs: options.rotation_system
         }
     }
 
