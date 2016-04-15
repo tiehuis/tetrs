@@ -256,11 +256,6 @@
 <span id="212">212</span>
 <span id="213">213</span>
 <span id="214">214</span>
-<span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! This modules provides an interface for dealing with different block offsets.</span>
 <span class='doccomment'>//!</span>
@@ -297,7 +292,7 @@
     <span class='doccomment'>/// // @##</span>
     <span class='doccomment'>/// // .#.</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// let rs = rotation_system::new(&quot;srs&quot;);</span>
+    <span class='doccomment'>/// let rs = rotation_system::new(&quot;srs&quot;).unwrap();</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// let (x1, y1) = rs.minp(block::Id::T, Rotation::R180);</span>
     <span class='doccomment'>/// assert_eq!((x1, y1), (0, 1));</span>
@@ -324,7 +319,7 @@
     <span class='doccomment'>/// ```</span>
     <span class='doccomment'>/// use tetrs::import::*;</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// let rs = rotation_system::new(&quot;srs&quot;);</span>
+    <span class='doccomment'>/// let rs = rotation_system::new(&quot;srs&quot;).unwrap();</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// // An L-block can have the following representation</span>
     <span class='doccomment'>/// // .#.</span>
@@ -358,7 +353,7 @@
     <span class='doccomment'>/// ```</span>
     <span class='doccomment'>/// use tetrs::import::*;</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// let rs = rotation_system::new(&quot;srs&quot;);</span>
+    <span class='doccomment'>/// let rs = rotation_system::new(&quot;srs&quot;).unwrap();</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// // An L-block can have the following representation</span>
     <span class='doccomment'>/// // .#.</span>
@@ -446,18 +441,13 @@
 <span class='doccomment'>///  - `dtet`</span>
 <span class='doccomment'>///  - `arika`</span>
 <span class='doccomment'>///  - `tengen`</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// # Panics</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// `new` will panic if the input string is not one of the strings present in</span>
-<span class='doccomment'>/// `Names`.</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>RotationSystem</span> {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>RotationSystem</span>, <span class='ident'>String</span><span class='op'>&gt;</span> {
     <span class='kw'>match</span> <span class='ident'>name</span> {
-        <span class='string'>&quot;srs&quot;</span> <span class='op'>=&gt;</span> <span class='ident'>SRS</span>::<span class='ident'>new</span>(),
-        <span class='string'>&quot;dtet&quot;</span> <span class='op'>=&gt;</span> <span class='ident'>DTET</span>::<span class='ident'>new</span>(),
-        <span class='string'>&quot;ars&quot;</span> <span class='op'>=&gt;</span> <span class='ident'>ARS</span>::<span class='ident'>new</span>(),
-        <span class='string'>&quot;tengen&quot;</span> <span class='op'>=&gt;</span> <span class='ident'>Tengen</span>::<span class='ident'>new</span>(),
-        _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;unknown rotation system: {}&quot;</span>, <span class='ident'>name</span>)
+        <span class='string'>&quot;srs&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>SRS</span>::<span class='ident'>new</span>()),
+        <span class='string'>&quot;dtet&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>DTET</span>::<span class='ident'>new</span>()),
+        <span class='string'>&quot;ars&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>ARS</span>::<span class='ident'>new</span>()),
+        <span class='string'>&quot;tengen&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>Tengen</span>::<span class='ident'>new</span>()),
+        _ <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;unknown rotation system: {}&quot;</span>, <span class='ident'>name</span>))
     }
 }
 

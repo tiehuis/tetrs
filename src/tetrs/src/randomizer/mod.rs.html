@@ -130,6 +130,9 @@
 <span id="86">86</span>
 <span id="87">87</span>
 <span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a randomizer.</span>
 <span class='doccomment'>//!</span>
@@ -208,15 +211,18 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// # Names</span>
 <span class='doccomment'>///  - `bag`</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// # Panics</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// `new` will panic if the input string is not one of the strings present in</span>
-<span class='doccomment'>/// `Names`.</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>lookahead</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>BagRandomizer</span> {
+<span class='doccomment'>///  - `memoryless`</span>
+<span class='doccomment'>///  - `gameboy`</span>
+<span class='doccomment'>///  - `tgm1`</span>
+<span class='doccomment'>///  - `tgm2`</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>lookahead</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Randomizer</span><span class='op'>&gt;</span>, <span class='ident'>String</span><span class='op'>&gt;</span> {
     <span class='kw'>match</span> <span class='ident'>name</span> {
-        <span class='string'>&quot;bag&quot;</span> <span class='op'>=&gt;</span> <span class='ident'>BagRandomizer</span>::<span class='ident'>new</span>(<span class='ident'>lookahead</span>),
-        _ <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;unknown randomizer name&quot;</span>)
+        <span class='string'>&quot;bag&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>BagRandomizer</span>::<span class='ident'>new</span>(<span class='ident'>lookahead</span>))),
+        <span class='string'>&quot;memoryless&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>MemorylessRandomizer</span>::<span class='ident'>new</span>(<span class='ident'>lookahead</span>))),
+        <span class='string'>&quot;gameboy&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>GameboyRandomizer</span>::<span class='ident'>new</span>(<span class='ident'>lookahead</span>))),
+        <span class='string'>&quot;tgm1&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>TGM1Randomizer</span>::<span class='ident'>new</span>(<span class='ident'>lookahead</span>))),
+        <span class='string'>&quot;tgm2&quot;</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>TGM2Randomizer</span>::<span class='ident'>new</span>(<span class='ident'>lookahead</span>))),
+        _ <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;unknown randomizer: {}&quot;</span>, <span class='ident'>name</span>))
     }
 }
 </pre>

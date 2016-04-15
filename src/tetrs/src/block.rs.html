@@ -671,7 +671,7 @@
 <span class='doccomment'>///     x: None,</span>
 <span class='doccomment'>///     y: None,</span>
 <span class='doccomment'>///     rotation: Rotation::R0,</span>
-<span class='doccomment'>///     rotation_system: &quot;srs&quot;</span>
+<span class='doccomment'>///     rotation_system: rotation_system::SRS</span>
 <span class='doccomment'>/// }</span>
 <span class='doccomment'>/// ```</span>
 <span class='doccomment'>///</span>
@@ -685,7 +685,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// // Has x: None, y: None, rotation: Rotation::R0, rotation_system: &quot;dtet&quot;</span>
 <span class='doccomment'>/// let options = BlockOptions {</span>
-<span class='doccomment'>///     rotation_system: &quot;dtet&quot;,</span>
+<span class='doccomment'>///     rotation_system: rotation_system::new(&quot;dtet&quot;).unwrap(),</span>
 <span class='doccomment'>///     ..Default::default()</span>
 <span class='doccomment'>/// };</span>
 <span class='doccomment'>/// ```</span>
@@ -697,7 +697,7 @@
 
     <span class='kw'>pub</span> <span class='ident'>rotation</span>: <span class='ident'>Rotation</span>,
 
-    <span class='kw'>pub</span> <span class='ident'>rotation_system</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>
+    <span class='kw'>pub</span> <span class='ident'>rotation_system</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>RotationSystem</span>
 }
 
 <span class='kw'>impl</span> <span class='ident'>Default</span> <span class='kw'>for</span> <span class='ident'>BlockOptions</span> {
@@ -706,7 +706,7 @@
             <span class='ident'>x</span>: <span class='prelude-val'>None</span>,
             <span class='ident'>y</span>: <span class='prelude-val'>None</span>,
             <span class='ident'>rotation</span>: <span class='ident'>Rotation</span>::<span class='ident'>R0</span>,
-            <span class='ident'>rotation_system</span>: <span class='string'>&quot;srs&quot;</span>
+            <span class='ident'>rotation_system</span>: <span class='ident'>rotation_system</span>::<span class='ident'>new</span>(<span class='string'>&quot;srs&quot;</span>).<span class='ident'>unwrap</span>()
         }
     }
 }
@@ -735,7 +735,7 @@
             <span class='ident'>x</span>: <span class='kw'>if</span> <span class='ident'>options</span>.<span class='ident'>x</span>.<span class='ident'>is_none</span>() { <span class='ident'>field</span>.<span class='ident'>spawn</span>.<span class='number'>0</span> } <span class='kw'>else</span> { <span class='ident'>options</span>.<span class='ident'>x</span>.<span class='ident'>unwrap</span>() },
             <span class='ident'>y</span>: <span class='kw'>if</span> <span class='ident'>options</span>.<span class='ident'>y</span>.<span class='ident'>is_none</span>() { <span class='ident'>field</span>.<span class='ident'>spawn</span>.<span class='number'>1</span> } <span class='kw'>else</span> { <span class='ident'>options</span>.<span class='ident'>y</span>.<span class='ident'>unwrap</span>() },
             <span class='ident'>r</span>: <span class='ident'>options</span>.<span class='ident'>rotation</span>,
-            <span class='ident'>rs</span>: <span class='ident'>rotation_system</span>::<span class='ident'>new</span>(<span class='ident'>options</span>.<span class='ident'>rotation_system</span>)
+            <span class='ident'>rs</span>: <span class='ident'>options</span>.<span class='ident'>rotation_system</span>
         }
     }
 

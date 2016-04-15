@@ -47,10 +47,10 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1646' class='srclink' href='../../src/tetrs/src/engine.rs.html#152-202' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-1689' class='srclink' href='../../src/tetrs/src/engine.rs.html#152-202' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Engine {
     pub controller: <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a>,
-    pub randomizer: <a class='struct' href='../../tetrs/randomizer/struct.BagRandomizer.html' title='tetrs::randomizer::BagRandomizer'>BagRandomizer</a>,
+    pub randomizer: <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;<a class='trait' href='../../tetrs/randomizer/trait.Randomizer.html' title='tetrs::randomizer::Randomizer'>Randomizer</a>&gt;,
     pub wallkick: &amp;'static <a class='trait' href='../../tetrs/wallkick/trait.Wallkick.html' title='tetrs::wallkick::Wallkick'>Wallkick</a>,
     pub rotation_system: &amp;'static <a class='trait' href='../../tetrs/rotation_system/trait.RotationSystem.html' title='tetrs::rotation_system::RotationSystem'>RotationSystem</a>,
     pub field: <a class='struct' href='../../tetrs/field/struct.Field.html' title='tetrs::field::Field'>Field</a>,
