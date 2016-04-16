@@ -81,6 +81,8 @@ pub enum Rotation {
     R0, R90, R180, R270
 }
 
+impl Default for Rotation { fn default() -> Rotation { Rotation::R0 } }
+
 impl CLike for Rotation {
     fn to_usize(&self) -> usize {
         *self as usize

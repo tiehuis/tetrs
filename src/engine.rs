@@ -1,33 +1,127 @@
 //! Implements a high-level engine which composes all the components
 //! into one abstract structure.
 
-#![allow(dead_code)]
+// engine.rs (revised)
+//
+// This attempts to go over a more extensible way of expanding the `Engine`
+// class with the required features. This is just one big stateful instance and
+// is a bit unwieldy, although its a suitable method to use.
+//
+// The first revision should have enough support to handle DAS, ARR, ARE, IHS,
+// IRS well.
+//
+// (omitted real IRS and IHS handling)
 
+use collections::enum_set::CLike;
+
+use block::{self, Block, BlockOptions, Rotation, Direction};
 use field::{Field, FieldOptions};
-use controller::{Action, Controller};
-use block::{self, Rotation, Direction, Block, BlockOptions};
+use controller::{Controller, Action};
 use randomizer::{self, Randomizer};
-use rotation_system::{self, RotationSystem};
 use wallkick::{self, Wallkick};
-use utility::BlockHelper;
 use statistics::Statistics;
 use history::History;
+use utility::BlockHelper;
+use rotation_system::{self, RotationSystem};
 
-use time;
-use collections::enum_set::CLike;
-use std::io::prelude::*;
-use std::fs::File;
-use serde_json;
+/// The current `Engine` status.
+#[derive(Copy, Clone, PartialEq, Debug)]
+enum Status {
+    /// Entry delay for piece spawn
+    Are,
 
-/// Stores a number of internal options that may be useful during a games
-/// execution.
+    /// Main movement phase
+    Move,
+
+    /// Occurs on lockout or game failure
+    GameOver,
+
+    /// Default status indicating nothing should happen
+    None
+}
+impl Default for Status { fn default() -> Status { Status::None } }
+
+
+/// Stores internal `Engine` status flags.
 ///
-/// Unlike `NullpoMino` these are never tied to a name. This can be handled by
-/// the caller if required.
-///
-/// Currently `Options` do not manage the randomizer/rotation system etc. Need
-/// to determine exactly what is required.
-#[derive(Serialize, Deserialize, Debug)]
+/// When adding new values, these should default to the standard defaults
+/// for primitives.
+#[derive(Default)]
+struct EngineInternal {
+    /// How many ticks have we been in the current status
+    status_timer: u64,
+
+    /// Current gravity of the piece
+    gravity_counter: f64,
+
+    /// The current soft drop frames to move
+    soft_drop_counter: f64,
+
+    /// How many times the current piece has been held
+    hold_count: u64,
+
+    /// Is the piece currently locking
+    locking: bool,
+
+    /// How long has the piece been locking
+    lock_timer: u64,
+
+    /// Was an Initial Hold requested?
+    ihs_flag: bool,
+
+    /// Was an Initial Rotate requested?
+    irs_flag: bool,
+
+    /// Which rotation direction was requested?
+    irs_rotation: Rotation,
+
+    /// Do we need a new piece spawned?
+    need_piece: bool,
+
+    /// How long has the current piece been alive?
+    piece_timer: u64,
+}
+
+
+/// Stores configurable options which alter how the engine works.
+pub struct EngineSettings {
+    /// How many ms should are last for
+    are: u64,
+
+    /// Auto-repeat-rate (in ms)
+    arr: u64,
+
+    /// Delayed auto-shift (in ms)
+    das: u64,
+
+    /// How fast soft drop occurs (cells per ms)
+    soft_drop_speed: f64,
+
+    /// How long the lock delay exists for
+    lock_delay: u64,
+
+    /// How many times can we hold per block
+    hold_limit: u64,
+
+    /// How many frames moved per ms
+    gravity: f64,
+
+    /// Should gravity be performed before move?
+    gravity_before_move: bool,
+}
+
+impl Default for EngineSettings {
+    fn default() -> EngineSettings {
+        EngineSettings {
+            are: 0, arr: 16, das: 180, soft_drop_speed: 2f64,
+            lock_delay: 300, hold_limit: 1, gravity: 0.001,
+            gravity_before_move: false
+        }
+    }
+}
+
+
+/// Struct for initializing an `Engine`
 #[allow(missing_docs)]
 pub struct EngineOptions {
     pub field_options: FieldOptions,
@@ -59,126 +153,43 @@ impl Default for EngineOptions {
     }
 }
 
-impl EngineOptions {
-    /// Construct an `EngineOptions` from a file.
-    pub fn load_file(name: &str) -> EngineOptions {
-        let mut f = match File::open(name) {
-            Ok(f) => f,
-            Err(e) => panic!("Failed to open file: {}", e)
-        };
-        let mut buffer = String::new();
-        let _ = f.read_to_string(&mut buffer);
-        serde_json::from_str(&buffer).unwrap()
-    }
-}
 
-#[derive(Serialize, Deserialize, Debug)]
-/// Settings used internally by an `Engine`.
-pub struct EngineSettings {
-    /// DAS setting (in ms)
-    pub das: u64,
-
-    /// ARE time (in ms)
-    pub are: u64,
-
-    /// Gravity (in ms). How many ms must pass for block to fall
-    pub gravity: u64,
-
-    /// Auto-repeat-rate (in ms)
-    pub arr: u64,
-
-    /// Is hold enabled
-    pub has_hold: bool,
-
-    /// How many times can we hold
-    pub hold_limit: u64,
-
-    /// Is hard drop allowed
-    pub has_hard_drop: bool,
-
-    /// Has soft drop
-    pub has_soft_drop: bool,
-
-    /// The speed soft drop works
-    pub soft_drop_speed: u64,
-
-    /// Maximum number of preview pieces
-    pub preview_count: u64
-}
-
-impl Default for EngineSettings {
-    fn default() -> EngineSettings {
-        EngineSettings {
-            das: 180,
-            are: 0,
-            gravity: 1000,
-            arr: 16,
-            has_hold: true,
-            hold_limit: 1,
-            has_hard_drop: true,
-            has_soft_drop: true,
-            soft_drop_speed: 16, // 1G
-            preview_count: 3
-        }
-    }
-}
-
-/// Which part of the game are we in. This is used to keep track of multi-frame
-/// events that require some internal state past state to be kept.
-#[derive(Debug, Clone, Copy)]
-#[allow(dead_code)]
-enum Status {
-    None, Setting, Ready, Move, LockFlash, LineClear, Are, EndingStart,
-    Excellent, GameOver
-}
-
-/// Stores variables which are modified internally during execution. Namely
-/// state counters and the like. This is namespaced to have better modularity and
-/// general code structure.
+/// Stores the internal engine details.
 ///
-/// This is required for state that is not reliant on frame counts.
-#[derive(Default)]
-struct EngineState {
-    /// Last update invocation time
-    last_update_time: u64,
-
-    /// How many successive holds have been made
-    hold_count: u64
-}
-
-/// This engine allows for handling of DAS-like features and other things
-/// which are otherwise transparent to sub-components which are only
-/// managed on a per-tick basis (have no concept of state over time).
+/// This is largely segmented into components `EngineSettings`, `EngineInternal`
+/// to reduce the overall complexity and namespace various features.
+///
+/// Most names are condensed a lot to provide shorter references.
 pub struct Engine {
     /// Controller which is used by the engine
-    pub controller: Controller,
+    pub co: Controller,
 
     /// The randomizer being used.
-    pub randomizer: Box<Randomizer>,
+    pub rd: Box<Randomizer>,
 
     /// The wallkick object being used.
-    pub wallkick: &'static Wallkick,
+    pub wk: &'static Wallkick,
 
     /// The rotation system used by this engine.
-    pub rotation_system: &'static RotationSystem,
+    pub rs: &'static RotationSystem,
 
     /// The field which the game is played on
-    pub field: Field,
+    pub fd: Field,
 
     /// The active block
-    pub block: Block,
+    pub bk: Block,
 
     /// The current hold block (this doesn't store an actual block right now)
-    pub hold: Option<block::Id>,
+    pub hd: Option<block::Id>,
 
     /// Settings used internally by the engine
-    pub options: EngineSettings,
+    pub op: EngineSettings,
 
     /// Statistics of the current game
-    pub statistics: Statistics,
+    pub st: Statistics,
 
     /// The input history of the game
-    pub history: History,
+    pub hs: History,
 
     /// Is the game running
     pub running: bool,
@@ -190,59 +201,17 @@ pub struct Engine {
     pub tick_count: u64,
 
     /// Private internal state flags
-    internal: EngineState,
+    it: EngineInternal,
 
-    /// The current game status. There are 5 main states that are utilized:
-    /// - Ready     -> Triggers for the first 50 frames
-    /// - Go        -> Triggers for the next 50 frames
-    /// - Move      -> Main state for when the game is running
-    /// - GameOver  -> Occurs on game failure
-    /// - Excellent -> Occurs on goal reached
-    status: Status
+    /// The current game status.
+    status: Status,
+
+    /// Status of the last frame
+    last_status: Status
 }
 
 impl Engine {
-
-    /// Construct a new engine object and return it.
-    ///
-    /// This should be used as a compositional object of all the underlying
-    /// objects. This adheres moreso to the rust philosophy and gives greater
-    /// variance in how an engine can be constructed.
-    ///
-    /// An engine is constructed in an initialized state and is ready to be
-    /// used right from the beginning.
-    pub fn new(options: EngineOptions) -> Engine {
-        let mut engine = Engine {
-            field: Field::with_options(options.field_options),
-            randomizer: randomizer::new(&options.randomizer_name, options.randomizer_lookahead).unwrap(),
-            controller: Controller::new(),
-            rotation_system: rotation_system::new(&options.rotation_system_name).unwrap(),
-            wallkick: wallkick::new(&options.wallkick_name).unwrap(),
-            block: Block { id: block::Id::None, x: 0, y: 0, r: Rotation::R0, rs: rotation_system::new("srs").unwrap() },
-            hold: None,
-            tick_count: 0,
-            mspt: options.mspt,
-            running: true,
-            options: options.engine_settings,
-            history: History::new(),
-            statistics: Statistics::new(),
-            internal: EngineState { ..Default::default() },
-            status: Status::Ready,
-        };
-
-        // Can we utilize internal data when constructing the block?
-        engine.block = Block::with_options(engine.randomizer.next(), &engine.field,
-            BlockOptions { rotation_system: engine.rotation_system, ..Default::default() }
-        );
-        engine
-    }
-
     /// Adjusts a constant value to ticks for the current gamestate.
-    ///
-    /// This takes a self argument, and the value to convert. If macro is
-    /// seperated by a ';' instead of a ',', the second argument is treated
-    /// as an identifier to a member function of `self`. This is cuts down
-    /// on repeated self references in a single call.
     ///
     /// ```text
     /// let ticks_to_wait = self.ticks(self, 789);
@@ -254,6 +223,16 @@ impl Engine {
         val / self.mspt
     }
 
+    /// Check if a particular action has been pressed with the specified
+    /// rate.
+    fn is_pressed(&self, action: Action, rate: u64) -> bool {
+        let sct = self.co.time[action.to_usize()] as u64;
+        let das = self.ticks(self.op.das);
+
+        // First press, or over das and arr rate has fired
+        sct == 1 || (sct >= das && (sct - das) % self.ticks(rate) == 0)
+    }
+
     /// The main update phase of the engine.
     ///
     /// This handles DAS and all other internal complications based on the
@@ -262,169 +241,325 @@ impl Engine {
     /// Each call to update is expected to take place in `~mspt` ms. It
     /// is up to the caller to manage the update lengths appropriately.
     pub fn update(&mut self) {
-        self.controller.update();
+        self.co.update();
+        self.last_status = self.status;
+
+        if self.it.need_piece {
+            self.do_piece_spawn();
+            self.it.need_piece = false;
+
+            // Have a method to reset all block internal counts
+            self.it.locking = false;
+            self.it.piece_timer = 0;
+            self.it.hold_count = 0;
+            self.it.lock_timer = 0;
+            self.it.soft_drop_counter = 0f64;
+            self.it.gravity_counter = 0f64;
+        }
 
         match self.status {
-            Status::Ready => self.update_ready(),
-            Status::Move => self.update_move(),
-            Status::GameOver => self.update_gameover(),
-            Status::Excellent => self.update_excellent(),
-            x => panic!("Cannot handle status {:?}", x)
+            Status::Move => self.stat_move(),
+            Status::Are => self.stat_are(),
+            Status::GameOver => self.stat_gameover(),
+            Status::None => ()
         }
 
-        self.tick_count += 1;
-    }
-
-    /// This is the initial `countdown` and is called for the first
-    /// 1666ms of play.
-    fn update_ready(&mut self) {
-        // Allow DAS charging and initial hold
-
-        match self.tick_count {
-            x if x == self.ticks(0)    => self.status = Status::Move,
-            x if x == self.ticks(833)  => (),
-            x if x == self.ticks(1667) => self.status = Status::Move,
-            _ => ()
+        // If the status changed during processing, reset timers
+        if self.status != self.last_status {
+            self.it.status_timer = 0;
+        }
+        else {
+            self.it.status_timer += 1;
         }
     }
 
-    fn is_pressed(&self, action: Action, rate: u64) -> bool {
-        let sct = self.controller.time[action.to_usize()] as u64;
-        let das = self.ticks(self.options.das);
+    /// High-level move function. This should be easy enough to follow.
+    fn stat_move(&mut self) {
+        // Handle Initial state change on first frame.
+        if self.it.piece_timer == 0 {
+            // Initial hold can be activated in other statuses and preserved, so we
+            // cannot just check for a hold keypress.
+            if self.it.ihs_flag {
+                self.do_hold();
+                self.it.ihs_flag = false;
+            }
 
-        // First press, or over das and arr rate has fired
-        sct == 1 || (sct >= das && (sct - das) % self.ticks(rate) == 0)
+            // Perform a rotation before the piece is spawn (tested for collision).
+            // Likewise with IHS, we cannot just check for a rotate key press.
+            //
+            // We can perform a double rotation with IRS on the first frame.
+            // This is valid behavior.,
+            if self.it.irs_flag {
+                self.bk.rotate_with_wallkick(&self.fd, self.wk, self.it.irs_rotation);
+                self.it.irs_flag = false;
+                self.it.irs_rotation = Rotation::R0;
+            }
+
+            // We only check for a complete lockout on the first frame the piece spawned.
+            // If we have an overlap, then this is invalid and the game is over.
+            if self.check_lockout() {
+                self.status = Status::GameOver;
+                return;
+            }
+        }
+
+        // Hard drop has max priority and overrides any other moves
+        if !self.check_hard_drop() {
+            // Check for a hold action and perform it if present
+            self.check_hold();
+
+            // Check for a rotate action and perform it if present
+            self.check_rotate();
+
+            // Would be nice to have this option
+            if self.op.gravity_before_move {
+                self.check_gravity_and_soft_drop();
+                self.check_move();
+            }
+            else {
+                self.check_move();
+                self.check_gravity_and_soft_drop();
+            }
+        }
+
+        // Check lockout once more, this may alter the current state if the block
+        // is deemed as locking.
+        self.check_lock();
+
+        // Check line clear
+        self.fd.clear_lines();
+
+        // Update the current piece timer
+        self.it.piece_timer += 1;
     }
 
-    /// This performs the bulk of the gameplay logic.
-    fn update_move(&mut self) {
-        self.history.update(&self.controller);
 
-        // Calculate movement then gravity or gravity then movement?
+    /// Perform ARE frame
+    fn stat_are(&mut self) {
+        // Check for initial rotate/hold
 
-        if self.controller.active(Action::MoveLeft) && self.controller.active(Action::MoveRight) {
-            let action = if self.controller.time(Action::MoveLeft) < self.controller.time(Action::MoveRight) {
+        // Check for are cancel
+
+        if self.it.status_timer > self.ticks(self.op.are) {
+            self.it.need_piece = true;
+            self.status = Status::Move;
+        }
+    }
+
+    /// Perform game over phase
+    fn stat_gameover(&mut self) {
+        self.running = false;
+    }
+
+    /// Perform a hold, swapping the current piece with the hold piece.
+    ///
+    /// If no hold piece is set, then the piece is taken from the randomizer.
+    fn do_hold(&mut self) {
+        if self.hd.is_none() {
+            self.hd = Some(self.bk.id);
+            self.bk = Block::with_options(self.rd.next(), &self.fd,
+                BlockOptions { rotation_system: self.rs, ..Default::default() }
+            );
+        }
+        else {
+            let tmp = self.bk.id;
+            self.bk = Block::with_options(self.hd.unwrap(), &self.fd,
+                BlockOptions { rotation_system: self.rs, ..Default::default() }
+            );
+            self.hd = Some(tmp);
+        }
+    }
+
+    /// Retrieve the next piece from the bag and set the current piece to this.
+    fn do_piece_spawn(&mut self) {
+        self.bk = Block::with_options(self.rd.next(), &self.fd,
+            BlockOptions { rotation_system: self.rs, ..Default::default() }
+        );
+    }
+
+    /// Check for a lockout with the current piece.
+    fn check_lockout(&mut self) -> bool {
+        self.bk.collides(&self.fd)
+    }
+
+    /// Check if a hold action is present and if so try to perform a hold.
+    fn check_hold(&mut self) -> bool {
+        if self.co.time(Action::Hold) == 1 && self.it.hold_count < self.op.hold_limit {
+            self.do_hold();
+            self.it.hold_count += 1;
+            true
+        }
+        else {
+            false
+        }
+    }
+
+    /// Check if a movement action is present and perform movement.
+    /// TODO: Ensure when moving while locking we readjust internal lock
+    /// counter so we don't get floating mid-air blocks!
+    fn check_move(&mut self) -> bool {
+        if self.co.active(Action::MoveLeft) && self.co.active(Action::MoveRight) {
+            let action = if self.co.time(Action::MoveLeft) < self.co.time(Action::MoveRight) {
                 Direction::Left
-            } else {
+            }
+            else {
                 Direction::Right
             };
 
-            if self.controller.time(Action::MoveLeft) > self.ticks(self.options.das) ||
-                self.controller.time(Action::MoveRight) > self.ticks(self.options.das) {
-                self.block.shift(&self.field, action);
+            if self.co.time(Action::MoveLeft) > self.ticks(self.op.das) ||
+                    self.co.time(Action::MoveRight) > self.ticks(self.op.das) {
+                self.bk.shift(&self.fd, action);
             }
+
+            true
         }
-
-        if self.is_pressed(Action::MoveLeft, self.options.arr) {
-            self.block.shift(&self.field, Direction::Left);
+        else if self.is_pressed(Action::MoveLeft, self.op.arr) {
+            self.bk.shift(&self.fd, Direction::Left);
+            true
         }
-
-        if self.is_pressed(Action::MoveRight, self.options.arr) {
-            self.block.shift(&self.field, Direction::Right);
-        }
-
-        // Drop has no DAS and is immediate
-        if self.controller.active(Action::MoveDown) {
-            let down = self.controller.time(Action::MoveDown);
-            if (down - 1) % self.ticks(self.options.soft_drop_speed) == 0 {
-                self.block.shift(&self.field, Direction::Down);
-            }
-        }
-
-        // Handle rotations
-        if self.controller.time(Action::RotateLeft) == 1 {
-            self.block.rotate_with_wallkick(&self.field, self.wallkick, Rotation::R270);
-        }
-        if self.controller.time(Action::RotateRight) == 1 {
-            self.block.rotate_with_wallkick(&self.field, self.wallkick, Rotation::R90);
-        }
-
-        // Hold currently only stores block id. Would be interesting to store the block
-        // and hold could possibly save the state of the blocks rotation?
-        if self.controller.time(Action::Hold) == 1 && self.internal.hold_count < self.options.hold_limit {
-            self.internal.hold_count += 1;
-            if self.hold.is_none() {
-                self.hold = Some(self.block.id);
-                self.block = Block::with_options(self.randomizer.next(), &self.field,
-                    BlockOptions { rotation_system: self.rotation_system, ..Default::default() }
-                );
-            }
-            else {
-                let tmp = self.block.id;
-                self.block = Block::with_options(self.hold.unwrap(), &self.field,
-                    BlockOptions { rotation_system: self.rotation_system, ..Default::default() }
-                );
-                self.hold = Some(tmp);
-            }
-        }
-
-        // Handle hard drop
-        if self.controller.time(Action::HardDrop) == 1 {
-            self.block.shift_extend(&self.field, Direction::Down);
-            self.field.freeze(self.block.clone());
-            self.block = Block::with_options(self.randomizer.next(), &self.field,
-                BlockOptions { rotation_system: self.rotation_system, ..Default::default() }
-            );
-
-            self.internal.hold_count = 0;
-            self.statistics.pieces += 1;
-        }
-
-        // Clear all line
-        let cleared = self.field.clear_lines();
-        self.statistics.lines += cleared as u64;
-
-        match cleared {
-            4 => self.statistics.fours += 1,
-            3 => self.statistics.triples += 1,
-            2 => self.statistics.doubles += 1,
-            1 => self.statistics.singles += 1,
-            _ => ()
-        };
-
-        if self.controller.time(Action::Quit) == 1 {
-            self.running = false;
-        }
-
-        // Determine if we are lagging or being called too early
-        // If outside of 5% error, warn. Note: should warn only once, or
-        // limited.
-        if self.internal.last_update_time == 0 {
-            self.internal.last_update_time = time::precise_time_ns();
+        else if self.is_pressed(Action::MoveRight, self.op.arr) {
+            self.bk.shift(&self.fd, Direction::Right);
+            true
         }
         else {
-            let now = time::precise_time_ns();
-            let rate = (now - self.internal.last_update_time) as f64 / (self.mspt * 1_000_000) as f64;
-
-            if rate > 1.05 {
-                warn!("Update lagging! {}% of expected update time", rate);
-            }
-            else if rate < 0.95 {
-                warn!("Update called too quick! {}% of expected update time", rate);
-            }
-
-            self.internal.last_update_time = now;
-        }
-
-        // Perform gravity
-        if self.tick_count % self.ticks(self.options.gravity) == 0 {
-            self.block.shift(&self.field, Direction::Down);
+            false
         }
     }
 
-    fn update_gameover(&self) {
+    /// Check if a rotation action is present and perform it.
+    fn check_rotate(&mut self) -> bool {
+        let mut r = false;
+        if self.co.time(Action::RotateLeft) == 1 {
+            self.bk.rotate_with_wallkick(&self.fd, self.wk, Rotation::R270);
+            r = true;
+        }
+        if self.co.time(Action::RotateRight) == 1 {
+            self.bk.rotate_with_wallkick(&self.fd, self.wk, Rotation::R90);
+            r = true;
+        }
+
+        r
     }
 
-    fn update_excellent(&self) {
+    /// Check if a hard drop action is present and if so perform it.
+    ///
+    /// This does not perform the locking of the piece, this is managed by
+    /// the `check_lock` function.
+    fn check_hard_drop(&mut self) -> bool {
+        if self.co.time(Action::HardDrop) == 1 {
+            self.bk.shift_extend(&self.fd, Direction::Down);
+            true
+        }
+        else {
+            false
+        }
     }
-}
 
-#[cfg(test)]
-mod tests {
-    use ::import::*;
+    /// Check the current gravity and perform any downward movement required.
+    ///
+    /// This may move multiple times per frame.
+    ///
+    /// We check gravity with soft drop since there is potential overlap with
+    /// which speed we may use (cumulative down movement etc).
+    fn check_gravity_and_soft_drop(&mut self) -> bool {
+        // op.gravity is how many cells are moved per ms.
+        //
+        // If we move 1.25 frames per ms, then at 16 frames this is equal
+        // to 20 frames (20G)
+        self.it.gravity_counter += (self.mspt as f64) * self.op.gravity;
 
-    #[test]
-    fn test_engine() {
-        let _ = Engine::new(EngineOptions { ..Default::default() });
+        // Soft drop has an internal counter as well to handle fractional
+        // movement correctly.
+        if self.co.active(Action::MoveDown) {
+            self.it.soft_drop_counter += (self.mspt as f64) * self.op.soft_drop_speed;
+        }
+        else {
+            self.it.soft_drop_counter = 0f64;
+        }
+
+        // We decrement both soft drop and gravity at the same time, we only
+        // utilize the highest value and do not do cumulative gravity (Option?)
+        let mut fell = false;
+        while self.it.gravity_counter >= 1f64 || self.it.soft_drop_counter >= 1f64 {
+            // Begin lock if we are pushed into floor.
+            if !self.bk.shift(&self.fd, Direction::Down) {
+                self.it.locking = true;
+            }
+
+            if self.it.gravity_counter >= 1f64 {
+                self.it.gravity_counter -= 1f64;
+            }
+            if self.it.soft_drop_counter >= 1f64 {
+                self.it.soft_drop_counter -= 1f64;
+            }
+
+            // Indicate gravity occurred on this frame
+            fell = true;
+        }
+
+        fell
+    }
+
+    // Check if the current piece should be locked into place.
+    //
+    // Problem with soft-drop/gravity and lock-delay where pieces are been
+    // frozen at the incorrect position.
+    fn check_lock(&mut self) {
+        let mut instant_lock = false;
+
+        // Hard drop will always lock (if hard drop lock)
+        if self.co.time(Action::HardDrop) == 1 {
+            // Manual lock on hard drop by default now. This should be an option.
+            instant_lock = true;
+        }
+
+        // Lock the piece if instant lock or over lock delay.
+        // Manage the next state to go to since this block is done.
+        if (self.it.lock_timer > self.ticks(self.op.lock_delay)) || instant_lock {
+            // Clone is not ideal
+            self.fd.freeze(self.bk.clone());
+
+            // Either perform ARE if non-zero, or immediately perform move
+            if self.op.are != 0 {
+                self.status = Status::Are;
+            }
+            else {
+                // Must explicitly reset status timer for next piece
+                self.it.status_timer = 0;
+                self.it.need_piece = true;
+                self.status = Status::Move;
+            }
+        }
+
+        // Update the lock delay after we have processed it (0 is first frame).
+        if self.it.locking {
+            self.it.lock_timer += 1;
+        }
+    }
+
+
+    /// Construct a new `Engine` from an `EngineOptions` instance.
+    pub fn new(options: EngineOptions) -> Engine {
+        let mut engine = Engine {
+            fd: Field::with_options(options.field_options),
+            rd: randomizer::new(&options.randomizer_name, options.randomizer_lookahead).unwrap(),
+            co: Controller::new(),
+            rs: rotation_system::new(&options.rotation_system_name).unwrap(),
+            wk: wallkick::new(&options.wallkick_name).unwrap(),
+            bk: Block { id: block::Id::None, x: 0, y: 0, r: Rotation::R0, rs: rotation_system::new("srs").unwrap() },
+            hd: None,
+            tick_count: 0,
+            mspt: options.mspt,
+            running: true,
+            op: options.engine_settings,
+            hs: History::new(),
+            st: Statistics::new(),
+            it: EngineInternal { ..Default::default() },
+            status: Status::Move,
+            last_status: Status::Move
+        };
+
+        engine.it.need_piece = true;
+        engine
     }
 }

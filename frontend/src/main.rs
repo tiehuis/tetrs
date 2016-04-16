@@ -28,11 +28,11 @@ static KEYMAP: [(Scancode, Action); 9] = [
 ];
 
 fn gather_input(engine: &mut Engine, pump: &mut sdl2::EventPump) {
-    engine.controller.deactivate_all();
+    engine.co.deactivate_all();
 
     for &(scancode, action) in KEYMAP.iter() {
         if pump.keyboard_state().is_scancode_pressed(scancode) {
-            engine.controller.activate(action);
+            engine.co.activate(action);
         }
     }
 
@@ -89,8 +89,8 @@ fn main() {
 
     let font = ttf_ctx.load_font(Path::new("res/font/font.ttf"), 128).unwrap();
 
-    let options = EngineOptions::load_file("config.json");
-    let mut engine = Engine::new(options);
+    // let options = EngineOptions::load_file("config.json");
+    let mut engine = Engine::new(EngineOptions { ..Default::default() });
 
     while engine.running {
         gather_input(&mut engine, &mut events);
@@ -101,11 +101,11 @@ fn main() {
         renderer.clear();
 
         // Calculating every frame in this manner is wasteful
-        let ghost = engine.block.ghost(&engine.field);
+        let ghost = engine.bk.ghost(&engine.fd);
 
-        for y in engine.field.hidden..engine.field.height {
-            for x in 0..engine.field.width {
-                renderer.set_draw_color(match (engine.field.occupies((x, y)), engine.block.occupies((x, y)), ghost.occupies((x, y))) {
+        for y in engine.fd.hidden..engine.fd.height {
+            for x in 0..engine.fd.width {
+                renderer.set_draw_color(match (engine.fd.occupies((x, y)), engine.bk.occupies((x, y)), ghost.occupies((x, y))) {
                     (true, true,  _)      => Color::RGB(255, 0, 0),
                     (true, false, _)      => Color::RGB(150, 208, 246),
                     (false, true, _)      => Color::RGB(150, 108, 246),
@@ -114,22 +114,22 @@ fn main() {
                 });
 
                 let _ = renderer.fill_rect(sq!(LEFT_FIELD_POSITION + 15 * x as u32,
-                                               UPPER_MARGIN + 15 * (y - engine.field.hidden) as u32, 15));
+                                               UPPER_MARGIN + 15 * (y - engine.fd.hidden) as u32, 15));
             }
         }
 
         renderer.set_draw_color(Color::RGB(255, 255, 255));
-        let _ = renderer.draw_rect(Rect::new(LEFT_FIELD_POSITION as i32 - 1, UPPER_MARGIN as i32 - 1, 15 * engine.field.width as u32 + 2,
-                                             15 * (engine.field.height - engine.field.hidden) as u32 + 2));
+        let _ = renderer.draw_rect(Rect::new(LEFT_FIELD_POSITION as i32 - 1, UPPER_MARGIN as i32 - 1, 15 * engine.fd.width as u32 + 2,
+                                             15 * (engine.fd.height - engine.fd.hidden) as u32 + 2));
 
 
-        let xoffset = LEFT_FIELD_POSITION + 20 + 15 * engine.field.width as u32;
+        let xoffset = LEFT_FIELD_POSITION + 20 + 15 * engine.fd.width as u32;
         let mut yoffset = UPPER_MARGIN2;
 
         // Draw preview pieces
         renderer.set_draw_color(Color::RGB(150, 108, 246));
-        for id in engine.randomizer.preview(engine.options.preview_count as usize) {
-            for &(x, y) in engine.block.rs.data(id, Rotation::R0) {
+        for id in engine.rd.preview(3) { //engine.op.preview_count as usize) {
+            for &(x, y) in engine.bk.rs.data(id, Rotation::R0) {
                 let _ = renderer.fill_rect(sq!(xoffset + 15 * x as u32, yoffset + 15 * y as u32, 15));
             }
             yoffset += 4 * 15 + 15;
@@ -137,8 +137,8 @@ fn main() {
 
         // Draw hold piece
         renderer.set_draw_color(Color::RGB(150, 108, 246));
-        if engine.hold.is_some() {
-            for &(x, y) in engine.block.rs.data(engine.hold.unwrap(), Rotation::R0) {
+        if engine.hd.is_some() {
+            for &(x, y) in engine.bk.rs.data(engine.hd.unwrap(), Rotation::R0) {
                 let _ = renderer.fill_rect(sq!(LEFT_FIELD_POSITION - 15 * 4 - 20 + 15 * x as u32, UPPER_MARGIN2 + 15 * y as u32, 15));
             }
         }
@@ -148,15 +148,15 @@ fn main() {
         let mut yoffset2 = (UPPER_MARGIN2 + 15) as i32;
 
         // Draw informational text
-        render_text!(renderer, font; &format!("Lines Cleared: {}", engine.statistics.lines),
+        render_text!(renderer, font; &format!("Lines Cleared: {}", engine.st.lines),
                      Rect::new(right_position, yoffset2, 150, 30));
         yoffset2 += 60;
 
-        render_text!(renderer, font; &format!("Pieces: {}", engine.statistics.pieces),
+        render_text!(renderer, font; &format!("Pieces: {}", engine.st.pieces),
                      Rect::new(right_position, yoffset2, 150, 30));
         yoffset2 += 60;
 
-        render_text!(renderer, font; &format!("PPM: {:.5}", (engine.statistics.pieces as f64 /
+        render_text!(renderer, font; &format!("PPM: {:.5}", (engine.st.pieces as f64 /
                                                          (engine.tick_count * engine.mspt) as f64) * 1000_f64),
                      Rect::new(right_position, yoffset2, 150, 30));
         yoffset2 += 60;
