@@ -47,44 +47,11 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1395' class='srclink' href='../../src/tetrs/src/engine.rs.html#77-107' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-1216' class='srclink' href='../../src/tetrs/src/engine.rs.html#87-111' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct EngineSettings {
-    pub das: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
-    pub are: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
-    pub gravity: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
-    pub arr: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
-    pub has_hold: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
-    pub hold_limit: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
-    pub has_hard_drop: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
-    pub has_soft_drop: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>,
-    pub soft_drop_speed: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
-    pub preview_count: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
-}</pre><div class='docblock'><p>Settings used internally by an <code>Engine</code>.</p>
-</div><h2 class='fields'>Fields</h2>
-<table><tr class='stab '>
-                             <td id='structfield.das'><code>das</code></td><td><div class='docblock'><p>DAS setting (in ms)</p>
-</div></td></tr><tr class='stab '>
-                             <td id='structfield.are'><code>are</code></td><td><div class='docblock'><p>ARE time (in ms)</p>
-</div></td></tr><tr class='stab '>
-                             <td id='structfield.gravity'><code>gravity</code></td><td><div class='docblock'><p>Gravity (in ms). How many ms must pass for block to fall</p>
-</div></td></tr><tr class='stab '>
-                             <td id='structfield.arr'><code>arr</code></td><td><div class='docblock'><p>Auto-repeat-rate (in ms)</p>
-</div></td></tr><tr class='stab '>
-                             <td id='structfield.has_hold'><code>has_hold</code></td><td><div class='docblock'><p>Is hold enabled</p>
-</div></td></tr><tr class='stab '>
-                             <td id='structfield.hold_limit'><code>hold_limit</code></td><td><div class='docblock'><p>How many times can we hold</p>
-</div></td></tr><tr class='stab '>
-                             <td id='structfield.has_hard_drop'><code>has_hard_drop</code></td><td><div class='docblock'><p>Is hard drop allowed</p>
-</div></td></tr><tr class='stab '>
-                             <td id='structfield.has_soft_drop'><code>has_soft_drop</code></td><td><div class='docblock'><p>Has soft drop</p>
-</div></td></tr><tr class='stab '>
-                             <td id='structfield.soft_drop_speed'><code>soft_drop_speed</code></td><td><div class='docblock'><p>The speed soft drop works</p>
-</div></td></tr><tr class='stab '>
-                             <td id='structfield.preview_count'><code>preview_count</code></td><td><div class='docblock'><p>Maximum number of preview pieces</p>
-</div></td></tr></table><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://serde-rs.github.io/serde/serde/serde/de/trait.Deserialize.html' title='serde::de::Deserialize'>Deserialize</a> for <a class='struct' href='../../tetrs/engine/struct.EngineSettings.html' title='tetrs::engine::EngineSettings'>EngineSettings</a></code></h3><div class='impl-items'><h4 id='method.deserialize' class='method'><code>fn <a href='https://serde-rs.github.io/serde/serde/serde/de/trait.Deserialize.html#tymethod.deserialize' class='fnname'>deserialize</a>&lt;__D&gt;(deserializer: &amp;mut __D) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../tetrs/engine/struct.EngineSettings.html' title='tetrs::engine::EngineSettings'>EngineSettings</a>, __D::Error&gt; <span class='where'>where __D: <a class='trait' href='https://serde-rs.github.io/serde/serde/serde/de/trait.Deserializer.html' title='serde::de::Deserializer'>Deserializer</a></span></code></h4>
-</div><h3 class='impl'><code>impl <a class='trait' href='https://serde-rs.github.io/serde/serde/serde/ser/trait.Serialize.html' title='serde::ser::Serialize'>Serialize</a> for <a class='struct' href='../../tetrs/engine/struct.EngineSettings.html' title='tetrs::engine::EngineSettings'>EngineSettings</a></code></h3><div class='impl-items'><h4 id='method.serialize' class='method'><code>fn <a href='https://serde-rs.github.io/serde/serde/serde/ser/trait.Serialize.html#tymethod.serialize' class='fnname'>serialize</a>&lt;__S&gt;(&amp;self, _serializer: &amp;mut __S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, __S::Error&gt; <span class='where'>where __S: <a class='trait' href='https://serde-rs.github.io/serde/serde/serde/ser/trait.Serializer.html' title='serde::ser::Serializer'>Serializer</a></span></code></h4>
-</div><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../../tetrs/engine/struct.EngineSettings.html' title='tetrs::engine::EngineSettings'>EngineSettings</a></code></h3><div class='impl-items'><h4 id='method.default' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; <a class='struct' href='../../tetrs/engine/struct.EngineSettings.html' title='tetrs::engine::EngineSettings'>EngineSettings</a></code></h4>
-</div><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../../tetrs/engine/struct.EngineSettings.html' title='tetrs::engine::EngineSettings'>EngineSettings</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+    // some fields omitted
+}</pre><div class='docblock'><p>Stores configurable options which alter how the engine works.</p>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../../tetrs/engine/struct.EngineSettings.html' title='tetrs::engine::EngineSettings'>EngineSettings</a></code></h3><div class='impl-items'><h4 id='method.default' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; <a class='struct' href='../../tetrs/engine/struct.EngineSettings.html' title='tetrs::engine::EngineSettings'>EngineSettings</a></code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 

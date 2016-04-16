@@ -472,37 +472,266 @@
 <span id="428">428</span>
 <span id="429">429</span>
 <span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a high-level engine which composes all the components</span>
 <span class='doccomment'>//! into one abstract structure.</span>
 
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>allow</span>(<span class='ident'>dead_code</span>)]</span>
+<span class='comment'>// engine.rs (revised)</span>
+<span class='comment'>//</span>
+<span class='comment'>// This attempts to go over a more extensible way of expanding the `Engine`</span>
+<span class='comment'>// class with the required features. This is just one big stateful instance and</span>
+<span class='comment'>// is a bit unwieldy, although its a suitable method to use.</span>
+<span class='comment'>//</span>
+<span class='comment'>// The first revision should have enough support to handle DAS, ARR, ARE, IHS,</span>
+<span class='comment'>// IRS well.</span>
+<span class='comment'>//</span>
+<span class='comment'>// (omitted real IRS and IHS handling)</span>
 
+<span class='kw'>use</span> <span class='ident'>collections</span>::<span class='ident'>enum_set</span>::<span class='ident'>CLike</span>;
+
+<span class='kw'>use</span> <span class='ident'>block</span>::{<span class='self'>self</span>, <span class='ident'>Block</span>, <span class='ident'>BlockOptions</span>, <span class='ident'>Rotation</span>, <span class='ident'>Direction</span>};
 <span class='kw'>use</span> <span class='ident'>field</span>::{<span class='ident'>Field</span>, <span class='ident'>FieldOptions</span>};
-<span class='kw'>use</span> <span class='ident'>controller</span>::{<span class='ident'>Action</span>, <span class='ident'>Controller</span>};
-<span class='kw'>use</span> <span class='ident'>block</span>::{<span class='self'>self</span>, <span class='ident'>Rotation</span>, <span class='ident'>Direction</span>, <span class='ident'>Block</span>, <span class='ident'>BlockOptions</span>};
+<span class='kw'>use</span> <span class='ident'>controller</span>::{<span class='ident'>Controller</span>, <span class='ident'>Action</span>};
 <span class='kw'>use</span> <span class='ident'>randomizer</span>::{<span class='self'>self</span>, <span class='ident'>Randomizer</span>};
-<span class='kw'>use</span> <span class='ident'>rotation_system</span>::{<span class='self'>self</span>, <span class='ident'>RotationSystem</span>};
 <span class='kw'>use</span> <span class='ident'>wallkick</span>::{<span class='self'>self</span>, <span class='ident'>Wallkick</span>};
-<span class='kw'>use</span> <span class='ident'>utility</span>::<span class='ident'>BlockHelper</span>;
 <span class='kw'>use</span> <span class='ident'>statistics</span>::<span class='ident'>Statistics</span>;
 <span class='kw'>use</span> <span class='ident'>history</span>::<span class='ident'>History</span>;
+<span class='kw'>use</span> <span class='ident'>utility</span>::<span class='ident'>BlockHelper</span>;
+<span class='kw'>use</span> <span class='ident'>rotation_system</span>::{<span class='self'>self</span>, <span class='ident'>RotationSystem</span>};
 
-<span class='kw'>use</span> <span class='ident'>time</span>;
-<span class='kw'>use</span> <span class='ident'>collections</span>::<span class='ident'>enum_set</span>::<span class='ident'>CLike</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>prelude</span>::<span class='op'>*</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fs</span>::<span class='ident'>File</span>;
-<span class='kw'>use</span> <span class='ident'>serde_json</span>;
+<span class='doccomment'>/// The current `Engine` status.</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Debug</span>)]</span>
+<span class='kw'>enum</span> <span class='ident'>Status</span> {
+    <span class='doccomment'>/// Entry delay for piece spawn</span>
+    <span class='ident'>Are</span>,
 
-<span class='doccomment'>/// Stores a number of internal options that may be useful during a games</span>
-<span class='doccomment'>/// execution.</span>
+    <span class='doccomment'>/// Main movement phase</span>
+    <span class='ident'>Move</span>,
+
+    <span class='doccomment'>/// Occurs on lockout or game failure</span>
+    <span class='ident'>GameOver</span>,
+
+    <span class='doccomment'>/// Default status indicating nothing should happen</span>
+    <span class='prelude-val'>None</span>
+}
+<span class='kw'>impl</span> <span class='ident'>Default</span> <span class='kw'>for</span> <span class='ident'>Status</span> { <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='ident'>Status</span> { <span class='ident'>Status</span>::<span class='prelude-val'>None</span> } }
+
+
+<span class='doccomment'>/// Stores internal `Engine` status flags.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// Unlike `NullpoMino` these are never tied to a name. This can be handled by</span>
-<span class='doccomment'>/// the caller if required.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// Currently `Options` do not manage the randomizer/rotation system etc. Need</span>
-<span class='doccomment'>/// to determine exactly what is required.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Serialize</span>, <span class='ident'>Deserialize</span>, <span class='ident'>Debug</span>)]</span>
+<span class='doccomment'>/// When adding new values, these should default to the standard defaults</span>
+<span class='doccomment'>/// for primitives.</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Default</span>)]</span>
+<span class='kw'>struct</span> <span class='ident'>EngineInternal</span> {
+    <span class='doccomment'>/// How many ticks have we been in the current status</span>
+    <span class='ident'>status_timer</span>: <span class='ident'>u64</span>,
+
+    <span class='doccomment'>/// Current gravity of the piece</span>
+    <span class='ident'>gravity_counter</span>: <span class='ident'>f64</span>,
+
+    <span class='doccomment'>/// The current soft drop frames to move</span>
+    <span class='ident'>soft_drop_counter</span>: <span class='ident'>f64</span>,
+
+    <span class='doccomment'>/// How many times the current piece has been held</span>
+    <span class='ident'>hold_count</span>: <span class='ident'>u64</span>,
+
+    <span class='doccomment'>/// Is the piece currently locking</span>
+    <span class='ident'>locking</span>: <span class='ident'>bool</span>,
+
+    <span class='doccomment'>/// How long has the piece been locking</span>
+    <span class='ident'>lock_timer</span>: <span class='ident'>u64</span>,
+
+    <span class='doccomment'>/// Was an Initial Hold requested?</span>
+    <span class='ident'>ihs_flag</span>: <span class='ident'>bool</span>,
+
+    <span class='doccomment'>/// Was an Initial Rotate requested?</span>
+    <span class='ident'>irs_flag</span>: <span class='ident'>bool</span>,
+
+    <span class='doccomment'>/// Which rotation direction was requested?</span>
+    <span class='ident'>irs_rotation</span>: <span class='ident'>Rotation</span>,
+
+    <span class='doccomment'>/// Do we need a new piece spawned?</span>
+    <span class='ident'>need_piece</span>: <span class='ident'>bool</span>,
+
+    <span class='doccomment'>/// How long has the current piece been alive?</span>
+    <span class='ident'>piece_timer</span>: <span class='ident'>u64</span>,
+}
+
+
+<span class='doccomment'>/// Stores configurable options which alter how the engine works.</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>EngineSettings</span> {
+    <span class='doccomment'>/// How many ms should are last for</span>
+    <span class='ident'>are</span>: <span class='ident'>u64</span>,
+
+    <span class='doccomment'>/// Auto-repeat-rate (in ms)</span>
+    <span class='ident'>arr</span>: <span class='ident'>u64</span>,
+
+    <span class='doccomment'>/// Delayed auto-shift (in ms)</span>
+    <span class='ident'>das</span>: <span class='ident'>u64</span>,
+
+    <span class='doccomment'>/// How fast soft drop occurs (cells per ms)</span>
+    <span class='ident'>soft_drop_speed</span>: <span class='ident'>f64</span>,
+
+    <span class='doccomment'>/// How long the lock delay exists for</span>
+    <span class='ident'>lock_delay</span>: <span class='ident'>u64</span>,
+
+    <span class='doccomment'>/// How many times can we hold per block</span>
+    <span class='ident'>hold_limit</span>: <span class='ident'>u64</span>,
+
+    <span class='doccomment'>/// How many frames moved per ms</span>
+    <span class='ident'>gravity</span>: <span class='ident'>f64</span>,
+
+    <span class='doccomment'>/// Should gravity be performed before move?</span>
+    <span class='ident'>gravity_before_move</span>: <span class='ident'>bool</span>,
+}
+
+<span class='kw'>impl</span> <span class='ident'>Default</span> <span class='kw'>for</span> <span class='ident'>EngineSettings</span> {
+    <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='ident'>EngineSettings</span> {
+        <span class='ident'>EngineSettings</span> {
+            <span class='ident'>are</span>: <span class='number'>0</span>, <span class='ident'>arr</span>: <span class='number'>16</span>, <span class='ident'>das</span>: <span class='number'>180</span>, <span class='ident'>soft_drop_speed</span>: <span class='number'>2f64</span>,
+            <span class='ident'>lock_delay</span>: <span class='number'>300</span>, <span class='ident'>hold_limit</span>: <span class='number'>1</span>, <span class='ident'>gravity</span>: <span class='number'>0.001</span>,
+            <span class='ident'>gravity_before_move</span>: <span class='boolval'>false</span>
+        }
+    }
+}
+
+
+<span class='doccomment'>/// Struct for initializing an `Engine`</span>
 <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>missing_docs</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>EngineOptions</span> {
     <span class='kw'>pub</span> <span class='ident'>field_options</span>: <span class='ident'>FieldOptions</span>,
@@ -534,126 +763,43 @@
     }
 }
 
-<span class='kw'>impl</span> <span class='ident'>EngineOptions</span> {
-    <span class='doccomment'>/// Construct an `EngineOptions` from a file.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>load_file</span>(<span class='ident'>name</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>EngineOptions</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>f</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>File</span>::<span class='ident'>open</span>(<span class='ident'>name</span>) {
-            <span class='prelude-val'>Ok</span>(<span class='ident'>f</span>) <span class='op'>=&gt;</span> <span class='ident'>f</span>,
-            <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Failed to open file: {}&quot;</span>, <span class='ident'>e</span>)
-        };
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>buffer</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
-        <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>f</span>.<span class='ident'>read_to_string</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>buffer</span>);
-        <span class='ident'>serde_json</span>::<span class='ident'>from_str</span>(<span class='kw-2'>&amp;</span><span class='ident'>buffer</span>).<span class='ident'>unwrap</span>()
-    }
-}
 
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Serialize</span>, <span class='ident'>Deserialize</span>, <span class='ident'>Debug</span>)]</span>
-<span class='doccomment'>/// Settings used internally by an `Engine`.</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>EngineSettings</span> {
-    <span class='doccomment'>/// DAS setting (in ms)</span>
-    <span class='kw'>pub</span> <span class='ident'>das</span>: <span class='ident'>u64</span>,
-
-    <span class='doccomment'>/// ARE time (in ms)</span>
-    <span class='kw'>pub</span> <span class='ident'>are</span>: <span class='ident'>u64</span>,
-
-    <span class='doccomment'>/// Gravity (in ms). How many ms must pass for block to fall</span>
-    <span class='kw'>pub</span> <span class='ident'>gravity</span>: <span class='ident'>u64</span>,
-
-    <span class='doccomment'>/// Auto-repeat-rate (in ms)</span>
-    <span class='kw'>pub</span> <span class='ident'>arr</span>: <span class='ident'>u64</span>,
-
-    <span class='doccomment'>/// Is hold enabled</span>
-    <span class='kw'>pub</span> <span class='ident'>has_hold</span>: <span class='ident'>bool</span>,
-
-    <span class='doccomment'>/// How many times can we hold</span>
-    <span class='kw'>pub</span> <span class='ident'>hold_limit</span>: <span class='ident'>u64</span>,
-
-    <span class='doccomment'>/// Is hard drop allowed</span>
-    <span class='kw'>pub</span> <span class='ident'>has_hard_drop</span>: <span class='ident'>bool</span>,
-
-    <span class='doccomment'>/// Has soft drop</span>
-    <span class='kw'>pub</span> <span class='ident'>has_soft_drop</span>: <span class='ident'>bool</span>,
-
-    <span class='doccomment'>/// The speed soft drop works</span>
-    <span class='kw'>pub</span> <span class='ident'>soft_drop_speed</span>: <span class='ident'>u64</span>,
-
-    <span class='doccomment'>/// Maximum number of preview pieces</span>
-    <span class='kw'>pub</span> <span class='ident'>preview_count</span>: <span class='ident'>u64</span>
-}
-
-<span class='kw'>impl</span> <span class='ident'>Default</span> <span class='kw'>for</span> <span class='ident'>EngineSettings</span> {
-    <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='ident'>EngineSettings</span> {
-        <span class='ident'>EngineSettings</span> {
-            <span class='ident'>das</span>: <span class='number'>180</span>,
-            <span class='ident'>are</span>: <span class='number'>0</span>,
-            <span class='ident'>gravity</span>: <span class='number'>1000</span>,
-            <span class='ident'>arr</span>: <span class='number'>16</span>,
-            <span class='ident'>has_hold</span>: <span class='boolval'>true</span>,
-            <span class='ident'>hold_limit</span>: <span class='number'>1</span>,
-            <span class='ident'>has_hard_drop</span>: <span class='boolval'>true</span>,
-            <span class='ident'>has_soft_drop</span>: <span class='boolval'>true</span>,
-            <span class='ident'>soft_drop_speed</span>: <span class='number'>16</span>, <span class='comment'>// 1G</span>
-            <span class='ident'>preview_count</span>: <span class='number'>3</span>
-        }
-    }
-}
-
-<span class='doccomment'>/// Which part of the game are we in. This is used to keep track of multi-frame</span>
-<span class='doccomment'>/// events that require some internal state past state to be kept.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>Clone</span>, <span class='ident'>Copy</span>)]</span>
-<span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>dead_code</span>)]</span>
-<span class='kw'>enum</span> <span class='ident'>Status</span> {
-    <span class='prelude-val'>None</span>, <span class='ident'>Setting</span>, <span class='ident'>Ready</span>, <span class='ident'>Move</span>, <span class='ident'>LockFlash</span>, <span class='ident'>LineClear</span>, <span class='ident'>Are</span>, <span class='ident'>EndingStart</span>,
-    <span class='ident'>Excellent</span>, <span class='ident'>GameOver</span>
-}
-
-<span class='doccomment'>/// Stores variables which are modified internally during execution. Namely</span>
-<span class='doccomment'>/// state counters and the like. This is namespaced to have better modularity and</span>
-<span class='doccomment'>/// general code structure.</span>
+<span class='doccomment'>/// Stores the internal engine details.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// This is required for state that is not reliant on frame counts.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Default</span>)]</span>
-<span class='kw'>struct</span> <span class='ident'>EngineState</span> {
-    <span class='doccomment'>/// Last update invocation time</span>
-    <span class='ident'>last_update_time</span>: <span class='ident'>u64</span>,
-
-    <span class='doccomment'>/// How many successive holds have been made</span>
-    <span class='ident'>hold_count</span>: <span class='ident'>u64</span>
-}
-
-<span class='doccomment'>/// This engine allows for handling of DAS-like features and other things</span>
-<span class='doccomment'>/// which are otherwise transparent to sub-components which are only</span>
-<span class='doccomment'>/// managed on a per-tick basis (have no concept of state over time).</span>
+<span class='doccomment'>/// This is largely segmented into components `EngineSettings`, `EngineInternal`</span>
+<span class='doccomment'>/// to reduce the overall complexity and namespace various features.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// Most names are condensed a lot to provide shorter references.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Engine</span> {
     <span class='doccomment'>/// Controller which is used by the engine</span>
-    <span class='kw'>pub</span> <span class='ident'>controller</span>: <span class='ident'>Controller</span>,
+    <span class='kw'>pub</span> <span class='ident'>co</span>: <span class='ident'>Controller</span>,
 
     <span class='doccomment'>/// The randomizer being used.</span>
-    <span class='kw'>pub</span> <span class='ident'>randomizer</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Randomizer</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>rd</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Randomizer</span><span class='op'>&gt;</span>,
 
     <span class='doccomment'>/// The wallkick object being used.</span>
-    <span class='kw'>pub</span> <span class='ident'>wallkick</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>Wallkick</span>,
+    <span class='kw'>pub</span> <span class='ident'>wk</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>Wallkick</span>,
 
     <span class='doccomment'>/// The rotation system used by this engine.</span>
-    <span class='kw'>pub</span> <span class='ident'>rotation_system</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>RotationSystem</span>,
+    <span class='kw'>pub</span> <span class='ident'>rs</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>RotationSystem</span>,
 
     <span class='doccomment'>/// The field which the game is played on</span>
-    <span class='kw'>pub</span> <span class='ident'>field</span>: <span class='ident'>Field</span>,
+    <span class='kw'>pub</span> <span class='ident'>fd</span>: <span class='ident'>Field</span>,
 
     <span class='doccomment'>/// The active block</span>
-    <span class='kw'>pub</span> <span class='ident'>block</span>: <span class='ident'>Block</span>,
+    <span class='kw'>pub</span> <span class='ident'>bk</span>: <span class='ident'>Block</span>,
 
     <span class='doccomment'>/// The current hold block (this doesn&#39;t store an actual block right now)</span>
-    <span class='kw'>pub</span> <span class='ident'>hold</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>block</span>::<span class='ident'>Id</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>hd</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>block</span>::<span class='ident'>Id</span><span class='op'>&gt;</span>,
 
     <span class='doccomment'>/// Settings used internally by the engine</span>
-    <span class='kw'>pub</span> <span class='ident'>options</span>: <span class='ident'>EngineSettings</span>,
+    <span class='kw'>pub</span> <span class='ident'>op</span>: <span class='ident'>EngineSettings</span>,
 
     <span class='doccomment'>/// Statistics of the current game</span>
-    <span class='kw'>pub</span> <span class='ident'>statistics</span>: <span class='ident'>Statistics</span>,
+    <span class='kw'>pub</span> <span class='ident'>st</span>: <span class='ident'>Statistics</span>,
 
     <span class='doccomment'>/// The input history of the game</span>
-    <span class='kw'>pub</span> <span class='ident'>history</span>: <span class='ident'>History</span>,
+    <span class='kw'>pub</span> <span class='ident'>hs</span>: <span class='ident'>History</span>,
 
     <span class='doccomment'>/// Is the game running</span>
     <span class='kw'>pub</span> <span class='ident'>running</span>: <span class='ident'>bool</span>,
@@ -665,59 +811,17 @@
     <span class='kw'>pub</span> <span class='ident'>tick_count</span>: <span class='ident'>u64</span>,
 
     <span class='doccomment'>/// Private internal state flags</span>
-    <span class='ident'>internal</span>: <span class='ident'>EngineState</span>,
+    <span class='ident'>it</span>: <span class='ident'>EngineInternal</span>,
 
-    <span class='doccomment'>/// The current game status. There are 5 main states that are utilized:</span>
-    <span class='doccomment'>/// - Ready     -&gt; Triggers for the first 50 frames</span>
-    <span class='doccomment'>/// - Go        -&gt; Triggers for the next 50 frames</span>
-    <span class='doccomment'>/// - Move      -&gt; Main state for when the game is running</span>
-    <span class='doccomment'>/// - GameOver  -&gt; Occurs on game failure</span>
-    <span class='doccomment'>/// - Excellent -&gt; Occurs on goal reached</span>
-    <span class='ident'>status</span>: <span class='ident'>Status</span>
+    <span class='doccomment'>/// The current game status.</span>
+    <span class='ident'>status</span>: <span class='ident'>Status</span>,
+
+    <span class='doccomment'>/// Status of the last frame</span>
+    <span class='ident'>last_status</span>: <span class='ident'>Status</span>
 }
 
 <span class='kw'>impl</span> <span class='ident'>Engine</span> {
-
-    <span class='doccomment'>/// Construct a new engine object and return it.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// This should be used as a compositional object of all the underlying</span>
-    <span class='doccomment'>/// objects. This adheres moreso to the rust philosophy and gives greater</span>
-    <span class='doccomment'>/// variance in how an engine can be constructed.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// An engine is constructed in an initialized state and is ready to be</span>
-    <span class='doccomment'>/// used right from the beginning.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>options</span>: <span class='ident'>EngineOptions</span>) <span class='op'>-&gt;</span> <span class='ident'>Engine</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>engine</span> <span class='op'>=</span> <span class='ident'>Engine</span> {
-            <span class='ident'>field</span>: <span class='ident'>Field</span>::<span class='ident'>with_options</span>(<span class='ident'>options</span>.<span class='ident'>field_options</span>),
-            <span class='ident'>randomizer</span>: <span class='ident'>randomizer</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>options</span>.<span class='ident'>randomizer_name</span>, <span class='ident'>options</span>.<span class='ident'>randomizer_lookahead</span>).<span class='ident'>unwrap</span>(),
-            <span class='ident'>controller</span>: <span class='ident'>Controller</span>::<span class='ident'>new</span>(),
-            <span class='ident'>rotation_system</span>: <span class='ident'>rotation_system</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>options</span>.<span class='ident'>rotation_system_name</span>).<span class='ident'>unwrap</span>(),
-            <span class='ident'>wallkick</span>: <span class='ident'>wallkick</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>options</span>.<span class='ident'>wallkick_name</span>).<span class='ident'>unwrap</span>(),
-            <span class='ident'>block</span>: <span class='ident'>Block</span> { <span class='ident'>id</span>: <span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='prelude-val'>None</span>, <span class='ident'>x</span>: <span class='number'>0</span>, <span class='ident'>y</span>: <span class='number'>0</span>, <span class='ident'>r</span>: <span class='ident'>Rotation</span>::<span class='ident'>R0</span>, <span class='ident'>rs</span>: <span class='ident'>rotation_system</span>::<span class='ident'>new</span>(<span class='string'>&quot;srs&quot;</span>).<span class='ident'>unwrap</span>() },
-            <span class='ident'>hold</span>: <span class='prelude-val'>None</span>,
-            <span class='ident'>tick_count</span>: <span class='number'>0</span>,
-            <span class='ident'>mspt</span>: <span class='ident'>options</span>.<span class='ident'>mspt</span>,
-            <span class='ident'>running</span>: <span class='boolval'>true</span>,
-            <span class='ident'>options</span>: <span class='ident'>options</span>.<span class='ident'>engine_settings</span>,
-            <span class='ident'>history</span>: <span class='ident'>History</span>::<span class='ident'>new</span>(),
-            <span class='ident'>statistics</span>: <span class='ident'>Statistics</span>::<span class='ident'>new</span>(),
-            <span class='ident'>internal</span>: <span class='ident'>EngineState</span> { ..<span class='ident'>Default</span>::<span class='ident'>default</span>() },
-            <span class='ident'>status</span>: <span class='ident'>Status</span>::<span class='ident'>Ready</span>,
-        };
-
-        <span class='comment'>// Can we utilize internal data when constructing the block?</span>
-        <span class='ident'>engine</span>.<span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>with_options</span>(<span class='ident'>engine</span>.<span class='ident'>randomizer</span>.<span class='ident'>next</span>(), <span class='kw-2'>&amp;</span><span class='ident'>engine</span>.<span class='ident'>field</span>,
-            <span class='ident'>BlockOptions</span> { <span class='ident'>rotation_system</span>: <span class='ident'>engine</span>.<span class='ident'>rotation_system</span>, ..<span class='ident'>Default</span>::<span class='ident'>default</span>() }
-        );
-        <span class='ident'>engine</span>
-    }
-
     <span class='doccomment'>/// Adjusts a constant value to ticks for the current gamestate.</span>
-    <span class='doccomment'>///</span>
-    <span class='doccomment'>/// This takes a self argument, and the value to convert. If macro is</span>
-    <span class='doccomment'>/// seperated by a &#39;;&#39; instead of a &#39;,&#39;, the second argument is treated</span>
-    <span class='doccomment'>/// as an identifier to a member function of `self`. This is cuts down</span>
-    <span class='doccomment'>/// on repeated self references in a single call.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// ```text</span>
     <span class='doccomment'>/// let ticks_to_wait = self.ticks(self, 789);</span>
@@ -729,6 +833,16 @@
         <span class='ident'>val</span> <span class='op'>/</span> <span class='self'>self</span>.<span class='ident'>mspt</span>
     }
 
+    <span class='doccomment'>/// Check if a particular action has been pressed with the specified</span>
+    <span class='doccomment'>/// rate.</span>
+    <span class='kw'>fn</span> <span class='ident'>is_pressed</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>action</span>: <span class='ident'>Action</span>, <span class='ident'>rate</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='kw'>let</span> <span class='ident'>sct</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>time</span>[<span class='ident'>action</span>.<span class='ident'>to_usize</span>()] <span class='kw'>as</span> <span class='ident'>u64</span>;
+        <span class='kw'>let</span> <span class='ident'>das</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>op</span>.<span class='ident'>das</span>);
+
+        <span class='comment'>// First press, or over das and arr rate has fired</span>
+        <span class='ident'>sct</span> <span class='op'>==</span> <span class='number'>1</span> <span class='op'>||</span> (<span class='ident'>sct</span> <span class='op'>&gt;=</span> <span class='ident'>das</span> <span class='op'>&amp;&amp;</span> (<span class='ident'>sct</span> <span class='op'>-</span> <span class='ident'>das</span>) <span class='op'>%</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='ident'>rate</span>) <span class='op'>==</span> <span class='number'>0</span>)
+    }
+
     <span class='doccomment'>/// The main update phase of the engine.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// This handles DAS and all other internal complications based on the</span>
@@ -737,170 +851,326 @@
     <span class='doccomment'>/// Each call to update is expected to take place in `~mspt` ms. It</span>
     <span class='doccomment'>/// is up to the caller to manage the update lengths appropriately.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>update</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>update</span>();
+        <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>update</span>();
+        <span class='self'>self</span>.<span class='ident'>last_status</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>status</span>;
+
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>need_piece</span> {
+            <span class='self'>self</span>.<span class='ident'>do_piece_spawn</span>();
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>need_piece</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+
+            <span class='comment'>// Have a method to reset all block internal counts</span>
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>locking</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>piece_timer</span> <span class='op'>=</span> <span class='number'>0</span>;
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>hold_count</span> <span class='op'>=</span> <span class='number'>0</span>;
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>lock_timer</span> <span class='op'>=</span> <span class='number'>0</span>;
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>soft_drop_counter</span> <span class='op'>=</span> <span class='number'>0f64</span>;
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>gravity_counter</span> <span class='op'>=</span> <span class='number'>0f64</span>;
+        }
 
         <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>status</span> {
-            <span class='ident'>Status</span>::<span class='ident'>Ready</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>update_ready</span>(),
-            <span class='ident'>Status</span>::<span class='ident'>Move</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>update_move</span>(),
-            <span class='ident'>Status</span>::<span class='ident'>GameOver</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>update_gameover</span>(),
-            <span class='ident'>Status</span>::<span class='ident'>Excellent</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>update_excellent</span>(),
-            <span class='ident'>x</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Cannot handle status {:?}&quot;</span>, <span class='ident'>x</span>)
+            <span class='ident'>Status</span>::<span class='ident'>Move</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>stat_move</span>(),
+            <span class='ident'>Status</span>::<span class='ident'>Are</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>stat_are</span>(),
+            <span class='ident'>Status</span>::<span class='ident'>GameOver</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>stat_gameover</span>(),
+            <span class='ident'>Status</span>::<span class='prelude-val'>None</span> <span class='op'>=&gt;</span> ()
         }
 
-        <span class='self'>self</span>.<span class='ident'>tick_count</span> <span class='op'>+=</span> <span class='number'>1</span>;
-    }
-
-    <span class='doccomment'>/// This is the initial `countdown` and is called for the first</span>
-    <span class='doccomment'>/// 1666ms of play.</span>
-    <span class='kw'>fn</span> <span class='ident'>update_ready</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='comment'>// Allow DAS charging and initial hold</span>
-
-        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>tick_count</span> {
-            <span class='ident'>x</span> <span class='kw'>if</span> <span class='ident'>x</span> <span class='op'>==</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='number'>0</span>)    <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>status</span> <span class='op'>=</span> <span class='ident'>Status</span>::<span class='ident'>Move</span>,
-            <span class='ident'>x</span> <span class='kw'>if</span> <span class='ident'>x</span> <span class='op'>==</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='number'>833</span>)  <span class='op'>=&gt;</span> (),
-            <span class='ident'>x</span> <span class='kw'>if</span> <span class='ident'>x</span> <span class='op'>==</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='number'>1667</span>) <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>status</span> <span class='op'>=</span> <span class='ident'>Status</span>::<span class='ident'>Move</span>,
-            _ <span class='op'>=&gt;</span> ()
+        <span class='comment'>// If the status changed during processing, reset timers</span>
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>status</span> <span class='op'>!=</span> <span class='self'>self</span>.<span class='ident'>last_status</span> {
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>status_timer</span> <span class='op'>=</span> <span class='number'>0</span>;
+        }
+        <span class='kw'>else</span> {
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>status_timer</span> <span class='op'>+=</span> <span class='number'>1</span>;
         }
     }
 
-    <span class='kw'>fn</span> <span class='ident'>is_pressed</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>action</span>: <span class='ident'>Action</span>, <span class='ident'>rate</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='kw'>let</span> <span class='ident'>sct</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>[<span class='ident'>action</span>.<span class='ident'>to_usize</span>()] <span class='kw'>as</span> <span class='ident'>u64</span>;
-        <span class='kw'>let</span> <span class='ident'>das</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>options</span>.<span class='ident'>das</span>);
+    <span class='doccomment'>/// High-level move function. This should be easy enough to follow.</span>
+    <span class='kw'>fn</span> <span class='ident'>stat_move</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
+        <span class='comment'>// Handle Initial state change on first frame.</span>
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>piece_timer</span> <span class='op'>==</span> <span class='number'>0</span> {
+            <span class='comment'>// Initial hold can be activated in other statuses and preserved, so we</span>
+            <span class='comment'>// cannot just check for a hold keypress.</span>
+            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>ihs_flag</span> {
+                <span class='self'>self</span>.<span class='ident'>do_hold</span>();
+                <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>ihs_flag</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+            }
 
-        <span class='comment'>// First press, or over das and arr rate has fired</span>
-        <span class='ident'>sct</span> <span class='op'>==</span> <span class='number'>1</span> <span class='op'>||</span> (<span class='ident'>sct</span> <span class='op'>&gt;=</span> <span class='ident'>das</span> <span class='op'>&amp;&amp;</span> (<span class='ident'>sct</span> <span class='op'>-</span> <span class='ident'>das</span>) <span class='op'>%</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='ident'>rate</span>) <span class='op'>==</span> <span class='number'>0</span>)
+            <span class='comment'>// Perform a rotation before the piece is spawn (tested for collision).</span>
+            <span class='comment'>// Likewise with IHS, we cannot just check for a rotate key press.</span>
+            <span class='comment'>//</span>
+            <span class='comment'>// We can perform a double rotation with IRS on the first frame.</span>
+            <span class='comment'>// This is valid behavior.,</span>
+            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>irs_flag</span> {
+                <span class='self'>self</span>.<span class='ident'>bk</span>.<span class='ident'>rotate_with_wallkick</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>fd</span>, <span class='self'>self</span>.<span class='ident'>wk</span>, <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>irs_rotation</span>);
+                <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>irs_flag</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+                <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>irs_rotation</span> <span class='op'>=</span> <span class='ident'>Rotation</span>::<span class='ident'>R0</span>;
+            }
+
+            <span class='comment'>// We only check for a complete lockout on the first frame the piece spawned.</span>
+            <span class='comment'>// If we have an overlap, then this is invalid and the game is over.</span>
+            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>check_lockout</span>() {
+                <span class='self'>self</span>.<span class='ident'>status</span> <span class='op'>=</span> <span class='ident'>Status</span>::<span class='ident'>GameOver</span>;
+                <span class='kw'>return</span>;
+            }
+        }
+
+        <span class='comment'>// Hard drop has max priority and overrides any other moves</span>
+        <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>check_hard_drop</span>() {
+            <span class='comment'>// Check for a hold action and perform it if present</span>
+            <span class='self'>self</span>.<span class='ident'>check_hold</span>();
+
+            <span class='comment'>// Check for a rotate action and perform it if present</span>
+            <span class='self'>self</span>.<span class='ident'>check_rotate</span>();
+
+            <span class='comment'>// Would be nice to have this option</span>
+            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>op</span>.<span class='ident'>gravity_before_move</span> {
+                <span class='self'>self</span>.<span class='ident'>check_gravity_and_soft_drop</span>();
+                <span class='self'>self</span>.<span class='ident'>check_move</span>();
+            }
+            <span class='kw'>else</span> {
+                <span class='self'>self</span>.<span class='ident'>check_move</span>();
+                <span class='self'>self</span>.<span class='ident'>check_gravity_and_soft_drop</span>();
+            }
+        }
+
+        <span class='comment'>// Check lockout once more, this may alter the current state if the block</span>
+        <span class='comment'>// is deemed as locking.</span>
+        <span class='self'>self</span>.<span class='ident'>check_lock</span>();
+
+        <span class='comment'>// Check line clear</span>
+        <span class='self'>self</span>.<span class='ident'>fd</span>.<span class='ident'>clear_lines</span>();
+
+        <span class='comment'>// Update the current piece timer</span>
+        <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>piece_timer</span> <span class='op'>+=</span> <span class='number'>1</span>;
     }
 
-    <span class='doccomment'>/// This performs the bulk of the gameplay logic.</span>
-    <span class='kw'>fn</span> <span class='ident'>update_move</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='self'>self</span>.<span class='ident'>history</span>.<span class='ident'>update</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>controller</span>);
 
-        <span class='comment'>// Calculate movement then gravity or gravity then movement?</span>
+    <span class='doccomment'>/// Perform ARE frame</span>
+    <span class='kw'>fn</span> <span class='ident'>stat_are</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
+        <span class='comment'>// Check for initial rotate/hold</span>
 
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>active</span>(<span class='ident'>Action</span>::<span class='ident'>MoveLeft</span>) <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>active</span>(<span class='ident'>Action</span>::<span class='ident'>MoveRight</span>) {
-            <span class='kw'>let</span> <span class='ident'>action</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>MoveLeft</span>) <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>MoveRight</span>) {
+        <span class='comment'>// Check for are cancel</span>
+
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>status_timer</span> <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>op</span>.<span class='ident'>are</span>) {
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>need_piece</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+            <span class='self'>self</span>.<span class='ident'>status</span> <span class='op'>=</span> <span class='ident'>Status</span>::<span class='ident'>Move</span>;
+        }
+    }
+
+    <span class='doccomment'>/// Perform game over phase</span>
+    <span class='kw'>fn</span> <span class='ident'>stat_gameover</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
+        <span class='self'>self</span>.<span class='ident'>running</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+    }
+
+    <span class='doccomment'>/// Perform a hold, swapping the current piece with the hold piece.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// If no hold piece is set, then the piece is taken from the randomizer.</span>
+    <span class='kw'>fn</span> <span class='ident'>do_hold</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>hd</span>.<span class='ident'>is_none</span>() {
+            <span class='self'>self</span>.<span class='ident'>hd</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='self'>self</span>.<span class='ident'>bk</span>.<span class='ident'>id</span>);
+            <span class='self'>self</span>.<span class='ident'>bk</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>with_options</span>(<span class='self'>self</span>.<span class='ident'>rd</span>.<span class='ident'>next</span>(), <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>fd</span>,
+                <span class='ident'>BlockOptions</span> { <span class='ident'>rotation_system</span>: <span class='self'>self</span>.<span class='ident'>rs</span>, ..<span class='ident'>Default</span>::<span class='ident'>default</span>() }
+            );
+        }
+        <span class='kw'>else</span> {
+            <span class='kw'>let</span> <span class='ident'>tmp</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>bk</span>.<span class='ident'>id</span>;
+            <span class='self'>self</span>.<span class='ident'>bk</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>with_options</span>(<span class='self'>self</span>.<span class='ident'>hd</span>.<span class='ident'>unwrap</span>(), <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>fd</span>,
+                <span class='ident'>BlockOptions</span> { <span class='ident'>rotation_system</span>: <span class='self'>self</span>.<span class='ident'>rs</span>, ..<span class='ident'>Default</span>::<span class='ident'>default</span>() }
+            );
+            <span class='self'>self</span>.<span class='ident'>hd</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>tmp</span>);
+        }
+    }
+
+    <span class='doccomment'>/// Retrieve the next piece from the bag and set the current piece to this.</span>
+    <span class='kw'>fn</span> <span class='ident'>do_piece_spawn</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
+        <span class='self'>self</span>.<span class='ident'>bk</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>with_options</span>(<span class='self'>self</span>.<span class='ident'>rd</span>.<span class='ident'>next</span>(), <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>fd</span>,
+            <span class='ident'>BlockOptions</span> { <span class='ident'>rotation_system</span>: <span class='self'>self</span>.<span class='ident'>rs</span>, ..<span class='ident'>Default</span>::<span class='ident'>default</span>() }
+        );
+    }
+
+    <span class='doccomment'>/// Check for a lockout with the current piece.</span>
+    <span class='kw'>fn</span> <span class='ident'>check_lockout</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='self'>self</span>.<span class='ident'>bk</span>.<span class='ident'>collides</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>fd</span>)
+    }
+
+    <span class='doccomment'>/// Check if a hold action is present and if so try to perform a hold.</span>
+    <span class='kw'>fn</span> <span class='ident'>check_hold</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>Hold</span>) <span class='op'>==</span> <span class='number'>1</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>hold_count</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>op</span>.<span class='ident'>hold_limit</span> {
+            <span class='self'>self</span>.<span class='ident'>do_hold</span>();
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>hold_count</span> <span class='op'>+=</span> <span class='number'>1</span>;
+            <span class='boolval'>true</span>
+        }
+        <span class='kw'>else</span> {
+            <span class='boolval'>false</span>
+        }
+    }
+
+    <span class='doccomment'>/// Check if a movement action is present and perform movement.</span>
+    <span class='doccomment'>/// TODO: Ensure when moving while locking we readjust internal lock</span>
+    <span class='doccomment'>/// counter so we don&#39;t get floating mid-air blocks!</span>
+    <span class='kw'>fn</span> <span class='ident'>check_move</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>active</span>(<span class='ident'>Action</span>::<span class='ident'>MoveLeft</span>) <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>active</span>(<span class='ident'>Action</span>::<span class='ident'>MoveRight</span>) {
+            <span class='kw'>let</span> <span class='ident'>action</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>MoveLeft</span>) <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>MoveRight</span>) {
                 <span class='ident'>Direction</span>::<span class='ident'>Left</span>
-            } <span class='kw'>else</span> {
+            }
+            <span class='kw'>else</span> {
                 <span class='ident'>Direction</span>::<span class='ident'>Right</span>
             };
 
-            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>MoveLeft</span>) <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>options</span>.<span class='ident'>das</span>) <span class='op'>||</span>
-                <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>MoveRight</span>) <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>options</span>.<span class='ident'>das</span>) {
-                <span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>, <span class='ident'>action</span>);
+            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>MoveLeft</span>) <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>op</span>.<span class='ident'>das</span>) <span class='op'>||</span>
+                    <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>MoveRight</span>) <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>op</span>.<span class='ident'>das</span>) {
+                <span class='self'>self</span>.<span class='ident'>bk</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>fd</span>, <span class='ident'>action</span>);
             }
+
+            <span class='boolval'>true</span>
         }
-
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is_pressed</span>(<span class='ident'>Action</span>::<span class='ident'>MoveLeft</span>, <span class='self'>self</span>.<span class='ident'>options</span>.<span class='ident'>arr</span>) {
-            <span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>, <span class='ident'>Direction</span>::<span class='ident'>Left</span>);
+        <span class='kw'>else</span> <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is_pressed</span>(<span class='ident'>Action</span>::<span class='ident'>MoveLeft</span>, <span class='self'>self</span>.<span class='ident'>op</span>.<span class='ident'>arr</span>) {
+            <span class='self'>self</span>.<span class='ident'>bk</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>fd</span>, <span class='ident'>Direction</span>::<span class='ident'>Left</span>);
+            <span class='boolval'>true</span>
         }
-
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is_pressed</span>(<span class='ident'>Action</span>::<span class='ident'>MoveRight</span>, <span class='self'>self</span>.<span class='ident'>options</span>.<span class='ident'>arr</span>) {
-            <span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>, <span class='ident'>Direction</span>::<span class='ident'>Right</span>);
-        }
-
-        <span class='comment'>// Drop has no DAS and is immediate</span>
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>active</span>(<span class='ident'>Action</span>::<span class='ident'>MoveDown</span>) {
-            <span class='kw'>let</span> <span class='ident'>down</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>MoveDown</span>);
-            <span class='kw'>if</span> (<span class='ident'>down</span> <span class='op'>-</span> <span class='number'>1</span>) <span class='op'>%</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>options</span>.<span class='ident'>soft_drop_speed</span>) <span class='op'>==</span> <span class='number'>0</span> {
-                <span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>, <span class='ident'>Direction</span>::<span class='ident'>Down</span>);
-            }
-        }
-
-        <span class='comment'>// Handle rotations</span>
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>RotateLeft</span>) <span class='op'>==</span> <span class='number'>1</span> {
-            <span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>rotate_with_wallkick</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>, <span class='self'>self</span>.<span class='ident'>wallkick</span>, <span class='ident'>Rotation</span>::<span class='ident'>R270</span>);
-        }
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>RotateRight</span>) <span class='op'>==</span> <span class='number'>1</span> {
-            <span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>rotate_with_wallkick</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>, <span class='self'>self</span>.<span class='ident'>wallkick</span>, <span class='ident'>Rotation</span>::<span class='ident'>R90</span>);
-        }
-
-        <span class='comment'>// Hold currently only stores block id. Would be interesting to store the block</span>
-        <span class='comment'>// and hold could possibly save the state of the blocks rotation?</span>
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>Hold</span>) <span class='op'>==</span> <span class='number'>1</span> <span class='op'>&amp;&amp;</span> <span class='self'>self</span>.<span class='ident'>internal</span>.<span class='ident'>hold_count</span> <span class='op'>&lt;</span> <span class='self'>self</span>.<span class='ident'>options</span>.<span class='ident'>hold_limit</span> {
-            <span class='self'>self</span>.<span class='ident'>internal</span>.<span class='ident'>hold_count</span> <span class='op'>+=</span> <span class='number'>1</span>;
-            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>hold</span>.<span class='ident'>is_none</span>() {
-                <span class='self'>self</span>.<span class='ident'>hold</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>id</span>);
-                <span class='self'>self</span>.<span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>with_options</span>(<span class='self'>self</span>.<span class='ident'>randomizer</span>.<span class='ident'>next</span>(), <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>,
-                    <span class='ident'>BlockOptions</span> { <span class='ident'>rotation_system</span>: <span class='self'>self</span>.<span class='ident'>rotation_system</span>, ..<span class='ident'>Default</span>::<span class='ident'>default</span>() }
-                );
-            }
-            <span class='kw'>else</span> {
-                <span class='kw'>let</span> <span class='ident'>tmp</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>id</span>;
-                <span class='self'>self</span>.<span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>with_options</span>(<span class='self'>self</span>.<span class='ident'>hold</span>.<span class='ident'>unwrap</span>(), <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>,
-                    <span class='ident'>BlockOptions</span> { <span class='ident'>rotation_system</span>: <span class='self'>self</span>.<span class='ident'>rotation_system</span>, ..<span class='ident'>Default</span>::<span class='ident'>default</span>() }
-                );
-                <span class='self'>self</span>.<span class='ident'>hold</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>tmp</span>);
-            }
-        }
-
-        <span class='comment'>// Handle hard drop</span>
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>HardDrop</span>) <span class='op'>==</span> <span class='number'>1</span> {
-            <span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>shift_extend</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>, <span class='ident'>Direction</span>::<span class='ident'>Down</span>);
-            <span class='self'>self</span>.<span class='ident'>field</span>.<span class='ident'>freeze</span>(<span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>clone</span>());
-            <span class='self'>self</span>.<span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>with_options</span>(<span class='self'>self</span>.<span class='ident'>randomizer</span>.<span class='ident'>next</span>(), <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>,
-                <span class='ident'>BlockOptions</span> { <span class='ident'>rotation_system</span>: <span class='self'>self</span>.<span class='ident'>rotation_system</span>, ..<span class='ident'>Default</span>::<span class='ident'>default</span>() }
-            );
-
-            <span class='self'>self</span>.<span class='ident'>internal</span>.<span class='ident'>hold_count</span> <span class='op'>=</span> <span class='number'>0</span>;
-            <span class='self'>self</span>.<span class='ident'>statistics</span>.<span class='ident'>pieces</span> <span class='op'>+=</span> <span class='number'>1</span>;
-        }
-
-        <span class='comment'>// Clear all line</span>
-        <span class='kw'>let</span> <span class='ident'>cleared</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>field</span>.<span class='ident'>clear_lines</span>();
-        <span class='self'>self</span>.<span class='ident'>statistics</span>.<span class='ident'>lines</span> <span class='op'>+=</span> <span class='ident'>cleared</span> <span class='kw'>as</span> <span class='ident'>u64</span>;
-
-        <span class='kw'>match</span> <span class='ident'>cleared</span> {
-            <span class='number'>4</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>statistics</span>.<span class='ident'>fours</span> <span class='op'>+=</span> <span class='number'>1</span>,
-            <span class='number'>3</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>statistics</span>.<span class='ident'>triples</span> <span class='op'>+=</span> <span class='number'>1</span>,
-            <span class='number'>2</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>statistics</span>.<span class='ident'>doubles</span> <span class='op'>+=</span> <span class='number'>1</span>,
-            <span class='number'>1</span> <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>statistics</span>.<span class='ident'>singles</span> <span class='op'>+=</span> <span class='number'>1</span>,
-            _ <span class='op'>=&gt;</span> ()
-        };
-
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>controller</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>Quit</span>) <span class='op'>==</span> <span class='number'>1</span> {
-            <span class='self'>self</span>.<span class='ident'>running</span> <span class='op'>=</span> <span class='boolval'>false</span>;
-        }
-
-        <span class='comment'>// Determine if we are lagging or being called too early</span>
-        <span class='comment'>// If outside of 5% error, warn. Note: should warn only once, or</span>
-        <span class='comment'>// limited.</span>
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>internal</span>.<span class='ident'>last_update_time</span> <span class='op'>==</span> <span class='number'>0</span> {
-            <span class='self'>self</span>.<span class='ident'>internal</span>.<span class='ident'>last_update_time</span> <span class='op'>=</span> <span class='ident'>time</span>::<span class='ident'>precise_time_ns</span>();
+        <span class='kw'>else</span> <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is_pressed</span>(<span class='ident'>Action</span>::<span class='ident'>MoveRight</span>, <span class='self'>self</span>.<span class='ident'>op</span>.<span class='ident'>arr</span>) {
+            <span class='self'>self</span>.<span class='ident'>bk</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>fd</span>, <span class='ident'>Direction</span>::<span class='ident'>Right</span>);
+            <span class='boolval'>true</span>
         }
         <span class='kw'>else</span> {
-            <span class='kw'>let</span> <span class='ident'>now</span> <span class='op'>=</span> <span class='ident'>time</span>::<span class='ident'>precise_time_ns</span>();
-            <span class='kw'>let</span> <span class='ident'>rate</span> <span class='op'>=</span> (<span class='ident'>now</span> <span class='op'>-</span> <span class='self'>self</span>.<span class='ident'>internal</span>.<span class='ident'>last_update_time</span>) <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> (<span class='self'>self</span>.<span class='ident'>mspt</span> <span class='op'>*</span> <span class='number'>1_000_000</span>) <span class='kw'>as</span> <span class='ident'>f64</span>;
-
-            <span class='kw'>if</span> <span class='ident'>rate</span> <span class='op'>&gt;</span> <span class='number'>1.05</span> {
-                <span class='macro'>warn</span><span class='macro'>!</span>(<span class='string'>&quot;Update lagging! {}% of expected update time&quot;</span>, <span class='ident'>rate</span>);
-            }
-            <span class='kw'>else</span> <span class='kw'>if</span> <span class='ident'>rate</span> <span class='op'>&lt;</span> <span class='number'>0.95</span> {
-                <span class='macro'>warn</span><span class='macro'>!</span>(<span class='string'>&quot;Update called too quick! {}% of expected update time&quot;</span>, <span class='ident'>rate</span>);
-            }
-
-            <span class='self'>self</span>.<span class='ident'>internal</span>.<span class='ident'>last_update_time</span> <span class='op'>=</span> <span class='ident'>now</span>;
-        }
-
-        <span class='comment'>// Perform gravity</span>
-        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>tick_count</span> <span class='op'>%</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>options</span>.<span class='ident'>gravity</span>) <span class='op'>==</span> <span class='number'>0</span> {
-            <span class='self'>self</span>.<span class='ident'>block</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>field</span>, <span class='ident'>Direction</span>::<span class='ident'>Down</span>);
+            <span class='boolval'>false</span>
         }
     }
 
-    <span class='kw'>fn</span> <span class='ident'>update_gameover</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) {
+    <span class='doccomment'>/// Check if a rotation action is present and perform it.</span>
+    <span class='kw'>fn</span> <span class='ident'>check_rotate</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>r</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>RotateLeft</span>) <span class='op'>==</span> <span class='number'>1</span> {
+            <span class='self'>self</span>.<span class='ident'>bk</span>.<span class='ident'>rotate_with_wallkick</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>fd</span>, <span class='self'>self</span>.<span class='ident'>wk</span>, <span class='ident'>Rotation</span>::<span class='ident'>R270</span>);
+            <span class='ident'>r</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+        }
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>RotateRight</span>) <span class='op'>==</span> <span class='number'>1</span> {
+            <span class='self'>self</span>.<span class='ident'>bk</span>.<span class='ident'>rotate_with_wallkick</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>fd</span>, <span class='self'>self</span>.<span class='ident'>wk</span>, <span class='ident'>Rotation</span>::<span class='ident'>R90</span>);
+            <span class='ident'>r</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+        }
+
+        <span class='ident'>r</span>
     }
 
-    <span class='kw'>fn</span> <span class='ident'>update_excellent</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) {
+    <span class='doccomment'>/// Check if a hard drop action is present and if so perform it.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// This does not perform the locking of the piece, this is managed by</span>
+    <span class='doccomment'>/// the `check_lock` function.</span>
+    <span class='kw'>fn</span> <span class='ident'>check_hard_drop</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>HardDrop</span>) <span class='op'>==</span> <span class='number'>1</span> {
+            <span class='self'>self</span>.<span class='ident'>bk</span>.<span class='ident'>shift_extend</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>fd</span>, <span class='ident'>Direction</span>::<span class='ident'>Down</span>);
+            <span class='boolval'>true</span>
+        }
+        <span class='kw'>else</span> {
+            <span class='boolval'>false</span>
+        }
     }
-}
 
-<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
-<span class='kw'>mod</span> <span class='ident'>tests</span> {
-    <span class='kw'>use</span> ::<span class='ident'>import</span>::<span class='op'>*</span>;
+    <span class='doccomment'>/// Check the current gravity and perform any downward movement required.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// This may move multiple times per frame.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// We check gravity with soft drop since there is potential overlap with</span>
+    <span class='doccomment'>/// which speed we may use (cumulative down movement etc).</span>
+    <span class='kw'>fn</span> <span class='ident'>check_gravity_and_soft_drop</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='comment'>// op.gravity is how many cells are moved per ms.</span>
+        <span class='comment'>//</span>
+        <span class='comment'>// If we move 1.25 frames per ms, then at 16 frames this is equal</span>
+        <span class='comment'>// to 20 frames (20G)</span>
+        <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>gravity_counter</span> <span class='op'>+=</span> (<span class='self'>self</span>.<span class='ident'>mspt</span> <span class='kw'>as</span> <span class='ident'>f64</span>) <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>op</span>.<span class='ident'>gravity</span>;
 
-    <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>test_engine</span>() {
-        <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>Engine</span>::<span class='ident'>new</span>(<span class='ident'>EngineOptions</span> { ..<span class='ident'>Default</span>::<span class='ident'>default</span>() });
+        <span class='comment'>// Soft drop has an internal counter as well to handle fractional</span>
+        <span class='comment'>// movement correctly.</span>
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>active</span>(<span class='ident'>Action</span>::<span class='ident'>MoveDown</span>) {
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>soft_drop_counter</span> <span class='op'>+=</span> (<span class='self'>self</span>.<span class='ident'>mspt</span> <span class='kw'>as</span> <span class='ident'>f64</span>) <span class='op'>*</span> <span class='self'>self</span>.<span class='ident'>op</span>.<span class='ident'>soft_drop_speed</span>;
+        }
+        <span class='kw'>else</span> {
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>soft_drop_counter</span> <span class='op'>=</span> <span class='number'>0f64</span>;
+        }
+
+        <span class='comment'>// We decrement both soft drop and gravity at the same time, we only</span>
+        <span class='comment'>// utilize the highest value and do not do cumulative gravity (Option?)</span>
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>fell</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+        <span class='kw'>while</span> <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>gravity_counter</span> <span class='op'>&gt;=</span> <span class='number'>1f64</span> <span class='op'>||</span> <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>soft_drop_counter</span> <span class='op'>&gt;=</span> <span class='number'>1f64</span> {
+            <span class='comment'>// Begin lock if we are pushed into floor.</span>
+            <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>bk</span>.<span class='ident'>shift</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>fd</span>, <span class='ident'>Direction</span>::<span class='ident'>Down</span>) {
+                <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>locking</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+            }
+
+            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>gravity_counter</span> <span class='op'>&gt;=</span> <span class='number'>1f64</span> {
+                <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>gravity_counter</span> <span class='op'>-=</span> <span class='number'>1f64</span>;
+            }
+            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>soft_drop_counter</span> <span class='op'>&gt;=</span> <span class='number'>1f64</span> {
+                <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>soft_drop_counter</span> <span class='op'>-=</span> <span class='number'>1f64</span>;
+            }
+
+            <span class='comment'>// Indicate gravity occurred on this frame</span>
+            <span class='ident'>fell</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+        }
+
+        <span class='ident'>fell</span>
+    }
+
+    <span class='comment'>// Check if the current piece should be locked into place.</span>
+    <span class='comment'>//</span>
+    <span class='comment'>// Problem with soft-drop/gravity and lock-delay where pieces are been</span>
+    <span class='comment'>// frozen at the incorrect position.</span>
+    <span class='kw'>fn</span> <span class='ident'>check_lock</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>instant_lock</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+
+        <span class='comment'>// Hard drop will always lock (if hard drop lock)</span>
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>HardDrop</span>) <span class='op'>==</span> <span class='number'>1</span> {
+            <span class='comment'>// Manual lock on hard drop by default now. This should be an option.</span>
+            <span class='ident'>instant_lock</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+        }
+
+        <span class='comment'>// Lock the piece if instant lock or over lock delay.</span>
+        <span class='comment'>// Manage the next state to go to since this block is done.</span>
+        <span class='kw'>if</span> (<span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>lock_timer</span> <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>op</span>.<span class='ident'>lock_delay</span>)) <span class='op'>||</span> <span class='ident'>instant_lock</span> {
+            <span class='comment'>// Clone is not ideal</span>
+            <span class='self'>self</span>.<span class='ident'>fd</span>.<span class='ident'>freeze</span>(<span class='self'>self</span>.<span class='ident'>bk</span>.<span class='ident'>clone</span>());
+
+            <span class='comment'>// Either perform ARE if non-zero, or immediately perform move</span>
+            <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>op</span>.<span class='ident'>are</span> <span class='op'>!=</span> <span class='number'>0</span> {
+                <span class='self'>self</span>.<span class='ident'>status</span> <span class='op'>=</span> <span class='ident'>Status</span>::<span class='ident'>Are</span>;
+            }
+            <span class='kw'>else</span> {
+                <span class='comment'>// Must explicitly reset status timer for next piece</span>
+                <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>status_timer</span> <span class='op'>=</span> <span class='number'>0</span>;
+                <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>need_piece</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+                <span class='self'>self</span>.<span class='ident'>status</span> <span class='op'>=</span> <span class='ident'>Status</span>::<span class='ident'>Move</span>;
+            }
+        }
+
+        <span class='comment'>// Update the lock delay after we have processed it (0 is first frame).</span>
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>locking</span> {
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>lock_timer</span> <span class='op'>+=</span> <span class='number'>1</span>;
+        }
+    }
+
+
+    <span class='doccomment'>/// Construct a new `Engine` from an `EngineOptions` instance.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>options</span>: <span class='ident'>EngineOptions</span>) <span class='op'>-&gt;</span> <span class='ident'>Engine</span> {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>engine</span> <span class='op'>=</span> <span class='ident'>Engine</span> {
+            <span class='ident'>fd</span>: <span class='ident'>Field</span>::<span class='ident'>with_options</span>(<span class='ident'>options</span>.<span class='ident'>field_options</span>),
+            <span class='ident'>rd</span>: <span class='ident'>randomizer</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>options</span>.<span class='ident'>randomizer_name</span>, <span class='ident'>options</span>.<span class='ident'>randomizer_lookahead</span>).<span class='ident'>unwrap</span>(),
+            <span class='ident'>co</span>: <span class='ident'>Controller</span>::<span class='ident'>new</span>(),
+            <span class='ident'>rs</span>: <span class='ident'>rotation_system</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>options</span>.<span class='ident'>rotation_system_name</span>).<span class='ident'>unwrap</span>(),
+            <span class='ident'>wk</span>: <span class='ident'>wallkick</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>options</span>.<span class='ident'>wallkick_name</span>).<span class='ident'>unwrap</span>(),
+            <span class='ident'>bk</span>: <span class='ident'>Block</span> { <span class='ident'>id</span>: <span class='ident'>block</span>::<span class='ident'>Id</span>::<span class='prelude-val'>None</span>, <span class='ident'>x</span>: <span class='number'>0</span>, <span class='ident'>y</span>: <span class='number'>0</span>, <span class='ident'>r</span>: <span class='ident'>Rotation</span>::<span class='ident'>R0</span>, <span class='ident'>rs</span>: <span class='ident'>rotation_system</span>::<span class='ident'>new</span>(<span class='string'>&quot;srs&quot;</span>).<span class='ident'>unwrap</span>() },
+            <span class='ident'>hd</span>: <span class='prelude-val'>None</span>,
+            <span class='ident'>tick_count</span>: <span class='number'>0</span>,
+            <span class='ident'>mspt</span>: <span class='ident'>options</span>.<span class='ident'>mspt</span>,
+            <span class='ident'>running</span>: <span class='boolval'>true</span>,
+            <span class='ident'>op</span>: <span class='ident'>options</span>.<span class='ident'>engine_settings</span>,
+            <span class='ident'>hs</span>: <span class='ident'>History</span>::<span class='ident'>new</span>(),
+            <span class='ident'>st</span>: <span class='ident'>Statistics</span>::<span class='ident'>new</span>(),
+            <span class='ident'>it</span>: <span class='ident'>EngineInternal</span> { ..<span class='ident'>Default</span>::<span class='ident'>default</span>() },
+            <span class='ident'>status</span>: <span class='ident'>Status</span>::<span class='ident'>Move</span>,
+            <span class='ident'>last_status</span>: <span class='ident'>Status</span>::<span class='ident'>Move</span>
+        };
+
+        <span class='ident'>engine</span>.<span class='ident'>it</span>.<span class='ident'>need_piece</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+        <span class='ident'>engine</span>
     }
 }
 </pre>
