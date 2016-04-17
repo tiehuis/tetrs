@@ -1,6 +1,4 @@
 #![feature(collections, enumset)]
-#![feature(custom_derive, plugin)]
-#![plugin(serde_macros)]
 
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
@@ -39,8 +37,6 @@ extern crate collections;
 extern crate rand;
 extern crate time;
 #[macro_use] extern crate log;
-extern crate serde;
-extern crate serde_json;
 
 /// Perform a safe conversion to i32, panicing if the current type does not
 /// lie within the required bounds.

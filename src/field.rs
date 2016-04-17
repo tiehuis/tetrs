@@ -76,7 +76,7 @@ pub struct Field {
 ///     ..Default::default()
 /// };
 /// ```
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Debug)]
 #[allow(missing_docs)]
 pub struct FieldOptions {
     pub width: usize,
