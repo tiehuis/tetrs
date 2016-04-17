@@ -614,6 +614,14 @@
 <span id="570">570</span>
 <span id="571">571</span>
 <span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a high-level engine which composes all the components</span>
 <span class='doccomment'>//! into one abstract structure.</span>
@@ -860,6 +868,11 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>update</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>update</span>();
         <span class='self'>self</span>.<span class='ident'>last_status</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>status</span>;
+
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>active</span>(<span class='ident'>Action</span>::<span class='ident'>Quit</span>) {
+            <span class='self'>self</span>.<span class='ident'>running</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+            <span class='kw'>return</span>;
+        }
 
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>need_piece</span> {
             <span class='self'>self</span>.<span class='ident'>do_piece_spawn</span>();
@@ -1141,6 +1154,9 @@
         <span class='comment'>// Manage the next state to go to since this block is done.</span>
         <span class='kw'>if</span> (<span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>lock_timer</span> <span class='op'>&gt;</span> <span class='self'>self</span>.<span class='ident'>ticks</span>(<span class='self'>self</span>.<span class='ident'>op</span>.<span class='ident'>lock_delay</span>)) <span class='op'>||</span> <span class='ident'>instant_lock</span> {
             <span class='comment'>// Clone is not ideal</span>
+            <span class='comment'>// Freezing here places a render frame between this and spawning</span>
+            <span class='comment'>// of a piece. This causes an overlap in the field and block</span>
+            <span class='comment'>// piece and should be adjusted.</span>
             <span class='self'>self</span>.<span class='ident'>fd</span>.<span class='ident'>freeze</span>(<span class='self'>self</span>.<span class='ident'>bk</span>.<span class='ident'>clone</span>());
 
             <span class='comment'>// Either perform ARE if non-zero, or immediately perform move</span>
