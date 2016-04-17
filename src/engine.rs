@@ -244,6 +244,11 @@ impl Engine {
         self.co.update();
         self.last_status = self.status;
 
+        if self.co.active(Action::Quit) {
+            self.running = false;
+            return;
+        }
+
         if self.it.need_piece {
             self.do_piece_spawn();
             self.it.need_piece = false;
@@ -524,6 +529,9 @@ impl Engine {
         // Manage the next state to go to since this block is done.
         if (self.it.lock_timer > self.ticks(self.op.lock_delay)) || instant_lock {
             // Clone is not ideal
+            // Freezing here places a render frame between this and spawning
+            // of a piece. This causes an overlap in the field and block
+            // piece and should be adjusted.
             self.fd.freeze(self.bk.clone());
 
             // Either perform ARE if non-zero, or immediately perform move
