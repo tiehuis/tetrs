@@ -513,6 +513,13 @@ impl Engine {
             instant_lock = true;
         }
 
+        // Reset lock timer if over a gap.
+        // TODO: Check this does not allow stalling of piece in air.
+        if !self.bk.collides_at_offset(&self.fd, (0, 1)) {
+            self.it.locking = false;
+            self.it.lock_timer = 0;
+        }
+
         // Lock the piece if instant lock or over lock delay.
         // Manage the next state to go to since this block is done.
         if (self.it.lock_timer > self.ticks(self.op.lock_delay)) || instant_lock {

@@ -263,7 +263,7 @@ impl Block {
     }
 
     /// Return whether the block collides with `field` at the specified offset.
-    fn collides_at_offset(&self, field: &Field, (xo, yo): (i32, i32)) -> bool {
+    pub fn collides_at_offset(&self, field: &Field, (xo, yo): (i32, i32)) -> bool {
         self.rs.data(self.id, self.r).iter()
                   .map(|&(dx, dy)| {
                       (self.x + i32!(dx) + xo, self.y + i32!(dy) + yo)
