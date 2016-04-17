@@ -607,6 +607,13 @@
 <span id="563">563</span>
 <span id="564">564</span>
 <span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a high-level engine which composes all the components</span>
 <span class='doccomment'>//! into one abstract structure.</span>
@@ -1121,6 +1128,13 @@
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>time</span>(<span class='ident'>Action</span>::<span class='ident'>HardDrop</span>) <span class='op'>==</span> <span class='number'>1</span> {
             <span class='comment'>// Manual lock on hard drop by default now. This should be an option.</span>
             <span class='ident'>instant_lock</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+        }
+
+        <span class='comment'>// Reset lock timer if over a gap.</span>
+        <span class='comment'>// TODO: Check this does not allow stalling of piece in air.</span>
+        <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>bk</span>.<span class='ident'>collides_at_offset</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>fd</span>, (<span class='number'>0</span>, <span class='number'>1</span>)) {
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>locking</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>lock_timer</span> <span class='op'>=</span> <span class='number'>0</span>;
         }
 
         <span class='comment'>// Lock the piece if instant lock or over lock delay.</span>
