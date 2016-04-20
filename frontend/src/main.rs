@@ -1,3 +1,7 @@
+#![feature(collections, enumset)]
+extern crate collections;
+use collections::enum_set::CLike;
+
 extern crate sdl2;
 extern crate sdl2_ttf;
 extern crate env_logger;
@@ -14,6 +18,16 @@ use tetrs::controller::Action;
 use std::thread;
 use std::time::Duration;
 use std::path::Path;
+
+static COLORMAP: [Color; 7] = [
+    Color::RGB(0, 255, 255), // I
+    Color::RGB(128, 0, 128), // T
+    Color::RGB(255, 165, 0), // L
+    Color::RGB(0, 0, 255),   // J
+    Color::RGB(128, 255, 0), // S
+    Color::RGB(255, 0, 0),   // Z
+    Color::RGB(255, 255, 0)  // O
+];
 
 static KEYMAP: [(Scancode, Action); 9] = [
     (Scancode::Left,  Action::MoveLeft),
@@ -107,9 +121,12 @@ fn main() {
             for x in 0..engine.fd.width {
                 renderer.set_draw_color(match (engine.fd.occupies((x, y)), engine.bk.occupies((x, y)), ghost.occupies((x, y))) {
                     (true, true,  _)      => Color::RGB(255, 0, 0),
-                    (true, false, _)      => Color::RGB(150, 208, 246),
-                    (false, true, _)      => Color::RGB(150, 108, 246),
-                    (false, false, true)  => Color::RGB(120, 108, 146),
+                    (true, false, _)      => COLORMAP[engine.fd.get((x, y)).to_usize()],
+                    (false, true, _)      => COLORMAP[engine.bk.id.to_usize()],
+                    (false, false, true)  => {
+                        let (r, g, b) = COLORMAP[engine.bk.id.to_usize()].rgb();
+                        Color::RGBA(20 + r / 7, 20 + g / 7, 20 + b / 7, 50)
+                    },
                     (false, false, false) => Color::RGB(0, 0, 0)
                 });
 
@@ -127,8 +144,8 @@ fn main() {
         let mut yoffset = UPPER_MARGIN2;
 
         // Draw preview pieces
-        renderer.set_draw_color(Color::RGB(150, 108, 246));
         for id in engine.rd.preview(3) { //engine.op.preview_count as usize) {
+            renderer.set_draw_color(COLORMAP[id.to_usize()]);
             for &(x, y) in engine.bk.rs.data(id, Rotation::R0) {
                 let _ = renderer.fill_rect(sq!(xoffset + 15 * x as u32, yoffset + 15 * y as u32, 15));
             }
@@ -136,8 +153,8 @@ fn main() {
         }
 
         // Draw hold piece
-        renderer.set_draw_color(Color::RGB(150, 108, 246));
         if engine.hd.is_some() {
+            renderer.set_draw_color(COLORMAP[engine.hd.unwrap().to_usize()]);
             for &(x, y) in engine.bk.rs.data(engine.hd.unwrap(), Rotation::R0) {
                 let _ = renderer.fill_rect(sq!(LEFT_FIELD_POSITION - 15 * 4 - 20 + 15 * x as u32, UPPER_MARGIN2 + 15 * y as u32, 15));
             }
