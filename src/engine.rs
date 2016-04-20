@@ -295,6 +295,9 @@ impl Engine {
             // We can perform a double rotation with IRS on the first frame.
             // This is valid behavior.,
             if self.it.irs_flag {
+                // Possible limitation: Wallkick up could have the y-axis outside
+                // of the allowed field region. Technically should have an infinite
+                // upper region.
                 self.bk.rotate_with_wallkick(&self.fd, self.wk, self.it.irs_rotation);
                 self.it.irs_flag = false;
                 self.it.irs_rotation = Rotation::R0;
@@ -342,6 +345,19 @@ impl Engine {
     /// Perform ARE frame
     fn stat_are(&mut self) {
         // Check for initial rotate/hold
+        if self.co.active(Action::Hold) {
+            self.it.ihs_flag = true;
+        }
+
+        // We take the last rotate button pressed as the direction
+        if self.co.active(Action::RotateLeft) {
+            self.it.irs_flag = true;
+            self.it.irs_rotation = Rotation::R270;
+        }
+        if self.co.active(Action::RotateRight) {
+            self.it.irs_flag = true;
+            self.it.irs_rotation = Rotation::R90;
+        }
 
         // Check for are cancel
 
