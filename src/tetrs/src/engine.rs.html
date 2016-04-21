@@ -622,6 +622,22 @@
 <span id="578">578</span>
 <span id="579">579</span>
 <span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Implements a high-level engine which composes all the components</span>
 <span class='doccomment'>//! into one abstract structure.</span>
@@ -920,6 +936,9 @@
             <span class='comment'>// We can perform a double rotation with IRS on the first frame.</span>
             <span class='comment'>// This is valid behavior.,</span>
             <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>irs_flag</span> {
+                <span class='comment'>// Possible limitation: Wallkick up could have the y-axis outside</span>
+                <span class='comment'>// of the allowed field region. Technically should have an infinite</span>
+                <span class='comment'>// upper region.</span>
                 <span class='self'>self</span>.<span class='ident'>bk</span>.<span class='ident'>rotate_with_wallkick</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>fd</span>, <span class='self'>self</span>.<span class='ident'>wk</span>, <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>irs_rotation</span>);
                 <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>irs_flag</span> <span class='op'>=</span> <span class='boolval'>false</span>;
                 <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>irs_rotation</span> <span class='op'>=</span> <span class='ident'>Rotation</span>::<span class='ident'>R0</span>;
@@ -967,6 +986,19 @@
     <span class='doccomment'>/// Perform ARE frame</span>
     <span class='kw'>fn</span> <span class='ident'>stat_are</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='comment'>// Check for initial rotate/hold</span>
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>active</span>(<span class='ident'>Action</span>::<span class='ident'>Hold</span>) {
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>ihs_flag</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+        }
+
+        <span class='comment'>// We take the last rotate button pressed as the direction</span>
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>active</span>(<span class='ident'>Action</span>::<span class='ident'>RotateLeft</span>) {
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>irs_flag</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>irs_rotation</span> <span class='op'>=</span> <span class='ident'>Rotation</span>::<span class='ident'>R270</span>;
+        }
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>co</span>.<span class='ident'>active</span>(<span class='ident'>Action</span>::<span class='ident'>RotateRight</span>) {
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>irs_flag</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+            <span class='self'>self</span>.<span class='ident'>it</span>.<span class='ident'>irs_rotation</span> <span class='op'>=</span> <span class='ident'>Rotation</span>::<span class='ident'>R90</span>;
+        }
 
         <span class='comment'>// Check for are cancel</span>
 
