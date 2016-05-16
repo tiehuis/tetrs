@@ -1,4 +1,6 @@
 #![feature(collections, enumset)]
+#![feature(custom_derive, plugin)]
+#![plugin(serde_macros)]
 
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
@@ -32,6 +34,7 @@
 //! block.shift_extend(&field, Direction::Down);
 //! ```
 
+extern crate serde_json;
 extern crate collections;
 #[macro_use] extern crate itertools;
 extern crate rand;

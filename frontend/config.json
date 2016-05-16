@@ -14,15 +14,13 @@
   "wallkick_name": "srs",
   "mspt": 16,
   "engine_settings": {
-    "das": 150,
     "are": 0,
-    "gravity": 1000,
     "arr": 16,
-    "has_hold": true,
+    "das": 180,
+    "soft_drop_speed": 2,
+    "lock_delay": 300,
     "hold_limit": 1,
-    "has_hard_drop": true,
-    "has_soft_drop": true,
-    "soft_drop_speed": 16,
-    "preview_count": 3
+    "gravity": 0.001,
+    "gravity_before_move": false
   }
 }

@@ -13,6 +13,9 @@
 // (omitted real IRS and IHS handling)
 
 use collections::enum_set::CLike;
+use std::fs::File;
+use std::io::Read;
+use serde_json;
 
 use block::{self, Block, BlockOptions, Rotation, Direction};
 use field::{Field, FieldOptions};
@@ -84,6 +87,7 @@ struct EngineInternal {
 
 
 /// Stores configurable options which alter how the engine works.
+#[derive(Serialize, Deserialize, Debug)]
 pub struct EngineSettings {
     /// How many ms should are last for
     are: u64,
@@ -123,6 +127,7 @@ impl Default for EngineSettings {
 
 /// Struct for initializing an `Engine`
 #[allow(missing_docs)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct EngineOptions {
     pub field_options: FieldOptions,
 
@@ -153,6 +158,18 @@ impl Default for EngineOptions {
     }
 }
 
+impl EngineOptions {
+    /// Load an engine options configuration file.
+    ///
+    /// All fields are required to be implemented so this does not support
+    /// breaking changes well.
+    pub fn from_file(filename: &str) -> EngineOptions {
+        let mut f = File::open(filename).unwrap();
+        let mut s = String::new();
+        f.read_to_string(&mut s).unwrap();
+        serde_json::from_str(&s).unwrap()
+    }
+}
 
 /// Stores the internal engine details.
 ///

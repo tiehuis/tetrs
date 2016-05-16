@@ -4,7 +4,6 @@
 //! aware of blocks themselves for the most part, besides the `freeze` function.
 
 use block::{Block, Id};
-use rotation_system::RotationSystem;
 
 /// A `Field` is simply a 2-D `Vec` with some corresponding options.
 ///
@@ -76,7 +75,7 @@ pub struct Field {
 ///     ..Default::default()
 /// };
 /// ```
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 #[allow(missing_docs)]
 pub struct FieldOptions {
     pub width: usize,

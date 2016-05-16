@@ -103,8 +103,8 @@ fn main() {
 
     let font = ttf_ctx.load_font(Path::new("res/font/font.ttf"), 128).unwrap();
 
-    // let options = EngineOptions::load_file("config.json");
-    let mut engine = Engine::new(EngineOptions { ..Default::default() });
+    let options = EngineOptions::from_file("config.json");
+    let mut engine = Engine::new(options);
 
     while engine.running {
         gather_input(&mut engine, &mut events);
