@@ -186,7 +186,7 @@
 
 <span class='kw'>impl</span> <span class='ident'>BagRandomizer</span> {
     <span class='doccomment'>/// Generate a new `BagRandomizer` instance.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>lookahead</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>lookahead</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>bag</span> <span class='op'>=</span> <span class='ident'>BagRandomizer</span> {
             <span class='ident'>lookahead</span>: <span class='ident'>VecDeque</span>::<span class='ident'>with_capacity</span>(<span class='ident'>lookahead</span>),
             <span class='ident'>rng</span>: <span class='ident'>rand</span>::<span class='ident'>thread_rng</span>(),
@@ -216,7 +216,7 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
-    <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>randomizer</span>::<span class='ident'>Randomizer</span>;
 
     <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>seq_test</span> {

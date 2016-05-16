@@ -283,7 +283,7 @@
     <span class='doccomment'>/// The action will be set to active.</span>
     <span class='doccomment'>/// Activating an already active timer has no effect.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>activate</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>action</span>: <span class='ident'>Action</span>) {
-        <span class='self'>self</span>.<span class='ident'>active</span>[<span class='ident'>action</span>.<span class='ident'>to_usize</span>()] <span class='op'>=</span> <span class='boolval'>true</span>;
+        <span class='self'>self</span>.<span class='ident'>active</span>[<span class='ident'>action</span>.<span class='ident'>to_usize</span>()] <span class='op'>=</span> <span class='boolvalue'>true</span>;
     }
 
     <span class='doccomment'>/// Deactivate the specified action.</span>
@@ -291,7 +291,7 @@
     <span class='doccomment'>/// The action will be set to inactive.</span>
     <span class='doccomment'>/// Deactivating an already inactive action has no effect.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>deactivate</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>action</span>: <span class='ident'>Action</span>) {
-        <span class='self'>self</span>.<span class='ident'>active</span>[<span class='ident'>action</span>.<span class='ident'>to_usize</span>()] <span class='op'>=</span> <span class='boolval'>false</span>;
+        <span class='self'>self</span>.<span class='ident'>active</span>[<span class='ident'>action</span>.<span class='ident'>to_usize</span>()] <span class='op'>=</span> <span class='boolvalue'>false</span>;
     }
 
     <span class='doccomment'>/// Deactivate all actions.</span>
@@ -302,7 +302,7 @@
     <span class='doccomment'>/// This does not reset the internal time of each action to 0.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>deactivate_all</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='self'>self</span>.<span class='ident'>active</span>.<span class='ident'>len</span>() {
-            <span class='self'>self</span>.<span class='ident'>active</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='boolval'>false</span>;
+            <span class='self'>self</span>.<span class='ident'>active</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='boolvalue'>false</span>;
         }
     }
 
@@ -334,7 +334,7 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
 
-    <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>collections</span>::<span class='ident'>enum_set</span>::<span class='ident'>CLike</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
@@ -342,7 +342,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>controller</span> <span class='op'>=</span> <span class='ident'>Controller</span>::<span class='ident'>new</span>();
 
         <span class='ident'>controller</span>.<span class='ident'>activate</span>(<span class='ident'>Action</span>::<span class='ident'>MoveLeft</span>);
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>controller</span>.<span class='ident'>active</span>[<span class='ident'>Action</span>::<span class='ident'>MoveLeft</span>.<span class='ident'>to_usize</span>()], <span class='boolval'>true</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>controller</span>.<span class='ident'>active</span>[<span class='ident'>Action</span>::<span class='ident'>MoveLeft</span>.<span class='ident'>to_usize</span>()], <span class='boolvalue'>true</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>controller</span>.<span class='ident'>time</span>[<span class='ident'>Action</span>::<span class='ident'>MoveLeft</span>.<span class='ident'>to_usize</span>()], <span class='number'>0</span>);
 
         <span class='ident'>controller</span>.<span class='ident'>update</span>();

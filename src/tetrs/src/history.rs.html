@@ -173,16 +173,16 @@
                                      .<span class='ident'>zip</span>(<span class='ident'>controller</span>.<span class='ident'>active</span>.<span class='ident'>iter</span>())
                                      .<span class='ident'>enumerate</span>() {
             <span class='kw'>match</span> (<span class='op'>*</span><span class='ident'>last</span>, <span class='op'>*</span><span class='ident'>curr</span>) {
-                (<span class='boolval'>true</span>, <span class='boolval'>false</span>) <span class='op'>=&gt;</span> {
+                (<span class='boolvalue'>true</span>, <span class='boolvalue'>false</span>) <span class='op'>=&gt;</span> {
                     <span class='self'>self</span>.<span class='ident'>history</span>.<span class='ident'>push</span>(<span class='ident'>Event</span> {
-                        <span class='ident'>press</span>: <span class='boolval'>false</span>,
+                        <span class='ident'>press</span>: <span class='boolvalue'>false</span>,
                         <span class='ident'>ticks</span>: <span class='self'>self</span>.<span class='ident'>tick_count</span>,
                         <span class='ident'>action</span>: <span class='ident'>Action</span>::<span class='ident'>from_usize</span>(<span class='ident'>i</span>)
                     });
                 },
-                (<span class='boolval'>false</span>, <span class='boolval'>true</span>) <span class='op'>=&gt;</span> {
+                (<span class='boolvalue'>false</span>, <span class='boolvalue'>true</span>) <span class='op'>=&gt;</span> {
                     <span class='self'>self</span>.<span class='ident'>history</span>.<span class='ident'>push</span>(<span class='ident'>Event</span> {
-                        <span class='ident'>press</span>: <span class='boolval'>true</span>,
+                        <span class='ident'>press</span>: <span class='boolvalue'>true</span>,
                         <span class='ident'>ticks</span>: <span class='self'>self</span>.<span class='ident'>tick_count</span>,
                         <span class='ident'>action</span>: <span class='ident'>Action</span>::<span class='ident'>from_usize</span>(<span class='ident'>i</span>)
                     });

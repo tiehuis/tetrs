@@ -1,5 +1,5 @@
 (function() {var implementors = {};
-implementors['tetrs'] = [];
+implementors["tetrs"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

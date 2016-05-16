@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-492' class='srclink' href='../../src/tetrs/src/controller.rs.html#49-55' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-622' class='srclink' href='../../src/tetrs/src/controller.rs.html#49-55' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Controller {
     pub time: <a class='type' href='../../tetrs/controller/type.CTarray.html' title='tetrs::controller::CTarray'>CTarray</a>,
     pub active: <a class='type' href='../../tetrs/controller/type.CAarray.html' title='tetrs::controller::CAarray'>CAarray</a>,
@@ -61,7 +61,8 @@ keystate of a keyboard.</p>
                              <td id='structfield.time'><code>time</code></td><td><div class='docblock'><p>The length each action has occured for in ticks.</p>
 </div></td></tr><tr class='stab '>
                              <td id='structfield.active'><code>active</code></td><td><div class='docblock'><p>Which actions are currently active.</p>
-</div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a></code></h4>
+</div></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-627' class='srclink' href='../../src/tetrs/src/controller.rs.html#57-127' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a></code></h4>
 <div class='docblock'><p>Return a new controller instance.</p>
 
 <p>The controller specified will start with all actions in the inactive
@@ -105,7 +106,8 @@ an object, rather than explicitly via events.</p>
 <span class='ident'>controller</span>.<span class='ident'>deactivate</span>(<span class='ident'>Action</span>::<span class='ident'>MoveRight</span>);
 <span class='ident'>controller</span>.<span class='ident'>update</span>();
 <span class='comment'>// active[Action::MoveRight] == 0</span></pre>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a></code></h3><div class='impl-items'><h4 id='method.default' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a></code></h4>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-625' class='srclink' href='../../src/tetrs/src/controller.rs.html#48' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.default' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; <a class='struct' href='../../tetrs/controller/struct.Controller.html' title='tetrs::controller::Controller'>Controller</a></code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
