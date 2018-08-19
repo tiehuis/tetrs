@@ -7,7 +7,6 @@
 use block::{self, Rotation, Block};
 use field::Field;
 use wallkick::Wallkick;
-use collections::enum_set::CLike;
 
 gen_wallkick!(SRS);
 
@@ -22,18 +21,18 @@ impl Wallkick for SRS {
             match r {
                 Rotation::R90 => {
                     if block.id == block::Id::I {
-                        &RIGHT_I[block.r.to_usize()]
+                        &RIGHT_I[block.r as usize]
                     }
                     else {
-                        &RIGHT_JLSTZ[block.r.to_usize()]
+                        &RIGHT_JLSTZ[block.r as usize]
                     }
                 },
                 Rotation::R270 => {
                     if block.id == block::Id::I {
-                        &LEFT_I[block.r.to_usize()]
+                        &LEFT_I[block.r as usize]
                     }
                     else {
-                        &LEFT_JLSTZ[block.r.to_usize()]
+                        &LEFT_JLSTZ[block.r as usize]
                     }
                 },
                 _ => panic!("Invalid wallkick test")

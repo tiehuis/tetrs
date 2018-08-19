@@ -12,7 +12,6 @@
 //
 // (omitted real IRS and IHS handling)
 
-use collections::enum_set::CLike;
 use std::fs::File;
 use std::io::Read;
 use serde_json;
@@ -243,7 +242,7 @@ impl Engine {
     /// Check if a particular action has been pressed with the specified
     /// rate.
     fn is_pressed(&self, action: Action, rate: u64) -> bool {
-        let sct = self.co.time[action.to_usize()] as u64;
+        let sct = self.co.time[action as usize] as u64;
         let das = self.ticks(self.op.das);
 
         // First press, or over das and arr rate has fired

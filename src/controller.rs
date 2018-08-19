@@ -8,7 +8,6 @@
 //! call to the `deactivate` function.
 
 use std::mem;
-use collections::enum_set::CLike;
 
 /// 'Controller Time' array.
 ///
@@ -30,14 +29,11 @@ pub enum Action {
     RotateLeft, RotateRight, Hold, Quit
 }
 
-impl CLike for Action {
-    fn to_usize(&self) -> usize {
-        *self as usize
-    }
-
-    fn from_usize(v: usize) -> Action {
-        unsafe { mem::transmute(v) }
-    }
+impl From<usize> for Action {
+	fn from(t: usize) -> Self {
+		assert!(t < 8);
+		unsafe { mem::transmute(t) }
+	}
 }
 
 /// A controller stores the internal state as a series of known actions.
@@ -65,12 +61,12 @@ impl Controller {
 
     /// Query if an action is currently active.
     pub fn active(&self, action: Action) -> bool {
-        self.active[action.to_usize()]
+        self.active[action as usize]
     }
 
     /// Query how long an action has been active for.
     pub fn time(&self, action: Action) -> u64 {
-        self.time[action.to_usize()]
+        self.time[action as usize]
     }
 
     /// Activate the specified action.
@@ -78,7 +74,7 @@ impl Controller {
     /// The action will be set to active.
     /// Activating an already active timer has no effect.
     pub fn activate(&mut self, action: Action) {
-        self.active[action.to_usize()] = true;
+        self.active[action as usize] = true;
     }
 
     /// Deactivate the specified action.
@@ -86,7 +82,7 @@ impl Controller {
     /// The action will be set to inactive.
     /// Deactivating an already inactive action has no effect.
     pub fn deactivate(&mut self, action: Action) {
-        self.active[action.to_usize()] = false;
+        self.active[action as usize] = false;
     }
 
     /// Deactivate all actions.
@@ -130,31 +126,30 @@ impl Controller {
 mod tests {
 
     use super::*;
-    use collections::enum_set::CLike;
 
     #[test]
     fn test() {
         let mut controller = Controller::new();
 
         controller.activate(Action::MoveLeft);
-        assert_eq!(controller.active[Action::MoveLeft.to_usize()], true);
-        assert_eq!(controller.time[Action::MoveLeft.to_usize()], 0);
+        assert_eq!(controller.active[Action::MoveLeft as usize], true);
+        assert_eq!(controller.time[Action::MoveLeft as usize], 0);
 
         controller.update();
-        assert_eq!(controller.time[Action::MoveLeft.to_usize()], 1);
+        assert_eq!(controller.time[Action::MoveLeft as usize], 1);
 
         controller.deactivate(Action::MoveLeft);
-        assert_eq!(controller.time[Action::MoveLeft.to_usize()], 1);
+        assert_eq!(controller.time[Action::MoveLeft as usize], 1);
 
         controller.update();
-        assert_eq!(controller.time[Action::MoveLeft.to_usize()], 0);
+        assert_eq!(controller.time[Action::MoveLeft as usize], 0);
 
         controller.activate(Action::MoveLeft);
         controller.activate(Action::MoveRight);
         controller.update();
         controller.update();
         controller.update();
-        assert_eq!(controller.time[Action::MoveLeft.to_usize()], 3);
-        assert_eq!(controller.time[Action::MoveRight.to_usize()], 3);
+        assert_eq!(controller.time[Action::MoveLeft as usize], 3);
+        assert_eq!(controller.time[Action::MoveRight as usize], 3);
     }
 }

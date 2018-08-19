@@ -121,10 +121,10 @@ fn main() {
             for x in 0..engine.fd.width {
                 renderer.set_draw_color(match (engine.fd.occupies((x, y)), engine.bk.occupies((x, y)), ghost.occupies((x, y))) {
                     (true, true,  _)      => Color::RGB(255, 0, 0),
-                    (true, false, _)      => COLORMAP[engine.fd.get((x, y)).to_usize()],
-                    (false, true, _)      => COLORMAP[engine.bk.id.to_usize()],
+                    (true, false, _)      => COLORMAP[engine.fd.get((x, y)) as usize],
+                    (false, true, _)      => COLORMAP[engine.bk.id as usize],
                     (false, false, true)  => {
-                        let (r, g, b) = COLORMAP[engine.bk.id.to_usize()].rgb();
+                        let (r, g, b) = COLORMAP[engine.bk.id as usize].rgb();
                         Color::RGBA(20 + r / 7, 20 + g / 7, 20 + b / 7, 50)
                     },
                     (false, false, false) => Color::RGB(0, 0, 0)
@@ -145,7 +145,7 @@ fn main() {
 
         // Draw preview pieces
         for id in engine.rd.preview(3) { //engine.op.preview_count as usize) {
-            renderer.set_draw_color(COLORMAP[id.to_usize()]);
+            renderer.set_draw_color(COLORMAP[id as usize]);
             for &(x, y) in engine.bk.rs.data(id, Rotation::R0) {
                 let _ = renderer.fill_rect(sq!(xoffset + 15 * x as u32, yoffset + 15 * y as u32, 15));
             }
@@ -154,7 +154,7 @@ fn main() {
 
         // Draw hold piece
         if engine.hd.is_some() {
-            renderer.set_draw_color(COLORMAP[engine.hd.unwrap().to_usize()]);
+            renderer.set_draw_color(COLORMAP[engine.hd.unwrap() as usize]);
             for &(x, y) in engine.bk.rs.data(engine.hd.unwrap(), Rotation::R0) {
                 let _ = renderer.fill_rect(sq!(LEFT_FIELD_POSITION - 15 * 4 - 20 + 15 * x as u32, UPPER_MARGIN2 + 15 * y as u32, 15));
             }
