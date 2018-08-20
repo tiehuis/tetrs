@@ -22,7 +22,6 @@ use field::Field;
 use rotation_system::{self, RotationSystem};
 
 use std::mem;
-use collections::enum_set::CLike;
 
 /// The identifier for a particular `Block`.
 #[repr(usize)]
@@ -32,19 +31,15 @@ pub enum Id {
     I, T, L, J, S, Z, O, None
 }
 
-impl CLike for Id {
-    fn to_usize(&self) -> usize {
-        *self as usize
-    }
-
-    fn from_usize(v: usize) -> Id {
-        assert!(v < 7);
-        unsafe { mem::transmute(v) }
-    }
+impl From<usize> for Id {
+	fn from(t: usize) -> Self {
+		assert!(t < 7);
+		unsafe { mem::transmute(t) }
+	}
 }
 
 impl Id {
-    /// Returns all `Id` variants known.
+	/// Returns all `Id` variants known.
     ///
     /// This does not return the `None` variant.
     pub fn variants() -> &'static [Id] {
@@ -83,31 +78,27 @@ pub enum Rotation {
 
 impl Default for Rotation { fn default() -> Rotation { Rotation::R0 } }
 
-impl CLike for Rotation {
-    fn to_usize(&self) -> usize {
-        *self as usize
-    }
-
-    fn from_usize(v: usize) -> Rotation {
-        assert!(v < 4);
-        unsafe { mem::transmute(v) }
-    }
+impl From<usize> for Rotation {
+	fn from(t: usize) -> Self {
+		assert!(t < 4);
+		unsafe { mem::transmute(t) }
+	}
 }
 
 impl Rotation {
-    /// Returns all known `Rotation` variants.
+	/// Returns all known `Rotation` variants.
     pub fn variants() -> Vec<Rotation> {
         vec![Rotation::R0, Rotation::R90, Rotation::R180, Rotation::R270]
     }
 
     /// Returns the next clockwise rotation.
     pub fn clockwise(&self) -> Rotation {
-        Rotation::from_usize((self.to_usize() + 4 + 1) % 4)
+        Rotation::from((*self as usize + 4 + 1) % 4)
     }
 
     /// Returns the next anticlockwise rotation.
     pub fn anticlockwise(&self) -> Rotation {
-        Rotation::from_usize((self.to_usize() + 4 - 1) % 4)
+        Rotation::from((*self as usize + 4 - 1) % 4)
     }
 }
 

@@ -128,7 +128,6 @@ pub trait RotationSystem {
 /// This could work as a derive attribute probably, but that is extra work.
 macro_rules! rs_gen {
     ($id:ident) => {
-        use collections::enum_set::CLike;
         use block::{Id, Rotation};
         use rotation_system::RotationSystem;
 
@@ -148,13 +147,13 @@ macro_rules! rs_gen {
         impl RotationSystem for $id {
             fn data(&self, ty: Id, rotation: Rotation) -> &'static [(usize, usize)] {
                 match ty {
-                    Id::I => &I[rotation.to_usize()],
-                    Id::T => &T[rotation.to_usize()],
-                    Id::L => &L[rotation.to_usize()],
-                    Id::J => &J[rotation.to_usize()],
-                    Id::S => &S[rotation.to_usize()],
-                    Id::Z => &Z[rotation.to_usize()],
-                    Id::O => &O[rotation.to_usize()],
+                    Id::I => &I[rotation as usize],
+                    Id::T => &T[rotation as usize],
+                    Id::L => &L[rotation as usize],
+                    Id::J => &J[rotation as usize],
+                    Id::S => &S[rotation as usize],
+                    Id::Z => &Z[rotation as usize],
+                    Id::O => &O[rotation as usize],
                     _ => panic!("Attempted to get data for Id: {:?}", ty)
                 }
             }

@@ -1,7 +1,6 @@
 //! Module which provides history management tools.
 
 use controller::{Action, Controller, CAarray};
-use collections::enum_set::CLike;
 
 /// An individual event in a history sequence.
 #[allow(dead_code)]
@@ -54,14 +53,14 @@ impl History {
                     self.history.push(Event {
                         press: false,
                         ticks: self.tick_count,
-                        action: Action::from_usize(i)
+                        action: Action::from(i)
                     });
                 },
                 (false, true) => {
                     self.history.push(Event {
                         press: true,
                         ticks: self.tick_count,
-                        action: Action::from_usize(i)
+                        action: Action::from(i)
                     });
                 },
                 _ => ()

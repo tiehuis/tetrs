@@ -1,10 +1,3 @@
-#![feature(collections, enumset)]
-#![feature(custom_derive, plugin)]
-#![plugin(serde_macros)]
-
-#![cfg_attr(feature = "clippy", feature(plugin))]
-#![cfg_attr(feature = "clippy", plugin(clippy))]
-
 #![warn(missing_docs)]
 
 #![crate_name = "tetrs"]
@@ -34,12 +27,11 @@
 //! block.shift_extend(&field, Direction::Down);
 //! ```
 
+extern crate serde;
 extern crate serde_json;
-extern crate collections;
+#[macro_use] extern crate serde_derive;
 #[macro_use] extern crate itertools;
 extern crate rand;
-extern crate time;
-#[macro_use] extern crate log;
 
 /// Perform a safe conversion to i32, panicing if the current type does not
 /// lie within the required bounds.
